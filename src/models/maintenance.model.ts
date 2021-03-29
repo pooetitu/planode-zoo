@@ -7,29 +7,30 @@ import {
     Optional,
     Sequelize
 } from "sequelize";
+import {UserInstance} from "./user.model";
 import {EmployeeInstance} from "./employee.model";
 
-export interface PresenceProps {
+export interface MaintenanceProps {
     id: number;
-    presenceDate: Date;
+    maintenanceDate: Date;
 }
 
-export interface PresenceCreationProps extends Optional<PresenceProps, "id"> {
+export interface MaintenanceCreationProps extends Optional<MaintenanceProps, "id"> {
 }
 
-export interface PresenceInstance extends Model<PresenceProps, PresenceCreationProps>, PresenceProps {
+export interface MaintenanceInstance extends Model<MaintenanceProps, MaintenanceCreationProps>, MaintenanceProps {
     setEmployee: BelongsToSetAssociationMixin<EmployeeInstance, "id">;
     getEmployee: BelongsToGetAssociationMixin<EmployeeInstance>;
 }
 
-export default function (sequelize: Sequelize): ModelCtor<PresenceInstance> {
-    return sequelize.define<PresenceInstance>("Presence", {
+export default function (sequelize: Sequelize): ModelCtor<MaintenanceInstance> {
+    return sequelize.define<MaintenanceInstance>("Maintenance", {
         id: {
             type: DataTypes.BIGINT,
             primaryKey: true,
             autoIncrement: true
         },
-        presenceDate: {
+        maintenanceDate: {
             type: DataTypes.DATE,
             allowNull: false
         }

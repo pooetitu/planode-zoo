@@ -4,7 +4,9 @@ import sessionCreator, {SessionInstance} from "./session.model";
 import employeeCreator, {EmployeeInstance} from "./employee.model";
 import presenceCreator, {PresenceInstance} from "./presence.model";
 import passCreator, {PassInstance} from "./pass.model";
+import maintenanceCreator, {MaintenanceInstance} from "./maintenance.model";
 import animalCreator, {AnimalInstance} from "./animal.model";
+import areaCreator, {AreaInstance} from "./area.model";
 import {Dialect} from "sequelize/types/lib/sequelize";
 
 export interface SequelizeManagerProps {
@@ -14,7 +16,9 @@ export interface SequelizeManagerProps {
     Employee: ModelCtor<EmployeeInstance>;
     Presence: ModelCtor<PresenceInstance>;
     Pass: ModelCtor<PassInstance>;
+    Maintenance: ModelCtor<MaintenanceInstance>;
     Animal: ModelCtor<AnimalInstance>;
+    Area: ModelCtor<AreaInstance>;
 }
 
 export class SequelizeManager implements SequelizeManagerProps {
@@ -27,7 +31,9 @@ export class SequelizeManager implements SequelizeManagerProps {
     Employee: ModelCtor<EmployeeInstance>;
     Presence: ModelCtor<PresenceInstance>;
     Pass: ModelCtor<PassInstance>;
+    Maintenance: ModelCtor<MaintenanceInstance>;
     Animal: ModelCtor<AnimalInstance>;
+    Area: ModelCtor<AreaInstance>;
 
     private constructor(props: SequelizeManagerProps) {
         this.sequelize = props.sequelize;
@@ -36,7 +42,9 @@ export class SequelizeManager implements SequelizeManagerProps {
         this.Employee = props.Employee;
         this.Presence = props.Presence;
         this.Pass = props.Pass;
+        this.Maintenance = props.Maintenance;
         this.Animal = props.Animal;
+        this.Area = props.Area;
     }
 
     public static async getInstance(): Promise<SequelizeManager> {
@@ -63,7 +71,9 @@ export class SequelizeManager implements SequelizeManagerProps {
             Employee: employeeCreator(sequelize),
             Presence: presenceCreator(sequelize),
             Pass: passCreator(sequelize),
-            Animal: animalCreator(sequelize)
+            Maintenance: maintenanceCreator(sequelize),
+            Animal: animalCreator(sequelize),
+            Area: areaCreator(sequelize)
         }
         SequelizeManager.associate(managerProps);
         await sequelize.sync();
@@ -79,5 +89,11 @@ export class SequelizeManager implements SequelizeManagerProps {
         props.Presence.belongsTo(props.Employee);
         props.User.hasMany(props.Pass);
         props.Pass.belongsTo(props.User);
+        props.Maintenance.belongsTo(props.Employee);
+        props.Maintenance.belongsTo(props.Maintenance);
+        props.Employee.hasMany(props.Maintenance);
+        props.Area.hasMany(props.Maintenance);
+        props.Area.hasMany(props.Animal);
+        props.Animal.belongsTo(props.Area);
     }
 }

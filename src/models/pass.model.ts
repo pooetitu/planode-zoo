@@ -1,10 +1,13 @@
 import {
+    BelongsToGetAssociationMixin,
+    BelongsToSetAssociationMixin,
     DataTypes,
     Model,
     ModelCtor,
     Optional,
     Sequelize
 } from "sequelize";
+import {UserInstance} from "./user.model";
 
 export interface PassProps {
     id: number;
@@ -17,7 +20,8 @@ export interface PassCreationProps extends Optional<PassProps, "id"> {
 }
 
 export interface PassInstance extends Model<PassProps, PassCreationProps>, PassProps {
-
+    setUser: BelongsToSetAssociationMixin<UserInstance, "id">;
+    getUser: BelongsToGetAssociationMixin<UserInstance>;
 }
 
 export default function (sequelize: Sequelize): ModelCtor<PassInstance> {

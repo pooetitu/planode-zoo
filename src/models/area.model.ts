@@ -12,7 +12,7 @@ import {
 import {SessionInstance, SessionProps} from "./session.model";
 import {UserInstance} from "./user.model";
 
-export interface EspaceProps {
+export interface AreaProps {
     id: number;
     name: string;
     type: string;
@@ -25,15 +25,15 @@ export interface EspaceProps {
 
 
 }
-export interface EspaceCreationProps extends Optional<EspaceProps, "id"> {
+export interface AreaCreationProps extends Optional<AreaProps, "id"> {
 }
 
-export interface EspaceInstance extends Model<EspaceProps, EspaceCreationProps>, EspaceProps {
+export interface AreaInstance extends Model<AreaProps, AreaCreationProps>, AreaProps {
 
 }
 
-export default function (sequelize: Sequelize): ModelCtor<EspaceInstance> {
-    return sequelize.define<EspaceInstance>("Espace", {
+export default function (sequelize: Sequelize): ModelCtor<AreaInstance> {
+    return sequelize.define<AreaInstance>("Area", {
         id: {
             type: DataTypes.BIGINT,
             primaryKey: true,

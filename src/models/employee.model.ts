@@ -1,13 +1,15 @@
 import {
     BelongsToGetAssociationMixin,
     BelongsToSetAssociationMixin,
-    DataTypes,
+    DataTypes, HasManyAddAssociationMixin, HasManyGetAssociationsMixin,
     Model,
     ModelCtor,
     Optional,
     Sequelize
 } from "sequelize";
 import {UserInstance} from "./user.model";
+import {SessionInstance} from "./session.model";
+import {MaintenanceInstance} from "./maintenance.model";
 
 export enum EmployeeType {
     ADMIN,
@@ -28,6 +30,8 @@ export interface EmployeeCreationProps extends Optional<EmployeeProps, "id"> {
 }
 
 export interface EmployeeInstance extends Model<EmployeeProps, EmployeeCreationProps>, EmployeeProps {
+    getMaintenance: HasManyGetAssociationsMixin<MaintenanceInstance>;
+    addMaintenance: HasManyAddAssociationMixin<MaintenanceInstance, "id">;
     setUser: BelongsToSetAssociationMixin<UserInstance, "id">;
     getUser: BelongsToGetAssociationMixin<UserInstance>;
 }
@@ -55,7 +59,6 @@ export default function (sequelize: Sequelize): ModelCtor<EmployeeInstance> {
     }, {
         freezeTableName: true,
         underscored: true,
-        timestamps: false,
-        paranoid: true
+        timestamps: false
     });
 }
