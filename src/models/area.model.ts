@@ -69,7 +69,6 @@ export default function (sequelize: Sequelize): ModelCtor<AreaInstance> {
     }, {
         freezeTableName: true,
         underscored: true,
-        paranoid: true,
-        timestamps: true
+        timestamps: false
     });
 }
