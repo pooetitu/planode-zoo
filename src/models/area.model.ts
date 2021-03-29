@@ -9,8 +9,9 @@ import {
     Optional,
     Sequelize
 } from "sequelize";
-import {SessionInstance, SessionProps} from "./session.model";
-import {UserInstance} from "./user.model";
+import {PassInstance} from "./pass.model";
+import {AnimalInstance} from "./animal.model";
+import {MaintenanceInstance} from "./maintenance.model";
 
 export interface AreaProps {
     id: number;
@@ -19,17 +20,20 @@ export interface AreaProps {
     description: string;
     capacity: number;
     duration: number;
-    openingstime: Date;
-    disabledaccess: boolean;
+    openingTime: Date;
+    disabledAccess: boolean;
     maintenance: boolean;
-
-
 }
 export interface AreaCreationProps extends Optional<AreaProps, "id"> {
 }
 
 export interface AreaInstance extends Model<AreaProps, AreaCreationProps>, AreaProps {
-
+    setPass: BelongsToSetAssociationMixin<PassInstance, "id">;
+    getPass: BelongsToGetAssociationMixin<PassInstance>;
+    getAnimals: HasManyGetAssociationsMixin<AnimalInstance>;
+    addAnimal: HasManyAddAssociationMixin<AnimalInstance, "id">;
+    getMaintenances: HasManyGetAssociationsMixin<MaintenanceInstance>;
+    addMaintenance: HasManyAddAssociationMixin<MaintenanceInstance, "id">;
 }
 
 export default function (sequelize: Sequelize): ModelCtor<AreaInstance> {
@@ -55,11 +59,11 @@ export default function (sequelize: Sequelize): ModelCtor<AreaInstance> {
         duration: {
             type: DataTypes.INTEGER
         },
-        openingstime: {
+        openingTime: {
             type: DataTypes.DATE,
             allowNull: false
         },
-        disabledaccess: {
+        disabledAccess: {
             type: DataTypes.BOOLEAN
         },
         maintenance: {
