@@ -3,6 +3,7 @@ import userCreator, {UserInstance} from "./user.model";
 import sessionCreator, {SessionInstance} from "./session.model";
 import employeeCreator, {EmployeeInstance} from "./employee.model";
 import presenceCreator, {PresenceInstance} from "./presence.model";
+import passCreator, {PassInstance} from "./pass.model";
 import {Dialect} from "sequelize/types/lib/sequelize";
 
 export interface SequelizeManagerProps {
@@ -11,6 +12,7 @@ export interface SequelizeManagerProps {
     Session: ModelCtor<SessionInstance>;
     Employee: ModelCtor<EmployeeInstance>;
     Presence: ModelCtor<PresenceInstance>;
+    Pass: ModelCtor<PassInstance>;
 }
 
 export class SequelizeManager implements SequelizeManagerProps {
@@ -22,6 +24,7 @@ export class SequelizeManager implements SequelizeManagerProps {
     Session: ModelCtor<SessionInstance>;
     Employee: ModelCtor<EmployeeInstance>;
     Presence: ModelCtor<PresenceInstance>;
+    Pass: ModelCtor<PassInstance>;
 
     private constructor(props: SequelizeManagerProps) {
         this.sequelize = props.sequelize;
@@ -29,6 +32,7 @@ export class SequelizeManager implements SequelizeManagerProps {
         this.Session = props.Session;
         this.Employee = props.Employee;
         this.Presence = props.Presence;
+        this.Pass = props.Pass;
     }
 
     public static async getInstance(): Promise<SequelizeManager> {
@@ -53,7 +57,8 @@ export class SequelizeManager implements SequelizeManagerProps {
             User: userCreator(sequelize),
             Session: sessionCreator(sequelize),
             Employee: employeeCreator(sequelize),
-            Presence: presenceCreator(sequelize)
+            Presence: presenceCreator(sequelize),
+            Pass: passCreator(sequelize)
         }
         SequelizeManager.associate(managerProps);
         await sequelize.sync();
@@ -67,5 +72,7 @@ export class SequelizeManager implements SequelizeManagerProps {
         props.Employee.belongsTo(props.User);
         props.Employee.hasMany(props.Presence);
         props.Presence.belongsTo(props.Employee);
+        props.User.hasMany(props.Pass);
+        props.Pass.belongsTo(props.User);
     }
 }
