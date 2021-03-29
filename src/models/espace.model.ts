@@ -19,7 +19,7 @@ export interface EspaceProps {
     description: string;
     capacity: number;
     duration: number;
-    openingstime: string;
+    openingstime: Date;
     disabledaccess: boolean;
     maintenance: boolean;
 
@@ -56,7 +56,8 @@ export default function (sequelize: Sequelize): ModelCtor<EspaceInstance> {
             type: DataTypes.INTEGER
         },
         openingstime: {
-            type: DataTypes.STRING
+            type: DataTypes.DATE,
+            allowNull: false
         },
         disabledaccess: {
             type: DataTypes.BOOLEAN
