@@ -3,7 +3,7 @@ import {
     BelongsToSetAssociationMixin,
     DataTypes,
     HasManyAddAssociationMixin,
-    HasManyGetAssociationsMixin, HasOneCreateAssociationMixin, HasOneGetAssociationMixin,
+    HasManyGetAssociationsMixin,
     Model,
     ModelCtor,
     Optional,

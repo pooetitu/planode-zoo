@@ -22,8 +22,8 @@ export interface AreaProps {
     duration: number;
     openingTime: Date;
     disabledAccess: boolean;
-    maintenance: boolean;
 }
+
 export interface AreaCreationProps extends Optional<AreaProps, "id"> {
 }
 
@@ -64,9 +64,6 @@ export default function (sequelize: Sequelize): ModelCtor<AreaInstance> {
             allowNull: false
         },
         disabledAccess: {
-            type: DataTypes.BOOLEAN
-        },
-        maintenance: {
             type: DataTypes.BOOLEAN
         },
     }, {

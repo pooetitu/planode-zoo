@@ -7,7 +7,6 @@ import {
     Optional,
     Sequelize
 } from "sequelize";
-import {UserInstance} from "./user.model";
 import {EmployeeInstance} from "./employee.model";
 
 export interface MaintenanceProps {

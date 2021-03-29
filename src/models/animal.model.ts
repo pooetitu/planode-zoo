@@ -1,15 +1,15 @@
 import {
     BelongsToGetAssociationMixin,
     BelongsToSetAssociationMixin,
-    DataTypes, HasManyAddAssociationMixin, HasManyGetAssociationsMixin,
+    DataTypes,
+    HasManyAddAssociationMixin,
+    HasManyGetAssociationsMixin,
     Model,
     ModelCtor,
     Optional,
     Sequelize
 } from "sequelize";
-import {SessionInstance} from "./session.model";
 import {TreatmentInstance} from "./treatment.model";
-import {EmployeeInstance} from "./employee.model";
 import {AreaInstance} from "./area.model";
 
 export interface AnimalProps {

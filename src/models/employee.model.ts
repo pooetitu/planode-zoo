@@ -1,14 +1,15 @@
 import {
     BelongsToGetAssociationMixin,
     BelongsToSetAssociationMixin,
-    DataTypes, HasManyAddAssociationMixin, HasManyGetAssociationsMixin,
+    DataTypes,
+    HasManyAddAssociationMixin,
+    HasManyGetAssociationsMixin,
     Model,
     ModelCtor,
     Optional,
     Sequelize
 } from "sequelize";
 import {UserInstance} from "./user.model";
-import {SessionInstance} from "./session.model";
 import {MaintenanceInstance} from "./maintenance.model";
 
 export enum EmployeeType {
