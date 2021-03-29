@@ -9,9 +9,10 @@ import {
 export interface PassProps {
     id: number;
     isEscapeGame: boolean;
-    startDate: string;
-    lastDate: string;
+    startDate: Date;
+    endDate: Date;
 }
+
 export interface PassCreationProps extends Optional<PassProps, "id"> {
 }
 
@@ -26,19 +27,18 @@ export default function (sequelize: Sequelize): ModelCtor<PassInstance> {
             primaryKey: true,
             autoIncrement: true
         },
-        username: {
-            type: DataTypes.STRING,
+        isEscapeGame: {
+            type: DataTypes.BOOLEAN,
         },
-        password: {
-            type: DataTypes.STRING
+        startDate: {
+            type: DataTypes.DATE
         },
-        email: {
-            type: DataTypes.STRING
+        endDate: {
+            type: DataTypes.DATE
         },
     }, {
         freezeTableName: true,
         underscored: true,
-        paranoid: true,
-        timestamps: true
+        timestamps: false
     });
 }
