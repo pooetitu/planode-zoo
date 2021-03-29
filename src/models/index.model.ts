@@ -4,6 +4,7 @@ import sessionCreator, {SessionInstance} from "./session.model";
 import employeeCreator, {EmployeeInstance} from "./employee.model";
 import presenceCreator, {PresenceInstance} from "./presence.model";
 import passCreator, {PassInstance} from "./pass.model";
+import animalCreator, {AnimalInstance} from "./animal.model";
 import {Dialect} from "sequelize/types/lib/sequelize";
 
 export interface SequelizeManagerProps {
@@ -13,6 +14,7 @@ export interface SequelizeManagerProps {
     Employee: ModelCtor<EmployeeInstance>;
     Presence: ModelCtor<PresenceInstance>;
     Pass: ModelCtor<PassInstance>;
+    Animal: ModelCtor<AnimalInstance>;
 }
 
 export class SequelizeManager implements SequelizeManagerProps {
@@ -25,6 +27,7 @@ export class SequelizeManager implements SequelizeManagerProps {
     Employee: ModelCtor<EmployeeInstance>;
     Presence: ModelCtor<PresenceInstance>;
     Pass: ModelCtor<PassInstance>;
+    Animal: ModelCtor<AnimalInstance>;
 
     private constructor(props: SequelizeManagerProps) {
         this.sequelize = props.sequelize;
@@ -33,6 +36,7 @@ export class SequelizeManager implements SequelizeManagerProps {
         this.Employee = props.Employee;
         this.Presence = props.Presence;
         this.Pass = props.Pass;
+        this.Animal = props.Animal;
     }
 
     public static async getInstance(): Promise<SequelizeManager> {
@@ -58,7 +62,8 @@ export class SequelizeManager implements SequelizeManagerProps {
             Session: sessionCreator(sequelize),
             Employee: employeeCreator(sequelize),
             Presence: presenceCreator(sequelize),
-            Pass: passCreator(sequelize)
+            Pass: passCreator(sequelize),
+            Animal: animalCreator(sequelize)
         }
         SequelizeManager.associate(managerProps);
         await sequelize.sync();

@@ -7,12 +7,10 @@ import {
     Optional,
     Sequelize
 } from "sequelize";
-import {UserInstance} from "./user.model";
 
 export interface AnimalProps {
     id: number;
     name: string;
-
 }
 
 export interface AnimalCreationProps extends Optional<AnimalProps, "id"> {
@@ -30,7 +28,7 @@ export default function (sequelize: Sequelize): ModelCtor<AnimalInstance> {
             autoIncrement: true
         },
         name: {
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allowNull: false
         }
     }, {
