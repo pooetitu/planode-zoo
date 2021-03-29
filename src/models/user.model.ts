@@ -1,13 +1,16 @@
 import {
+    BelongsToGetAssociationMixin,
+    BelongsToSetAssociationMixin,
     DataTypes,
     HasManyAddAssociationMixin,
-    HasManyGetAssociationsMixin,
+    HasManyGetAssociationsMixin, HasOneCreateAssociationMixin, HasOneGetAssociationMixin,
     Model,
     ModelCtor,
     Optional,
     Sequelize
 } from "sequelize";
 import {SessionInstance} from "./session.model";
+import {EmployeeInstance} from "./employee.model";
 
 export interface UserProps {
     id: number;
@@ -22,6 +25,8 @@ export interface UserCreationProps extends Optional<UserProps, "id"> {
 export interface UserInstance extends Model<UserProps, UserCreationProps>, UserProps {
     getSessions: HasManyGetAssociationsMixin<SessionInstance>;
     addSession: HasManyAddAssociationMixin<SessionInstance, "id">;
+    setEmployee: BelongsToSetAssociationMixin<EmployeeInstance, "id">;
+    getEmployee: BelongsToGetAssociationMixin<EmployeeInstance>;
 }
 
 export default function (sequelize: Sequelize): ModelCtor<UserInstance> {
