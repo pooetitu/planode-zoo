@@ -1,13 +1,15 @@
 import {
     BelongsToGetAssociationMixin,
     BelongsToSetAssociationMixin,
-    DataTypes,
+    DataTypes, HasManyAddAssociationMixin, HasManyGetAssociationsMixin,
     Model,
     ModelCtor,
     Optional,
     Sequelize
 } from "sequelize";
 import {UserInstance} from "./user.model";
+import {SessionInstance} from "./session.model";
+import {AreaInstance} from "./area.model";
 
 export interface PassProps {
     id: number;
@@ -22,6 +24,8 @@ export interface PassCreationProps extends Optional<PassProps, "id"> {
 export interface PassInstance extends Model<PassProps, PassCreationProps>, PassProps {
     setUser: BelongsToSetAssociationMixin<UserInstance, "id">;
     getUser: BelongsToGetAssociationMixin<UserInstance>;
+    getAreas: HasManyGetAssociationsMixin<AreaInstance>;
+    addArea: HasManyAddAssociationMixin<AreaInstance, "id">;
 }
 
 export default function (sequelize: Sequelize): ModelCtor<PassInstance> {

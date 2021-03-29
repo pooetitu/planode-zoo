@@ -7,6 +7,7 @@ import passCreator, {PassInstance} from "./pass.model";
 import maintenanceCreator, {MaintenanceInstance} from "./maintenance.model";
 import animalCreator, {AnimalInstance} from "./animal.model";
 import areaCreator, {AreaInstance} from "./area.model";
+import treatmentCreator, {TreatmentInstance} from "./treatment.model";
 import {Dialect} from "sequelize/types/lib/sequelize";
 
 export interface SequelizeManagerProps {
@@ -19,6 +20,7 @@ export interface SequelizeManagerProps {
     Maintenance: ModelCtor<MaintenanceInstance>;
     Animal: ModelCtor<AnimalInstance>;
     Area: ModelCtor<AreaInstance>;
+    Treatment: ModelCtor<TreatmentInstance>;
 }
 
 export class SequelizeManager implements SequelizeManagerProps {
@@ -34,6 +36,7 @@ export class SequelizeManager implements SequelizeManagerProps {
     Maintenance: ModelCtor<MaintenanceInstance>;
     Animal: ModelCtor<AnimalInstance>;
     Area: ModelCtor<AreaInstance>;
+    Treatment: ModelCtor<TreatmentInstance>;
 
     private constructor(props: SequelizeManagerProps) {
         this.sequelize = props.sequelize;
@@ -45,6 +48,7 @@ export class SequelizeManager implements SequelizeManagerProps {
         this.Maintenance = props.Maintenance;
         this.Animal = props.Animal;
         this.Area = props.Area;
+        this.Treatment = props.Treatment;
     }
 
     public static async getInstance(): Promise<SequelizeManager> {
@@ -73,7 +77,8 @@ export class SequelizeManager implements SequelizeManagerProps {
             Pass: passCreator(sequelize),
             Maintenance: maintenanceCreator(sequelize),
             Animal: animalCreator(sequelize),
-            Area: areaCreator(sequelize)
+            Area: areaCreator(sequelize),
+            Treatment: treatmentCreator(sequelize)
         }
         SequelizeManager.associate(managerProps);
         await sequelize.sync();
@@ -95,5 +100,8 @@ export class SequelizeManager implements SequelizeManagerProps {
         props.Area.hasMany(props.Maintenance);
         props.Area.hasMany(props.Animal);
         props.Animal.belongsTo(props.Area);
+        props.Animal.hasMany(props.Treatment);
+        props.Employee.hasMany(props.Treatment);
+        props.Treatment.belongsTo(props.Animal);
     }
 }
