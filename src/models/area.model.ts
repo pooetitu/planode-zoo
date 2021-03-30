@@ -12,6 +12,7 @@ import {
 import {PassInstance} from "./pass.model";
 import {AnimalInstance} from "./animal.model";
 import {MaintenanceInstance} from "./maintenance.model";
+import {AreaAccessInstance} from "./area_access.model";
 
 export interface AreaProps {
     id: number;
@@ -34,6 +35,8 @@ export interface AreaInstance extends Model<AreaProps, AreaCreationProps>, AreaP
     addAnimal: HasManyAddAssociationMixin<AnimalInstance, "id">;
     getMaintenances: HasManyGetAssociationsMixin<MaintenanceInstance>;
     addMaintenance: HasManyAddAssociationMixin<MaintenanceInstance, "id">;
+    getAreasAccesses: HasManyGetAssociationsMixin<AreaAccessInstance>;
+    addAreaAccess: HasManyAddAssociationMixin<AreaAccessInstance, "id">;
 }
 
 export default function (sequelize: Sequelize): ModelCtor<AreaInstance> {
