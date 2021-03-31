@@ -2,7 +2,7 @@ import {ModelCtor} from "sequelize";
 import {UserInstance} from "../models/user.model";
 import {SessionInstance} from "../models/session.model";
 import {SequelizeManager} from "../models/index.model";
-import {PassInstance} from "../models/pass.model";
+import {PassCreationProps, PassInstance, passMap} from "../models/pass.model";
 
 export class PassController {
 
@@ -25,10 +25,26 @@ export class PassController {
         return PassController.instance;
     }
 
-    // public async create(props: PassCreationProps): Promise<PassInstance | null> {
-    //     return this.Pass.create({
-    //         ...props,
-    //     });
-    // }
+    public async getAllPass(): Promise<PassInstance[] | null> {
+        return await this.Pass.findAll();
+    }
 
+    public async getPassById(id: string): Promise<PassInstance | null> {
+        return await this.Pass.findOne({
+            where: {
+                id
+            }
+        });
+    }
+
+    public async createPass(props: PassCreationProps, user: UserInstance): Promise<PassInstance | null> {
+        const endDate = new Date(props.startDate);
+        endDate.setDate(props.startDate.getDate() + passMap[props.type])
+        const pass = await this.Pass.create({
+            ...props,
+            endDate: new Date(endDate)
+        });
+        pass.setUser(user);
+        return pass;
+    }
 }
