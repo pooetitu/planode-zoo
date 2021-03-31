@@ -69,4 +69,15 @@ export class AuthController {
             }
         });
     }
+
+    public async getUser(token: string):  Promise<UserInstance | null> {
+        return this.User.findOne({
+            include:[ {
+                model:this.Session,
+                where: {
+                    token
+                }
+            }]
+        });
+    }
 }
