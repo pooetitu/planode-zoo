@@ -8,6 +8,7 @@ import {
     Sequelize
 } from "sequelize";
 import {EmployeeInstance} from "./employee.model";
+import {AreaInstance} from "./area.model";
 
 export interface MaintenanceProps {
     id: number;
@@ -20,6 +21,8 @@ export interface MaintenanceCreationProps extends Optional<MaintenanceProps, "id
 export interface MaintenanceInstance extends Model<MaintenanceProps, MaintenanceCreationProps>, MaintenanceProps {
     setEmployee: BelongsToSetAssociationMixin<EmployeeInstance, "id">;
     getEmployee: BelongsToGetAssociationMixin<EmployeeInstance>;
+    setArea: BelongsToSetAssociationMixin<AreaInstance, "id">;
+    getArea: BelongsToGetAssociationMixin<AreaInstance>;
 }
 
 export default function (sequelize: Sequelize): ModelCtor<MaintenanceInstance> {

@@ -1,6 +1,4 @@
 import {ModelCtor} from "sequelize";
-import {UserInstance} from "../models/user.model";
-import {SessionInstance} from "../models/session.model";
 import {SequelizeManager} from "../models/index.model";
 import {EmployeeInstance} from "../models/employee.model";
 import {TreatmentCreationProps, TreatmentInstance} from "../models/treatment.model";

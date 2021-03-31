@@ -11,6 +11,7 @@ import {
 } from "sequelize";
 import {UserInstance} from "./user.model";
 import {AreaInstance} from "./area.model";
+import {PassUsageInstance} from "./pass_usage.model";
 
 export interface PassProps {
     id: number;
@@ -27,6 +28,8 @@ export interface PassInstance extends Model<PassProps, PassCreationProps>, PassP
     getUser: BelongsToGetAssociationMixin<UserInstance>;
     getAreas: HasManyGetAssociationsMixin<AreaInstance>;
     addArea: HasManyAddAssociationMixin<AreaInstance, "id">;
+    getPassUsages: HasManyGetAssociationsMixin<PassUsageInstance>;
+    addPassUsage: HasManyAddAssociationMixin<PassUsageInstance, "id">;
 }
 
 export default function (sequelize: Sequelize): ModelCtor<PassInstance> {

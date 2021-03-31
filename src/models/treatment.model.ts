@@ -12,7 +12,9 @@ import {AnimalInstance} from "./animal.model";
 
 export interface TreatmentProps {
     id: number;
+    name: string;
     description: string;
+    date: Date;
 }
 
 export interface TreatmentCreationProps extends Optional<TreatmentProps, "id"> {
@@ -32,8 +34,14 @@ export default function (sequelize: Sequelize): ModelCtor<TreatmentInstance> {
             primaryKey: true,
             autoIncrement: true
         },
+        name: {
+            type: DataTypes.STRING
+        },
         description: {
             type: DataTypes.STRING
+        },
+        date: {
+            type: DataTypes.DATE
         }
     }, {
         underscored: true,
