@@ -1,7 +1,7 @@
 import {ModelCtor} from "sequelize";
 import {UserInstance} from "../models/user.model";
 import {SessionInstance} from "../models/session.model";
-import {SequelizeManager} from "../models";
+import {SequelizeManager} from "../models/index.model";
 import {AreaCreationProps, AreaInstance} from "../models/area.model";
 import {AreaAccessInstance} from "../models/area_access.model";
 
