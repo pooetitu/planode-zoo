@@ -43,4 +43,17 @@ export class AreaController {
             }
         });
     }
-}
+    public async deleteAreaByName(name: string){
+        await this.Area.destroy({
+            where: {
+                name
+            }
+        });
+    }
+    public async deleteAreaById(id: string){
+        await this.Area.destroy({
+            where: {
+                id
+            }
+        })
+    }}
