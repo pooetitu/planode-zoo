@@ -11,13 +11,14 @@ import {
 } from "sequelize";
 import {UserInstance} from "./user.model";
 import {MaintenanceInstance} from "./maintenance.model";
+import {TreatmentInstance} from "./treatment.model";
 
 export enum EmployeeType {
-    ADMIN,
-    VETERINARY,
-    SELLER,
-    RECEPTION,
-    SERVICE_AGENT
+    ADMIN = "ADMIN",
+    VETERINARY = "VETERINARY",
+    SELLER = "SELLER",
+    RECEPTION = "RECEPTION",
+    SERVICE_AGENT = "SERVICE_AGENT"
 }
 
 export interface EmployeeProps {
@@ -31,6 +32,8 @@ export interface EmployeeCreationProps extends Optional<EmployeeProps, "id"> {
 }
 
 export interface EmployeeInstance extends Model<EmployeeProps, EmployeeCreationProps>, EmployeeProps {
+    getTreatments: HasManyGetAssociationsMixin<TreatmentInstance>;
+    addTreatment: HasManyAddAssociationMixin<TreatmentInstance, "id">;
     getMaintenance: HasManyGetAssociationsMixin<MaintenanceInstance>;
     addMaintenance: HasManyAddAssociationMixin<MaintenanceInstance, "id">;
     setUser: BelongsToSetAssociationMixin<UserInstance, "id">;

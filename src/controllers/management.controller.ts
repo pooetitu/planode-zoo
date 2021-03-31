@@ -26,25 +26,25 @@ export class ManagementController {
         return ManagementController.instance;
     }
 
-    public async lockArea(props: MaintenanceCreationProps, admin: EmployeeInstance, area: AreaInstance):Promise<MaintenanceInstance | null> {
-        if(admin !== null && area !== null){
-            let maintenance = await this.Maintenance.create({
+    public async lockArea(props: MaintenanceCreationProps, admin: EmployeeInstance, area: AreaInstance): Promise<MaintenanceInstance | null> {
+        if (admin !== null && area !== null) {
+            const maintenance = await this.Maintenance.create({
                 ...props
             });
-            maintenance.setEmployee(admin);
-            maintenance.setArea(area);
+            await maintenance.setEmployee(admin);
+            await maintenance.setArea(area);
             return maintenance;
         }
         return null;
     }
 
     public async treatAnimal(props: TreatmentCreationProps, veterinary: EmployeeInstance, animal: AnimalInstance): Promise<TreatmentInstance | null> {
-        if(veterinary !== null && animal !== null) {
-            let treatment = await this.Treatment.create({
+        if (veterinary !== null && animal !== null) {
+            const treatment = await this.Treatment.create({
                 ...props
             });
-            treatment.setEmployee(veterinary);
-            treatment.setAnimal(animal);
+            await treatment.setAnimal(animal);
+            await treatment.setEmployee(veterinary);
             return treatment;
         }
         return null;

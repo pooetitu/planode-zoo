@@ -8,20 +8,11 @@ import {AreaAccessInstance} from "../models/area_access.model";
 export class AreaController {
 
 
+    private static instance: AreaController;
     Area: ModelCtor<AreaInstance>;
     AreaAccess: ModelCtor<AreaAccessInstance>;
     User: ModelCtor<UserInstance>;
     Session: ModelCtor<SessionInstance>;
-
-    private static instance: AreaController;
-
-    public static async getInstance(): Promise<AreaController> {
-        if(AreaController.instance === undefined) {
-            const {User, Session, Area, AreaAccess} = await SequelizeManager.getInstance();
-            AreaController.instance = new AreaController(User, Session, Area, AreaAccess);
-        }
-        return AreaController.instance;
-    }
 
     private constructor(User: ModelCtor<UserInstance>, Session: ModelCtor<SessionInstance>, Area: ModelCtor<AreaInstance>, AreaAccess: ModelCtor<AreaAccessInstance>) {
         this.User = User;
@@ -30,30 +21,41 @@ export class AreaController {
         this.AreaAccess = AreaAccess;
     }
 
-    public async createArea(props: AreaCreationProps): Promise<AreaInstance | null>{
+    public static async getInstance(): Promise<AreaController> {
+        if (AreaController.instance === undefined) {
+            const {User, Session, Area, AreaAccess} = await SequelizeManager.getInstance();
+            AreaController.instance = new AreaController(User, Session, Area, AreaAccess);
+        }
+        return AreaController.instance;
+    }
+
+    public async createArea(props: AreaCreationProps): Promise<AreaInstance | null> {
         return await this.Area.create({
             ...props
         });
     }
 
-    public async getAreaById(id: string): Promise<AreaInstance | null>{
+    public async getAreaById(id: string): Promise<AreaInstance | null> {
         return await this.Area.findOne({
             where: {
                 id
             }
         });
     }
-    public async deleteAreaByName(name: string){
+
+    public async deleteAreaByName(name: string) {
         await this.Area.destroy({
             where: {
                 name
             }
         });
     }
-    public async deleteAreaById(id: string){
+
+    public async deleteAreaById(id: string) {
         await this.Area.destroy({
             where: {
                 id
             }
         })
-    }}
+    }
+}

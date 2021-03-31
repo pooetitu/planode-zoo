@@ -113,6 +113,7 @@ export class SequelizeManager implements SequelizeManagerProps {
         props.Animal.hasMany(props.Treatment);
         props.Employee.hasMany(props.Treatment);
         props.Treatment.belongsTo(props.Animal);
+        props.Treatment.belongsTo(props.Employee);
         props.Area.hasMany(props.AreaAccess);
         props.AreaAccess.belongsTo(props.Area);
         props.AreaAccess.belongsTo(props.PassUsage);

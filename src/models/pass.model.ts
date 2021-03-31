@@ -12,7 +12,6 @@ import {
 import {UserInstance} from "./user.model";
 import {AreaInstance} from "./area.model";
 import {PassUsageInstance} from "./pass_usage.model";
-import {EmployeeType} from "./employee.model";
 
 export enum PassType {
     DAILY,

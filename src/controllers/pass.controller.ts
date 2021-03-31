@@ -1,8 +1,8 @@
 import {ModelCtor} from "sequelize";
-import {UserCreationProps, UserInstance} from "../models/user.model";
+import {UserInstance} from "../models/user.model";
 import {SessionInstance} from "../models/session.model";
 import {SequelizeManager} from "../models/index.model";
-import {PassCreationProps, PassInstance} from "../models/pass.model";
+import {PassInstance} from "../models/pass.model";
 
 export class PassController {
 

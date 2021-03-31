@@ -70,10 +70,21 @@ export class AuthController {
         });
     }
 
-    public async getUser(token: string):  Promise<UserInstance | null> {
+    public async getUserById(id: number): Promise<UserInstance | null> {
         return this.User.findOne({
-            include:[ {
-                model:this.Session,
+            include: [{
+                model: this.Session,
+                where: {
+                    id
+                }
+            }]
+        });
+    }
+
+    public async getUserByToken(token: string): Promise<UserInstance | null> {
+        return this.User.findOne({
+            include: [{
+                model: this.Session,
                 where: {
                     token
                 }
