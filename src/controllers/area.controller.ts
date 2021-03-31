@@ -31,9 +31,35 @@ export class AreaController {
     }
 
     public async createArea(props: AreaCreationProps): Promise<AreaInstance | null>{
-        return this.Area.create({
-            ...props
-        });
+        try{
+            return await this.Area.create({
+                ...props
+            });
+        }
+        catch (err){
+            console.error(err);
+            return null;
+        }
     }
+
+    public async getAreaById(id: string): Promise<AreaInstance | null>{
+        try{
+            return await this.Area.findOne({
+                where: {
+                    id
+                }
+            });
+        }
+        catch (err){
+            console.error(err);
+            return null;
+        }
+
+    }
+
+
+
+
+
 
 }
