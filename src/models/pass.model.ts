@@ -12,12 +12,21 @@ import {
 import {UserInstance} from "./user.model";
 import {AreaInstance} from "./area.model";
 import {PassUsageInstance} from "./pass_usage.model";
+import {EmployeeType} from "./employee.model";
+
+export enum PassType {
+    DAILY,
+    WEEKLY,
+    YEARLY,
+    ONCE_MONTHLY
+}
 
 export interface PassProps {
     id: number;
     isEscapeGame: boolean;
     startDate: Date;
     endDate: Date;
+    type: PassType;
 }
 
 export interface PassCreationProps extends Optional<PassProps, "id"> {
@@ -48,6 +57,11 @@ export default function (sequelize: Sequelize): ModelCtor<PassInstance> {
         endDate: {
             type: DataTypes.DATE
         },
+        type: {
+            type: DataTypes.ENUM,
+            values: ["DAILY", "WEEKLY", "YEARLY", "ONCE_MONTHLY"],
+            allowNull: false
+        }
     }, {
         freezeTableName: true,
         underscored: true,
