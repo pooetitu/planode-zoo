@@ -2,7 +2,7 @@ import {ModelCtor} from "sequelize";
 import {UserInstance} from "../models/user.model";
 import {SessionInstance} from "../models/session.model";
 import {SequelizeManager} from "../models/index.model";
-import {EmployeeInstance} from "../models/employee.model";
+import {EmployeeCreationProps, EmployeeInstance} from "../models/employee.model";
 
 export class EmployeeController {
 
@@ -26,21 +26,16 @@ export class EmployeeController {
         return EmployeeController.instance;
     }
 
+    async createEmployee(props: EmployeeCreationProps, user: UserInstance): Promise<EmployeeInstance | null> {
+        const employee = await this.Employee.create({...props});
+        await employee.setUser(user);
+        await user.setEmployee(employee);
+        return employee;
+    }
+
     async getEmployeeByToken(token: string): Promise<EmployeeInstance | null> {
-        return await this.Employee.findOne({
-            include: [{
-                model: this.User,
-                duplicating: false,
-                required: true,
-                include: [{
-                    model: this.Session,
-                    duplicating: false,
-                    required: true,
-                    where: {
-                        token
-                    }
-                }]
-            }]
-        });
+        return await this.Session.findOne({
+            where: {token}
+        }).then(session => session!.getUser().then(user => user!.getEmployee()));
     }
 }

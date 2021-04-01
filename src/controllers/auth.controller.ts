@@ -50,6 +50,7 @@ export class AuthController {
             token
         });
         await session.setUser(user);
+        await user.addSession(session);
         return session;
     }
 

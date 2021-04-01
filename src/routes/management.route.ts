@@ -4,6 +4,7 @@ import {maintenanceMiddleware, treatmentMiddleware} from "../middlewares/managem
 import {EmployeeController} from "../controllers/employee.controller";
 import {AnimalController} from "../controllers/animal.controller";
 import {AreaController} from "../controllers/area.controller";
+import {AuthController} from "../controllers/auth.controller";
 
 const managementRouter = express.Router();
 
@@ -54,6 +55,30 @@ managementRouter.post("/maintenance", maintenanceMiddleware, async function (req
     if (maintenance !== null) {
         res.status(201);
         res.json(maintenance);
+    } else {
+        res.status(409).end();
+    }
+});
+
+managementRouter.post("/hire", maintenanceMiddleware, async function (req, res) {
+    const userId = req.body.userId;
+    const firstname = req.body.firstname;
+    const lastname = req.body.lastname;
+    const type = req.body.type;
+
+    const authController = await AuthController.getInstance();
+    const user = await authController.getUserById(userId);
+    if (firstname === undefined || lastname === undefined || type === undefined || user === null) {
+        res.status(400).end();
+        return;
+    }
+    const employeeController = await EmployeeController.getInstance();
+    const employee = await employeeController.createEmployee({firstname, lastname, type}, user);
+    console.log(employee);
+    await employee?.getUser().then(async a =>  a.getEmployee().then( async b => console.log(b)));
+    if (employee !== null) {
+        res.status(201);
+        res.json(employee);
     } else {
         res.status(409).end();
     }
