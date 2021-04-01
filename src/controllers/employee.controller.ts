@@ -33,6 +33,15 @@ export class EmployeeController {
         return employee;
     }
 
+    async deleteEmployee(user: UserInstance): Promise<boolean> {
+        const employee = await user.getEmployee();
+        if(employee === null) {
+            return false;
+        }
+        await employee.destroy();
+        return true;
+    }
+
     async getEmployeeByToken(token: string): Promise<EmployeeInstance | null> {
         return await this.Session.findOne({
             where: {token}

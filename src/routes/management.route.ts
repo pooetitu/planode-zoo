@@ -84,6 +84,24 @@ managementRouter.post("/hire", maintenanceMiddleware, async function (req, res) 
     }
 });
 
+managementRouter.delete("/fire", maintenanceMiddleware, async function (req, res) {
+    const userId = req.body.userId;
+    const authController = await AuthController.getInstance();
+    const user = await authController.getUserById(userId);
+    if(userId === undefined || user === null){
+        res.status(400).end();
+        return;
+    }
+    const employeeController = await EmployeeController.getInstance();
+    const isDeleted = await employeeController.deleteEmployee(user);
+    if(isDeleted) {
+        res.status(204).end();
+    }
+    else{
+        res.status(400).end();
+    }
+});
+
 export {
     managementRouter
 };
