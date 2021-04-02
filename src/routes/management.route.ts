@@ -1,14 +1,15 @@
 import express from "express";
 import {ManagementController} from "../controllers/management.controller";
-import {maintenanceMiddleware, treatmentMiddleware} from "../middlewares/management.middleware";
+import {managementMiddleware} from "../middlewares/management.middleware";
 import {EmployeeController} from "../controllers/employee.controller";
 import {AnimalController} from "../controllers/animal.controller";
 import {AreaController} from "../controllers/area.controller";
 import {AuthController} from "../controllers/auth.controller";
+import {EmployeeType} from "../models/employee.model";
 
 const managementRouter = express.Router();
 
-managementRouter.post("/treatment", treatmentMiddleware, async function (req, res) {
+managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const token = req.headers["authorization"] as string;
     const name = req.body.name;
     const date = req.body.date;
@@ -36,7 +37,7 @@ managementRouter.post("/treatment", treatmentMiddleware, async function (req, re
     }
 });
 
-managementRouter.post("/maintenance", maintenanceMiddleware, async function (req, res) {
+managementRouter.post("/maintenance", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const token = req.headers["authorization"] as string;
     const maintenanceDate = req.body.maintenanceDate;
     const areaId = req.body.areaId;
@@ -60,7 +61,7 @@ managementRouter.post("/maintenance", maintenanceMiddleware, async function (req
     }
 });
 
-managementRouter.post("/hire", maintenanceMiddleware, async function (req, res) {
+managementRouter.post("/hire", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const userId = req.body.userId;
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
@@ -84,7 +85,7 @@ managementRouter.post("/hire", maintenanceMiddleware, async function (req, res) 
     }
 });
 
-managementRouter.delete("/fire", maintenanceMiddleware, async function (req, res) {
+managementRouter.delete("/fire", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const userId = req.body.userId;
     const authController = await AuthController.getInstance();
     const user = await authController.getUserById(userId);
