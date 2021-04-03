@@ -20,7 +20,7 @@ export class ManagementController {
 
     public static async getInstance(): Promise<ManagementController> {
         if (ManagementController.instance === undefined) {
-            const {Treatment, Maintenance, Pass} = await SequelizeManager.getInstance();
+            const {Treatment, Maintenance} = await SequelizeManager.getInstance();
             ManagementController.instance = new ManagementController(Treatment, Maintenance);
         }
         return ManagementController.instance;

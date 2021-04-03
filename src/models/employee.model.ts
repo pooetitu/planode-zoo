@@ -57,7 +57,7 @@ export default function (sequelize: Sequelize): ModelCtor<EmployeeInstance> {
         },
         type: {
             type: DataTypes.ENUM,
-            values: ["ADMIN", "VETERINARY", "SELLER", "RECEPTION", "SERVICE_AGENT"],
+            values: [EmployeeType.ADMIN, EmployeeType.VETERINARY, EmployeeType.SELLER, EmployeeType.RECEPTION, EmployeeType.SERVICE_AGENT],
             allowNull: false
         }
     }, {
