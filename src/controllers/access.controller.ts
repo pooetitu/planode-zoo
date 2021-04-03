@@ -32,9 +32,9 @@ export class AccessController {
                 [Sequelize.Op.and]: [Sequelize.where(Sequelize.fn('DATE', currentDate), Sequelize.fn('DATE', Sequelize.col('use_date')))]
             }
         });
-        if(passUsages.length > 0 && passUsages[0] !== null){
+        if (passUsages.length > 0 && passUsages[0] !== null) {
             return passUsages[0];
-        }else{
+        } else {
             const passUsage = await this.PassUsage.create({useDate: new Date()});
             await passUsage.setPass(pass);
             await pass.addPassUsage(passUsage);
@@ -55,26 +55,26 @@ export class AccessController {
             this.containsType(presentEmployees, EmployeeType.SERVICE_AGENT) !== undefined);
     }
 
-    private containsType(presentEmployees: EmployeeInstance[], type: EmployeeType): EmployeeInstance | undefined {
-        return presentEmployees.find(e => e.getDataValue("type") === type);
-    }
-
-    public async canAccessZoo(pass: PassInstance): Promise<Boolean>{
+    public async canAccessZoo(pass: PassInstance): Promise<Boolean> {
         const currentDate = new Date();
-        if(!(pass.startDate <= currentDate && pass.endDate !== undefined && pass.endDate <= currentDate)){
+        if (!(pass.startDate <= currentDate && pass.endDate !== undefined && pass.endDate <= currentDate)) {
             return false;
         }
-        if(pass.type === PassType.ONCE_MONTHLY){
+        if (pass.type === PassType.ONCE_MONTHLY) {
             const passUsage = await pass.getPassUsages({
                 where: {
                     [Sequelize.Op.and]: [Sequelize.where(Sequelize.fn('MONTH', currentDate), Sequelize.fn('MONTH', Sequelize.col('use_date')))]
                 }
             });
-            if(passUsage[0].useDate !== currentDate && passUsage !== null ) {
+            if (passUsage[0].useDate !== currentDate && passUsage !== null) {
                 return false;
             }
         }
         return true;
+    }
+
+    private containsType(presentEmployees: EmployeeInstance[], type: EmployeeType): EmployeeInstance | undefined {
+        return presentEmployees.find(e => e.getDataValue("type") === type);
     }
 
 }
