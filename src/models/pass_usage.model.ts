@@ -35,7 +35,7 @@ export default function (sequelize: Sequelize): ModelCtor<PassUsageInstance> {
             autoIncrement: true
         },
         useDate: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.DATE,
             allowNull: false
         },
     }, {

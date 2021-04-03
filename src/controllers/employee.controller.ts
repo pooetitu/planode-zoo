@@ -35,7 +35,7 @@ export class EmployeeController {
 
     async deleteEmployee(user: UserInstance): Promise<boolean> {
         const employee = await user.getEmployee();
-        if(employee === null) {
+        if (employee === null) {
             return false;
         }
         await employee.destroy();

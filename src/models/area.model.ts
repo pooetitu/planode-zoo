@@ -1,6 +1,6 @@
 import {
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
+    BelongsToManyAddAssociationsMixin,
+    BelongsToManyGetAssociationsMixin,
     DataTypes,
     HasManyAddAssociationMixin,
     HasManyGetAssociationsMixin,
@@ -29,13 +29,13 @@ export interface AreaCreationProps extends Optional<AreaProps, "id"> {
 }
 
 export interface AreaInstance extends Model<AreaProps, AreaCreationProps>, AreaProps {
-    setPass: BelongsToSetAssociationMixin<PassInstance, "id">;
-    getPass: BelongsToGetAssociationMixin<PassInstance>;
+    setPass: BelongsToManyAddAssociationsMixin<PassInstance, "id">;
+    getPasses: BelongsToManyGetAssociationsMixin<PassInstance>;
     getAnimals: HasManyGetAssociationsMixin<AnimalInstance>;
     addAnimal: HasManyAddAssociationMixin<AnimalInstance, "id">;
     getMaintenances: HasManyGetAssociationsMixin<MaintenanceInstance>;
     addMaintenance: HasManyAddAssociationMixin<MaintenanceInstance, "id">;
-    getAreasAccesses: HasManyGetAssociationsMixin<AreaAccessInstance>;
+    getAreaAccesses: HasManyGetAssociationsMixin<AreaAccessInstance>;
     addAreaAccess: HasManyAddAssociationMixin<AreaAccessInstance, "id">;
 }
 

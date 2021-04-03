@@ -1,5 +1,7 @@
 import {
     BelongsToGetAssociationMixin,
+    BelongsToManyAddAssociationsMixin,
+    BelongsToManyGetAssociationsMixin,
     BelongsToSetAssociationMixin,
     DataTypes,
     HasManyAddAssociationMixin,
@@ -36,8 +38,8 @@ export interface PassCreationProps extends Optional<PassProps, "id"> {
 export interface PassInstance extends Model<PassProps, PassCreationProps>, PassProps {
     setUser: BelongsToSetAssociationMixin<UserInstance, "id">;
     getUser: BelongsToGetAssociationMixin<UserInstance>;
-    getAreas: HasManyGetAssociationsMixin<AreaInstance>;
-    addArea: HasManyAddAssociationMixin<AreaInstance, "id">;
+    getAreas: BelongsToManyGetAssociationsMixin<AreaInstance>;
+    addArea: BelongsToManyAddAssociationsMixin<AreaInstance, "id">;
     getPassUsages: HasManyGetAssociationsMixin<PassUsageInstance>;
     addPassUsage: HasManyAddAssociationMixin<PassUsageInstance, "id">;
 }

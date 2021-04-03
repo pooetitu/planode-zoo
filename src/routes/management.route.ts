@@ -76,7 +76,7 @@ managementRouter.post("/hire", managementMiddleware(EmployeeType.ADMIN), async f
     const employeeController = await EmployeeController.getInstance();
     const employee = await employeeController.createEmployee({firstname, lastname, type}, user);
     console.log(employee);
-    await employee?.getUser().then(async a =>  a.getEmployee().then( async b => console.log(b)));
+    await employee?.getUser().then(async a => a.getEmployee().then(async b => console.log(b)));
     if (employee !== null) {
         res.status(201);
         res.json(employee);
@@ -89,20 +89,33 @@ managementRouter.delete("/fire", managementMiddleware(EmployeeType.ADMIN), async
     const userId = req.body.userId;
     const authController = await AuthController.getInstance();
     const user = await authController.getUserById(userId);
-    if(userId === undefined || user === null){
+    if (userId === undefined || user === null) {
         res.status(400).end();
         return;
     }
     const employeeController = await EmployeeController.getInstance();
     const isDeleted = await employeeController.deleteEmployee(user);
-    if(isDeleted) {
+    if (isDeleted) {
         res.status(204).end();
-    }
-    else{
+    } else {
         res.status(400).end();
     }
 });
 
+managementRouter.get("/suggest-maintenance-month", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+    const areaId = req.body.areaId;
+    const areaController = await AreaController.getInstance();
+    const area = await areaController.getAreaById(areaId);
+    if (area === null) {
+        res.status(400).end();
+        return;
+    }
+    const managementController = await ManagementController.getInstance();
+    const date = await managementController.suggestedMaintenanceDate(area);
+    res.json({"month": date});
+});
+
 export {
     managementRouter
+
 };

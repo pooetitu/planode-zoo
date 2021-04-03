@@ -33,7 +33,7 @@ export default function (sequelize: Sequelize): ModelCtor<AreaAccessInstance> {
             autoIncrement: true
         },
         useDate: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.DATE,
             allowNull: false
         },
     }, {

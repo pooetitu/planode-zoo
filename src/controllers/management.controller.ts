@@ -1,4 +1,4 @@
-import {ModelCtor} from "sequelize";
+import {col, fn, ModelCtor, Op} from "sequelize";
 import {SequelizeManager} from "../models/index.model";
 import {EmployeeInstance} from "../models/employee.model";
 import {TreatmentCreationProps, TreatmentInstance} from "../models/treatment.model";
@@ -20,7 +20,7 @@ export class ManagementController {
 
     public static async getInstance(): Promise<ManagementController> {
         if (ManagementController.instance === undefined) {
-            const {Treatment, Maintenance} = await SequelizeManager.getInstance();
+            const {Treatment, Maintenance, Pass} = await SequelizeManager.getInstance();
             ManagementController.instance = new ManagementController(Treatment, Maintenance);
         }
         return ManagementController.instance;
@@ -48,5 +48,23 @@ export class ManagementController {
             return treatment;
         }
         return null;
+    }
+
+    /*TODO
+    Trouver un moyen d'avoir les mois n'ayant aucun acces a un espace
+     */
+    public async suggestedMaintenanceDate(area: AreaInstance): Promise<number> {
+        const lastYearStart = new Date(new Date().getFullYear() - 1, 0, 2);
+        const lastYearEnd = new Date(new Date().getFullYear() - 1, 11, 32);
+        const areaAccess = await area.getAreaAccesses({
+            attributes: ['useDate', [fn('COUNT', 'id'), 'totalCount']],
+            group: [fn('MONTH', col('use_date'))],
+            where: {use_date: {[Op.between]: [lastYearStart, lastYearEnd]}}
+        });
+        let access = areaAccess.reduce((a, b) =>
+            // @ts-ignore
+            b.getDataValue(`totalCount`) < a.getDataValue(`totalCount`) ? b : a
+        );
+        return access.useDate.getMonth();
     }
 }
