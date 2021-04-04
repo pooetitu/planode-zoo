@@ -23,7 +23,7 @@ export interface PassUsageCreationProps extends Optional<PassUsageProps, "id"> {
 export interface PassUsageInstance extends Model<PassUsageProps, PassUsageCreationProps>, PassUsageProps {
     setPass: BelongsToSetAssociationMixin<PassInstance, "id">;
     getPass: BelongsToGetAssociationMixin<PassInstance>;
-    getAreasAccesses: HasManyGetAssociationsMixin<AreaAccessInstance>;
+    getAreaAccesses: HasManyGetAssociationsMixin<AreaAccessInstance>;
     addAreaAccess: HasManyAddAssociationMixin<AreaAccessInstance, "id">;
 }
 

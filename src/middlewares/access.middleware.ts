@@ -8,7 +8,6 @@ export function zooOpenCheckMiddleware(accessDate: Date): (req: express.Request,
             AccessController.getInstance()
                 .then(accessController => (accessController.zooCanOpen(accessDate)
                     .then(canOpen => canOpen ? next() : res.status(403).end())));
-
         } else {
             res.status(401).end();
             return;

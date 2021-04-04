@@ -112,6 +112,7 @@ managementRouter.get("/suggest-maintenance-month", managementMiddleware(Employee
     }
     const managementController = await ManagementController.getInstance();
     const date = await managementController.suggestedMaintenanceDate(area);
+    res.status(200);
     res.json({"month": date});
 });
 

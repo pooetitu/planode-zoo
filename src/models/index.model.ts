@@ -121,5 +121,6 @@ export class SequelizeManager implements SequelizeManagerProps {
         props.AreaAccess.belongsTo(props.PassUsage);
         props.Pass.hasMany(props.PassUsage);
         props.PassUsage.belongsTo(props.Pass);
+        props.PassUsage.hasMany(props.AreaAccess);
     }
 }

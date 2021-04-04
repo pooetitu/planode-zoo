@@ -2,9 +2,9 @@ import express from "express";
 import {AccessController} from "../controllers/access.controller";
 import {zooAccessMiddleware, zooOpenCheckMiddleware} from "../middlewares/access.middleware";
 import {PassController} from "../controllers/pass.controller";
+import {AreaController} from "../controllers/area.controller";
 
 const accessRouter = express.Router();
-
 
 /**
  * @swagger
@@ -42,6 +42,27 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMi
     if (passUsage !== null) {
         res.status(201);
         res.json(passUsage);
+    } else {
+        res.status(409).end();
+    }
+});
+
+accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, async function (req, res) {
+    const passId = req.params.passId;
+    const areaId = req.params.areaId;
+    const passController = await PassController.getInstance();
+    const areaController = await AreaController.getInstance();
+    const pass = await passController.getPassById(passId);
+    const area = await areaController.getAreaById(areaId);
+    if (pass === null || area === null) {
+        res.status(400).end();
+        return;
+    }
+    const accessController = await AccessController.getInstance();
+    const areaAccess = await accessController.accessArea(pass, area);
+    if (areaAccess !== null) {
+        res.status(201);
+        res.json(areaAccess);
     } else {
         res.status(409).end();
     }

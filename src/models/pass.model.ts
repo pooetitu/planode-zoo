@@ -30,6 +30,7 @@ export interface PassProps {
     startDate: Date;
     endDate?: Date;
     type: PassType;
+    orderedAreaIds: string;
 }
 
 export interface PassCreationProps extends Optional<PassProps, "id"> {
@@ -64,7 +65,16 @@ export default function (sequelize: Sequelize): ModelCtor<PassInstance> {
             type: DataTypes.ENUM,
             values: ["DAILY", "WEEK_END", "YEARLY", "ONCE_MONTHLY"],
             allowNull: false
-        }
+        },
+        orderedAreaIds: {
+            type: DataTypes.STRING,
+            get(): number[] {
+                return this.getDataValue('orderedAreaIds').split(';').map(str => parseInt(str));
+            },
+            set(val: number[]) {
+                this.setDataValue('orderedAreaIds', val.join(';'));
+            },
+        },
     }, {
         freezeTableName: true,
         underscored: true,
