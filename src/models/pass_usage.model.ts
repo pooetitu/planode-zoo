@@ -15,6 +15,7 @@ import {AreaAccessInstance} from "./area_access.model";
 export interface PassUsageProps {
     id: number;
     useDate: Date;
+    leaveDate?: Date;
 }
 
 export interface PassUsageCreationProps extends Optional<PassUsageProps, "id"> {
@@ -37,6 +38,9 @@ export default function (sequelize: Sequelize): ModelCtor<PassUsageInstance> {
         useDate: {
             type: DataTypes.DATE,
             allowNull: false
+        },
+        leaveDate: {
+            type: DataTypes.DATE,
         },
     }, {
         freezeTableName: true,

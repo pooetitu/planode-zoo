@@ -58,36 +58,35 @@ export class AreaController {
             }
         })
     }
-    public async updateAreaById(id: string, props:AreaCreationProps): Promise<boolean> {
+
+    public async updateAreaById(id: string, props: AreaCreationProps): Promise<boolean> {
         const area = await this.Area.findOne({
             where: {
                 id
             }
         });
-        if(area !== null){
-           await area.update({
-               ...props
-           })
+        if (area !== null) {
+            await area.update({
+                ...props
+            })
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
 
-    public async updateAreaByName(name: string, props:AreaCreationProps): Promise<boolean> {
+    public async updateAreaByName(name: string, props: AreaCreationProps): Promise<boolean> {
         const area = await this.Area.findOne({
             where: {
                 name
             }
         });
-        if(area !== null){
+        if (area !== null) {
             await area.update({
                 ...props
             })
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
