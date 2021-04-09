@@ -29,21 +29,38 @@ export class AccessController {
         return AccessController.instance;
     }
 
-    public async usePass(pass: PassInstance): Promise<PassUsageInstance | null> {
+    public async accessZoo(pass: PassInstance): Promise<PassUsageInstance | null> {
         const currentDate = new Date();
-        const passUsages = await pass.getPassUsages({
+        const passUsage = (await pass.getPassUsages({
             where: {
-                [Sequelize.Op.and]: [Sequelize.where(Sequelize.fn('DATE', currentDate), Sequelize.fn('DATE', Sequelize.col('use_date')))]
+                [Sequelize.Op.and]: [Sequelize.where(Sequelize.fn('DATE', currentDate), Sequelize.fn('DATE', Sequelize.col('use_date'))),
+                    {leave_date: null}]
             }
-        });
-        if (passUsages.length > 0 && passUsages[0] !== null) {
-            return passUsages[0];
+        }))[0];
+        if (passUsage !== undefined && passUsage.leaveDate === null) {
+            return passUsage;
         } else {
             const passUsage = await this.PassUsage.create({useDate: new Date()});
             await passUsage.setPass(pass);
             await pass.addPassUsage(passUsage);
             return passUsage;
         }
+    }
+
+
+    public async leaveZoo(pass: PassInstance): Promise<PassUsageInstance> {
+        const currentDate = new Date();
+        const passUsage = (await pass.getPassUsages({
+            limit: 1,
+            where: {
+                [Sequelize.Op.and]: [
+                    Sequelize.where(Sequelize.fn('DATE', currentDate), Sequelize.fn('DATE', Sequelize.col('use_date'))),
+                    {leave_date: null}]
+            }
+        }))[0];
+        passUsage.leaveDate = currentDate;
+        await passUsage.save();
+        return passUsage;
     }
 
     public async zooCanOpen(date: Date): Promise<Boolean> {
@@ -61,12 +78,12 @@ export class AccessController {
 
     public async canAccessZoo(pass: PassInstance): Promise<Boolean> {
         const currentDate = new Date();
-        if (pass.endDate === undefined || pass.startDate <= currentDate && pass.endDate <= currentDate) {
+        if (pass.endDate === undefined || !(pass.startDate <= currentDate && pass.endDate >= currentDate)) {
             return false;
         }
         if (pass.type === PassType.ONCE_MONTHLY) {
             const passUsage = (await pass.getPassUsages({
-                limit:1,
+                limit: 1,
                 where: {
                     [Sequelize.Op.and]: [Sequelize.where(Sequelize.fn('MONTH', currentDate), Sequelize.fn('MONTH', Sequelize.col('use_date')))]
                 }
@@ -78,17 +95,13 @@ export class AccessController {
         return true;
     }
 
-    private containsType(presentEmployees: EmployeeInstance[], type: EmployeeType): EmployeeInstance | undefined {
-        return presentEmployees.find(e => e.getDataValue("type") === type);
-    }
-
     public async canAccessArea(pass: PassInstance, area: AreaInstance): Promise<Boolean> {
         const passAreas = (pass.get("orderedAreaIds") as unknown as number[]);
-        if(passAreas.includes(area.id) !== undefined){
-            if(pass.isEscapeGame){
+        if (passAreas.includes(area.id) !== undefined) {
+            if (pass.isEscapeGame) {
                 const currentDate = new Date();
                 const areasVisited = (await (await pass.getPassUsages({
-                    where:{
+                    where: {
                         [Sequelize.Op.and]: [Sequelize.where(Sequelize.fn('DATE', currentDate), Sequelize.fn('DATE', Sequelize.col('use_date')))]
                     }
                 }))[0].getAreaAccesses()).length;
@@ -100,7 +113,7 @@ export class AccessController {
     }
 
     public async accessArea(pass: PassInstance, area: AreaInstance): Promise<AreaAccessInstance | null> {
-        if(await this.canAccessArea(pass, area)) {
+        if (await this.canAccessArea(pass, area)) {
             const currentDate = new Date();
             const passUsage = (await pass.getPassUsages({
                 limit: 1,
@@ -113,12 +126,17 @@ export class AccessController {
             });
             if (areaAccess !== null) {
                 await passUsage.addAreaAccess(areaAccess);
+                await area.addAreaAccess(areaAccess);
                 await areaAccess.setPassUsage(passUsage);
                 await areaAccess.setArea(area);
             }
             return areaAccess;
         }
         return null;
+    }
+
+    private containsType(presentEmployees: EmployeeInstance[], type: EmployeeType): EmployeeInstance | undefined {
+        return presentEmployees.find(e => e.getDataValue("type") === type);
     }
 
 }
