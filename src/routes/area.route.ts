@@ -7,9 +7,17 @@ import {AreaController} from "../controllers/area.controller";
 const areaRouter = express.Router();
 
 areaRouter.post("/zoo/area", async function (req,res){
+    //TODO à tester
     const areaController = await AreaController.getInstance();
-    //const name = req.body.
-    const area = await areaController.createArea();
+    const id = req.body.id;
+    const name = req.body.name;
+    const type = req.body.type;
+    const description = req.body.description;
+    const capacity = req.body.capacity;
+    const duration = req.body.duration;
+    const openingTime = req.body.openingTime;
+    const disabledAccess = req.body.disabledAccess;
+    const area = await areaController.createArea(req.body);
     if (area === null) {
         res.status(400).end();
         return;
@@ -35,15 +43,7 @@ areaRouter.get("/zoo/:areaId", async function (req,res){
 });
 
 areaRouter.put("/zoo/:areaId", async function (req,res){
-    const areaId = req.params.areaId;
-    const areaController = await AreaController.getInstance();
-    const area = await areaController.deleteAreaById(areaId);
-    if (area === null) {
-        res.status(400).end();
-        return;
-    }else{
-        res.status(400).end();
-    }
+    //TODO put area
 
 
 });
