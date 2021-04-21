@@ -9,6 +9,13 @@ import {EmployeeType} from "../models/employee.model";
 
 const managementRouter = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Management
+ *   description: Management actions of the park
+ */
+
 managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const token = req.headers["authorization"] as string;
     const name = req.body.name;

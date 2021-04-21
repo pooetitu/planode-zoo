@@ -8,26 +8,45 @@ const accessRouter = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Access
+ *   description: Access rules for a Pass
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Access:
+ *       type: object
+ *       required:
+ *         - passId
+ *       properties:
+ *         passId:
+ *           type: number
+ *           description: The auto-generated id of the Pass
+ *       example:
+ *         id: 1564
+ */
+
+/**
+ * @swagger
  * /access/zoo/{passId}:
  *  get:
- *      summary: Get access of the pass
+ *      summary: Return access of the pass
  *      tags: [Access]
  *      parameters:
- *          - in: path
- *            name: passId
- *            schema :
- *              type: integer
- *            required: true
- *            description: The Pass Id
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
  *      responses:
- *          200:
- *              description: The Access Result
- *              contens:
- *                  application/json:
- *                      schema:
- *                          $ref:'#/components/schemas/Access'
- *          404:
- *              description: The Access was not found
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
  */
 accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;
@@ -47,6 +66,25 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMi
     }
 });
 
+/**
+ * @swagger
+ * /access/zoo/{passId}:
+ *  put:
+ *      summary: Update access of the pass
+ *      tags: [Access]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
@@ -64,6 +102,25 @@ accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMi
     }
 });
 
+/**
+ * @swagger
+ * /access/zoo/{passId}:
+ *  get:
+ *      summary: Return access of the pass
+ *      tags: [Access]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;
     const areaId = req.params.areaId;

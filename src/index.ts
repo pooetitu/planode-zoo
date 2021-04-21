@@ -17,19 +17,25 @@ buildRoutes(app);
 const port = process.env.PORT || 3000;
 
 const swaggerOptions = {
-    explorer: true,
-    swaggerDefinition:{
-        info:{
-            title:'PlanodeZoo API',
-            version:'1.0.0'
-        }
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: 'PlanodeZoo API',
+            description: "Application NodeJs projet ESGI",
+            version: '1.0.0',
+        },
+        servers: [
+            {
+                url: `http://localhost:${port}`
+            }
+        ]
     },
     apis: ['./src/routes/*.ts'],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.listen(port, function () {
     console.log(`Listening on ${port}...`);

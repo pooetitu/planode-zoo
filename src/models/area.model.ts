@@ -29,8 +29,8 @@ export interface AreaCreationProps extends Optional<AreaProps, "id"> {
 }
 
 export interface AreaInstance extends Model<AreaProps, AreaCreationProps>, AreaProps {
-    setPass: BelongsToManyAddAssociationsMixin<PassInstance, "id">;
     getPasses: BelongsToManyGetAssociationsMixin<PassInstance>;
+    addPass: BelongsToManyAddAssociationsMixin<PassInstance, "id">;
     getAnimals: HasManyGetAssociationsMixin<AnimalInstance>;
     addAnimal: HasManyAddAssociationMixin<AnimalInstance, "id">;
     getMaintenances: HasManyGetAssociationsMixin<MaintenanceInstance>;

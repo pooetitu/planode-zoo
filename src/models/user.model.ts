@@ -11,6 +11,7 @@ import {
 } from "sequelize";
 import {SessionInstance} from "./session.model";
 import {EmployeeInstance} from "./employee.model";
+import {PassInstance} from "./pass.model";
 
 export interface UserProps {
     id: number;
@@ -27,6 +28,8 @@ export interface UserInstance extends Model<UserProps, UserCreationProps>, UserP
     addSession: HasManyAddAssociationMixin<SessionInstance, "id">;
     setEmployee: BelongsToSetAssociationMixin<EmployeeInstance, "id">;
     getEmployee: BelongsToGetAssociationMixin<EmployeeInstance>;
+    getPasses: HasManyGetAssociationsMixin<PassInstance>;
+    addPass: HasManyAddAssociationMixin<PassInstance, "id">;
 }
 
 export default function (sequelize: Sequelize): ModelCtor<UserInstance> {

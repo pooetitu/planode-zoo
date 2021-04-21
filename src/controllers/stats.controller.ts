@@ -1,4 +1,4 @@
-import Sequelize, {fn, ModelCtor, Op} from "sequelize";
+import Sequelize, {ModelCtor, Op} from "sequelize";
 import {SequelizeManager} from "../models/index.model";
 import {AreaInstance} from "../models/area.model";
 import {AreaAccessInstance} from "../models/area_access.model";
@@ -54,7 +54,7 @@ export class StatsController {
     public async getZooAttendance(date: Date, period: StatsPeriods): Promise<number> {
         const areaAccesses = await this.PassUsage.findAndCountAll({
             where: {
-                [Op.and]: [Sequelize.fn(period, date), Sequelize.fn(period, Sequelize.col('use_date')),{leave_date: null}]
+                [Op.and]: [Sequelize.fn(period, date), Sequelize.fn(period, Sequelize.col('use_date')), {leave_date: null}]
             }
         });
         return areaAccesses.count;

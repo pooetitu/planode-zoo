@@ -4,6 +4,35 @@ import {authMiddleware} from "../middlewares/auth.middleware";
 
 const authRouter = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Authentification
+ *   description: Authentification actions
+ */
+
+/**
+ * @swagger
+ * /auth/signup:
+ *  post:
+ *      summary: Create a new account
+ *      tags: [Authentification]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema :
+ *                      $ref:'#/components/schemas/Auth'
+ *      responses:
+ *          200:
+ *              description: The account is created
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref:'#/components/schemas/Auth'
+ *          500:
+ *              description: Some server ERROR
+ */
 authRouter.post("/signup", async function (req, res) {
     const login = req.body.login;
     const password = req.body.password;
@@ -28,6 +57,29 @@ authRouter.post("/signup", async function (req, res) {
     }
 });
 
+/**
+ * @swagger
+ * /access/zoo/{passId}:
+ *  get:
+ *      summary: Get access of the pass
+ *      tags: [Access]
+ *      parameters:
+ *          - in: path
+ *            name: passId
+ *            schema :
+ *              type: integer
+ *            required: true
+ *            description: The Pass Id
+ *      responses:
+ *          200:
+ *              description: The Access Result
+ *              contens:
+ *                  application/json:
+ *                      schema:
+ *                          $ref:'#/components/schemas/Access'
+ *          404:
+ *              description: The Access was not found
+ */
 authRouter.post("/login", async function (req, res) {
     const login = req.body.login;
     const password = req.body.password;
@@ -47,6 +99,29 @@ authRouter.post("/login", async function (req, res) {
     }
 });
 
+/**
+ * @swagger
+ * /access/zoo/{passId}:
+ *  get:
+ *      summary: Get access of the pass
+ *      tags: [Access]
+ *      parameters:
+ *          - in: path
+ *            name: passId
+ *            schema :
+ *              type: integer
+ *            required: true
+ *            description: The Pass Id
+ *      responses:
+ *          200:
+ *              description: The Access Result
+ *              contens:
+ *                  application/json:
+ *                      schema:
+ *                          $ref:'#/components/schemas/Access'
+ *          404:
+ *              description: The Access was not found
+ */
 authRouter.delete("/logout", authMiddleware, async function (req, res) {
     const token = req.headers["authorization"] as string;
     const authController = await AuthController.getInstance();

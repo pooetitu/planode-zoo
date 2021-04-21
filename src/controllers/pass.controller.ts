@@ -3,6 +3,7 @@ import {UserInstance} from "../models/user.model";
 import {SessionInstance} from "../models/session.model";
 import {SequelizeManager} from "../models/index.model";
 import {PassCreationProps, PassInstance, passMap} from "../models/pass.model";
+import {AreaController} from "./area.controller";
 
 export class PassController {
 
@@ -42,9 +43,31 @@ export class PassController {
         endDate.setDate(props.startDate.getDate() + passMap[props.type])
         const pass = await this.Pass.create({
             ...props,
-            endDate: new Date(endDate)
+            endDate: endDate
         });
-        pass.setUser(user);
+        const areaIds: string[] = pass.get("orderedAreaIds") as unknown as string[];
+        if(areaIds.length > 0){
+            const areaController = await AreaController.getInstance();
+            for (const areaId of areaIds) {
+                const area = await areaController.getAreaById(areaId);
+                if(area === null){
+                    await pass.destroy();
+                    return null;
+                }
+                await pass.addArea([area]);
+                await area.addPass([pass]);
+            }
+        }
+        await pass.setUser(user);
+        await user.addPass(pass);
         return pass;
+    }
+
+    public async deletePassById(id: string) {
+        await this.Pass.destroy({
+            where: {
+                id
+            }
+        })
     }
 }

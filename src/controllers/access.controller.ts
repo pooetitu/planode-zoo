@@ -7,6 +7,8 @@ import {PassInstance, PassType} from "../models/pass.model";
 import {AreaInstance} from "../models/area.model";
 import {AreaAccessInstance} from "../models/area_access.model";
 
+// TODO Verifier la capacité d'une area lors d'un passUsage
+
 export class AccessController {
     private static instance: AccessController;
     Employee: ModelCtor<EmployeeInstance>;

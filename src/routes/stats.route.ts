@@ -4,6 +4,13 @@ import {AreaController} from "../controllers/area.controller";
 
 const statsRouter = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Stats
+ *   description: Stats actions of the park
+ */
+
 statsRouter.get("/zoo/realtime", async function (req, res) {
     const statsController = await StatsController.getInstance();
     res.json({"attendance": await statsController.getZooRealtimeAttendance()});

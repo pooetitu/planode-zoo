@@ -15,7 +15,7 @@ import {UserInstance} from "./user.model";
 import {AreaInstance} from "./area.model";
 import {PassUsageInstance} from "./pass_usage.model";
 
-export const passMap = {"DAILY": 1, "WEEK_END": 2, "YEARLY": 365, "ONCE_MONTHLY": 365};
+export const passMap = {"DAILY": 0, "WEEK_END": 1, "YEARLY": 365, "ONCE_MONTHLY": 365};
 
 export enum PassType {
     DAILY = "DAILY",
@@ -68,10 +68,14 @@ export default function (sequelize: Sequelize): ModelCtor<PassInstance> {
         },
         orderedAreaIds: {
             type: DataTypes.STRING,
-            get(): number[] {
-                return this.getDataValue('orderedAreaIds').split(';').map(str => parseInt(str));
+            get(): string[] {
+                if(this.getDataValue('orderedAreaIds')){
+                    return this.getDataValue('orderedAreaIds').split(';');
+                }
+                return [];
             },
-            set(val: number[]) {
+            set(val: string[]) {
+                console.log(val);
                 this.setDataValue('orderedAreaIds', val.join(';'));
             },
         },
