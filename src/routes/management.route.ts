@@ -16,6 +16,41 @@ const managementRouter = express.Router();
  *   description: Management actions of the park
  */
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Management:
+ *       type: object
+ *       required:
+ *         - passId
+ *       properties:
+ *         passId:
+ *           type: number
+ *           description: The auto-generated id of the Pass
+ *       example:
+ *         id: 1564
+ */
+
+/**
+ * @swagger
+ * /management/treatment:
+ *  post:
+ *      summary: Manage Authentification
+ *      tags: [Management]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const token = req.headers["authorization"] as string;
     const name = req.body.name;
@@ -44,6 +79,25 @@ managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY
     }
 });
 
+/**
+ * @swagger
+ * /management/maintenance:
+ *  post:
+ *      summary: Manage Authentification
+ *      tags: [Management]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 managementRouter.post("/maintenance", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const token = req.headers["authorization"] as string;
     const maintenanceDate = req.body.maintenanceDate;
@@ -68,6 +122,25 @@ managementRouter.post("/maintenance", managementMiddleware(EmployeeType.ADMIN), 
     }
 });
 
+/**
+ * @swagger
+ * /management/hire:
+ *  post:
+ *      summary: Manage Authentification
+ *      tags: [Management]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 managementRouter.post("/hire", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const userId = req.body.userId;
     const firstname = req.body.firstname;
@@ -92,6 +165,25 @@ managementRouter.post("/hire", managementMiddleware(EmployeeType.ADMIN), async f
     }
 });
 
+/**
+ * @swagger
+ * /management/fire:
+ *  delete:
+ *      summary: Manage Authentification
+ *      tags: [Management]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 managementRouter.delete("/fire", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const userId = req.body.userId;
     const authController = await AuthController.getInstance();
@@ -109,6 +201,25 @@ managementRouter.delete("/fire", managementMiddleware(EmployeeType.ADMIN), async
     }
 });
 
+/**
+ * @swagger
+ * /management/suggest-maintenance-month:
+ *  get:
+ *      summary: Manage Authentification
+ *      tags: [Management]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 managementRouter.get("/suggest-maintenance-month", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.body.areaId;
     const areaController = await AreaController.getInstance();

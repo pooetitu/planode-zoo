@@ -104,7 +104,7 @@ accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMi
 
 /**
  * @swagger
- * /access/zoo/{passId}:
+ * /access/zoo/{areaId}/{passId}:
  *  get:
  *      summary: Return access of the pass
  *      tags: [Access]

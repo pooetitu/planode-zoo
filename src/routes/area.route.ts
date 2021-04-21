@@ -61,6 +61,25 @@ const areaRouter = express.Router();
  *         disabledAccess: 1
  */
 
+/**
+ * @swagger
+ * /area/zoo/{areaId}/{passId}:
+ *  post:
+ *      summary: Create an area
+ *      tags: [Area]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 areaRouter.post("/zoo/area", async function (req, res) {
     //TODO à tester
     const areaController = await AreaController.getInstance();
@@ -83,6 +102,25 @@ areaRouter.post("/zoo/area", async function (req, res) {
 
 });
 
+/**
+ * @swagger
+ * /area/zoo/{areaId}/{passId}:
+ *  get:
+ *      summary: Create an area
+ *      tags: [Area]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 areaRouter.get("/zoo/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
@@ -97,12 +135,50 @@ areaRouter.get("/zoo/:areaId", async function (req, res) {
 
 });
 
+/**
+ * @swagger
+ * /area/zoo/{areaId}/{passId}:
+ *  put:
+ *      summary: Create an area
+ *      tags: [Area]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 areaRouter.put("/zoo/:areaId", async function (req, res) {
     //TODO put area
 
 
 });
 
+/**
+ * @swagger
+ * /area/zoo/{areaId}/{passId}:
+ *  delete:
+ *      summary: Create an area
+ *      tags: [Area]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 areaRouter.delete("/zoo/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();

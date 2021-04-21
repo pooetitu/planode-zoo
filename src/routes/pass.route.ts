@@ -11,6 +11,41 @@ const passRouter = express.Router();
  *   description: Pass actions
  */
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Pass:
+ *       type: object
+ *       required:
+ *         - passId
+ *       properties:
+ *         passId:
+ *           type: number
+ *           description: The auto-generated id of the Pass
+ *       example:
+ *         id: 1564
+ */
+
+/**
+ * @swagger
+ * /pass/:
+ *  post:
+ *      summary: Manage Authentification
+ *      tags: [Pass]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 passRouter.post("/", authMiddleware, async function (req, res) {
     const passController = await PassController.getInstance();
     const type = req.body.type;
@@ -38,6 +73,25 @@ passRouter.post("/", authMiddleware, async function (req, res) {
     }
 });
 
+/**
+ * @swagger
+ * /pass/:
+ *  get:
+ *      summary: Manage Authentification
+ *      tags: [Pass]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 passRouter.get("/", async function (req, res) {
     const passController = await PassController.getInstance();
     const pass = await passController.getAllPass();
@@ -49,6 +103,25 @@ passRouter.get("/", async function (req, res) {
     }
 });
 
+/**
+ * @swagger
+ * /pass/{passId}:
+ *  get:
+ *      summary: Manage Authentification
+ *      tags: [Pass]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 passRouter.get("/:passId", async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
@@ -61,10 +134,48 @@ passRouter.get("/:passId", async function (req, res) {
     }
 });
 
+/**
+ * @swagger
+ * /pass/{passId}:
+ *  put:
+ *      summary: Manage Authentification
+ *      tags: [Pass]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 passRouter.put("/:passId", async function (req, res) {
 
 });
 
+/**
+ * @swagger
+ * /pass/{passId}:
+ *  delete:
+ *      summary: Manage Authentification
+ *      tags: [Pass]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
 passRouter.delete("/:passId", async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
