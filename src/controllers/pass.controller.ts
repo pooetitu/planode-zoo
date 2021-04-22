@@ -46,11 +46,11 @@ export class PassController {
             endDate: endDate
         });
         const areaIds: string[] = pass.get("orderedAreaIds") as unknown as string[];
-        if(areaIds.length > 0){
+        if (areaIds.length > 0) {
             const areaController = await AreaController.getInstance();
             for (const areaId of areaIds) {
                 const area = await areaController.getAreaById(areaId);
-                if(area === null){
+                if (area === null) {
                     await pass.destroy();
                     return null;
                 }

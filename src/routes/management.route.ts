@@ -4,11 +4,12 @@ import {managementMiddleware} from "../middlewares/management.middleware";
 import {EmployeeController} from "../controllers/employee.controller";
 import {AnimalController} from "../controllers/animal.controller";
 import {AreaController} from "../controllers/area.controller";
-import {AuthController} from "../controllers/auth.controller";
 import {EmployeeType} from "../models/employee.model";
+import {employeeRouter} from "./employee.route";
 
 const managementRouter = express.Router();
 
+managementRouter.use("/employee", employeeRouter);
 /**
  * @swagger
  * tags:
@@ -119,85 +120,6 @@ managementRouter.post("/maintenance", managementMiddleware(EmployeeType.ADMIN), 
         res.json(maintenance);
     } else {
         res.status(409).end();
-    }
-});
-
-/**
- * @swagger
- * /management/hire:
- *  post:
- *      summary: Manage Authentification
- *      tags: [Management]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
- *      responses:
- *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
- */
-managementRouter.post("/hire", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
-    const userId = req.body.userId;
-    const firstname = req.body.firstname;
-    const lastname = req.body.lastname;
-    const type = req.body.type;
-
-    const authController = await AuthController.getInstance();
-    const user = await authController.getUserById(userId);
-    if (firstname === undefined || lastname === undefined || type === undefined || user === null) {
-        res.status(400).end();
-        return;
-    }
-    const employeeController = await EmployeeController.getInstance();
-    const employee = await employeeController.createEmployee({firstname, lastname, type}, user);
-    console.log(employee);
-    await employee?.getUser().then(async a => a.getEmployee().then(async b => console.log(b)));
-    if (employee !== null) {
-        res.status(201);
-        res.json(employee);
-    } else {
-        res.status(409).end();
-    }
-});
-
-/**
- * @swagger
- * /management/fire:
- *  delete:
- *      summary: Manage Authentification
- *      tags: [Management]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
- *      responses:
- *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
- */
-managementRouter.delete("/fire", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
-    const userId = req.body.userId;
-    const authController = await AuthController.getInstance();
-    const user = await authController.getUserById(userId);
-    if (userId === undefined || user === null) {
-        res.status(400).end();
-        return;
-    }
-    const employeeController = await EmployeeController.getInstance();
-    const isDeleted = await employeeController.deleteEmployee(user);
-    if (isDeleted) {
-        res.status(204).end();
-    } else {
-        res.status(400).end();
     }
 });
 

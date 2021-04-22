@@ -37,10 +37,9 @@ animalRouter.post("/", async function (req, res) {
             res.status(400).end();
             return;
         } else {
-            res.json(animal);
+            res.status(201).json(animal);
         }
-    }
-    catch (err){
+    } catch (err) {
         res.status(400).send(err).end();
     }
 });
@@ -50,19 +49,19 @@ animalRouter.put("/:animalId", async function (req, res) {
 
     const animalController = await AnimalController.getInstance();
     const animal = await animalController.getAnimal(animalId);
-    if(animal === null){
+    if (animal === null) {
         res.status(400).end();
         return;
     }
-    await animalController.updateAnimal(animal,{...req.body});
+    await animalController.updateAnimal(animal, {...req.body});
     res.status(204).end();
 });
 
 
-animalRouter.delete("/:animalId",async function (req, res) {
+animalRouter.delete("/:animalId", async function (req, res) {
     const animalId = req.params.animalId;
 
-    if(animalId === undefined){
+    if (animalId === undefined) {
         res.status(400).end();
         return;
     }
@@ -71,6 +70,6 @@ animalRouter.delete("/:animalId",async function (req, res) {
     res.status(204).end();
 });
 
-export{
+export {
     animalRouter
 }

@@ -55,9 +55,9 @@ export class AreaController {
     }
 
     public async updateArea(area: AreaInstance, props: AreaCreationProps) {
-            await area.update({
-                ...props
-            });
+        await area.update({
+            ...props
+        });
     }
 
     public async addAnimal(area: AreaInstance, animal: AnimalInstance) {

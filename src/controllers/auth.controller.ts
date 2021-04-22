@@ -71,7 +71,7 @@ export class AuthController {
         });
     }
 
-    public async getUserById(id: number): Promise<UserInstance | null> {
+    public async getUserById(id: string): Promise<UserInstance | null> {
         return this.User.findOne({
             include: [{
                 model: this.Session,

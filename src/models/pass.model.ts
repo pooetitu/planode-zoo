@@ -69,7 +69,7 @@ export default function (sequelize: Sequelize): ModelCtor<PassInstance> {
         orderedAreaIds: {
             type: DataTypes.STRING,
             get(): string[] {
-                if(this.getDataValue('orderedAreaIds')){
+                if (this.getDataValue('orderedAreaIds')) {
                     return this.getDataValue('orderedAreaIds').split(';');
                 }
                 return [];

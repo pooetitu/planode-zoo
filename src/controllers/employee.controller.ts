@@ -1,4 +1,4 @@
-import {ModelCtor} from "sequelize";
+import {ModelCtor, Op} from "sequelize";
 import {UserInstance} from "../models/user.model";
 import {SessionInstance} from "../models/session.model";
 import {SequelizeManager} from "../models/index.model";
@@ -46,5 +46,18 @@ export class EmployeeController {
         return await this.Session.findOne({
             where: {token}
         }).then(session => session!.getUser().then(user => user!.getEmployee()));
+    }
+
+    async getEmployeeById(id: string): Promise<EmployeeInstance | null> {
+        return await this.Employee.findOne({where: {id}});
+    }
+
+    async getAllUser() {
+        return await this.Employee.findAll();
+    }
+
+    async getEmployeeByUserId(userId: string) {
+       // @ts-ignore
+        return await this.Employee.findOne({where: {"$user_id$": {[Op.eq]:userId}}});
     }
 }

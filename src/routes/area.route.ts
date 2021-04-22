@@ -85,9 +85,8 @@ areaRouter.post("/", async function (req, res) {
     const areaController = await AreaController.getInstance();
     try {
         const area = await areaController.createArea({...req.body});
-        res.json(area);
-    }
-    catch (err){
+        res.status(201).json(area);
+    } catch (err) {
         res.status(400).send(err).end();
         return;
     }
@@ -158,14 +157,14 @@ areaRouter.put("/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
     const area = await areaController.getAreaById(areaId);
-    if(area === null){
+    if (area === null) {
         res.status(400).end();
         return;
     }
     try {
         await areaController.updateArea(area, {...req.body});
         res.status(204).end();
-    }catch (err) {
+    } catch (err) {
         res.status(400).send(err).end();
     }
 });
@@ -175,13 +174,13 @@ areaRouter.put("/:areaId/:animalId", async function (req, res) {
     const animalId = req.params.animalId;
     const areaController = await AreaController.getInstance();
     const area = await areaController.getAreaById(areaId);
-    if(area === null){
+    if (area === null) {
         res.status(400).end();
         return;
     }
     const animalController = await AnimalController.getInstance();
     const animal = await animalController.getAnimal(animalId);
-    if(animal === null){
+    if (animal === null) {
         res.status(400).end();
         return;
     }
