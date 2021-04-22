@@ -1,51 +1,39 @@
+
+import {Animal} from "./animal.model";
 import {
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
-    DataTypes,
-    Model,
-    ModelCtor,
-    Optional,
-    Sequelize
-} from "sequelize";
-import {EmployeeInstance} from "./employee.model";
-import {AnimalInstance} from "./animal.model";
+    Column,
+    CreateDateColumn,
+    DeleteDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
+import {Employee} from "./employee.model";
 
-export interface TreatmentProps {
-    id: number;
-    name: string;
-    description: string;
-    date: Date;
-}
+@Entity()
+export class Treatment{
+    @PrimaryGeneratedColumn("uuid")
+    id!: string;
 
-export interface TreatmentCreationProps extends Optional<TreatmentProps, "id"> {
-}
+    @Column({nullable: false})
+    name!: string;
 
-export interface TreatmentInstance extends Model<TreatmentProps, TreatmentCreationProps>, TreatmentProps {
-    setEmployee: BelongsToSetAssociationMixin<EmployeeInstance, "id">;
-    getEmployee: BelongsToGetAssociationMixin<EmployeeInstance>;
-    setAnimal: BelongsToSetAssociationMixin<AnimalInstance, "id">;
-    getAnimal: BelongsToGetAssociationMixin<AnimalInstance>;
-}
+    @Column()
+    description!: string;
 
-export default function (sequelize: Sequelize): ModelCtor<TreatmentInstance> {
-    return sequelize.define<TreatmentInstance>("Treatment", {
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        name: {
-            type: DataTypes.STRING
-        },
-        description: {
-            type: DataTypes.STRING
-        },
-        date: {
-            type: DataTypes.DATE
-        }
-    }, {
-        underscored: true,
-        freezeTableName: true,
-        timestamps: false
-    });
+    @ManyToOne(() => Animal, animal => animal.treatments)
+    animal!: Animal;
+
+    @ManyToOne(() => Employee, employee => employee.treatments)
+    employee!: Employee;
+
+    @CreateDateColumn()
+    createdAt!: Date;
+
+    @UpdateDateColumn()
+    updatedAt!: Date;
+
+    @DeleteDateColumn()
+    deletedAt!: Date;
 }

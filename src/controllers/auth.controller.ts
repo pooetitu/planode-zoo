@@ -35,7 +35,7 @@ export class AuthController {
     public async login(login: string, password: string): Promise<SessionInstance | null> {
         const user = await this.User.findOne({
             where: {
-                login
+                login: username
             }
         });
         if (user === null) {

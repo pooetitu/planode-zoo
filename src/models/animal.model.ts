@@ -1,47 +1,36 @@
 import {
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
-    DataTypes,
-    HasManyAddAssociationMixin,
-    HasManyGetAssociationsMixin,
-    Model,
-    ModelCtor,
-    Optional,
-    Sequelize
-} from "sequelize";
-import {TreatmentInstance} from "./treatment.model";
-import {AreaInstance} from "./area.model";
+    Column,
+    CreateDateColumn,
+    DeleteDateColumn,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
+import {Treatment} from "./treatment.model";
+import {Area} from "./area.model";
 
-export interface AnimalProps {
-    id: number;
-    name: string;
-}
+@Entity()
+export class Animal{
+    @PrimaryGeneratedColumn("uuid")
+    id!: string;
 
-export interface AnimalCreationProps extends Optional<AnimalProps, "id"> {
-}
+    @Column({nullable: false})
+    name!: string;
 
-export interface AnimalInstance extends Model<AnimalProps, AnimalCreationProps>, AnimalProps {
-    getTreatments: HasManyGetAssociationsMixin<TreatmentInstance>;
-    addTreatment: HasManyAddAssociationMixin<TreatmentInstance, "id">;
-    setArea: BelongsToSetAssociationMixin<AreaInstance, "id">;
-    getArea: BelongsToGetAssociationMixin<AreaInstance>;
-}
+    @ManyToOne(() => Area, area => area.animals)
+    area!: Area;
 
-export default function (sequelize: Sequelize): ModelCtor<AnimalInstance> {
-    return sequelize.define<AnimalInstance>("Animal", {
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false
-        }
-    }, {
-        timestamps: false,
-        freezeTableName: true,
-        underscored: true,
-        paranoid: true
-    });
+    @OneToMany(() => Treatment, treatment => treatment.animal)
+    treatments!: Treatment;
+
+    @CreateDateColumn()
+    createdAt!: Date;
+
+    @UpdateDateColumn()
+    updatedAt!: Date;
+
+    @DeleteDateColumn()
+    deletedAt!: Date;
 }

@@ -58,7 +58,7 @@ authRouter.post("/signup", async function (req, res) {
     }
     const authController = await AuthController.getInstance();
     const user = await authController.subscribe({
-        login,
+        login: username,
         password,
         email
     });
@@ -97,7 +97,7 @@ authRouter.post("/login", async function (req, res) {
         return;
     }
     const authController = await AuthController.getInstance();
-    const session = await authController.login(login, password);
+    const session = await authController.username(login, password);
     if (session === null) {
         res.status(404).end();
         return;

@@ -1,19 +1,7 @@
-import {
-    BelongsToGetAssociationMixin,
-    BelongsToManyAddAssociationsMixin,
-    BelongsToManyGetAssociationsMixin,
-    BelongsToSetAssociationMixin,
-    DataTypes,
-    HasManyAddAssociationMixin,
-    HasManyGetAssociationsMixin,
-    Model,
-    ModelCtor,
-    Optional,
-    Sequelize
-} from "sequelize";
-import {UserInstance} from "./user.model";
-import {AreaInstance} from "./area.model";
-import {PassUsageInstance} from "./pass_usage.model";
+import {User} from "./user.model";
+import {PassUsage} from "./pass_usage.model";
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {PassAreas} from "./pass_areas.model";
 
 export const passMap = {"DAILY": 0, "WEEK_END": 1, "YEARLY": 365, "ONCE_MONTHLY": 365};
 
@@ -21,67 +9,34 @@ export enum PassType {
     DAILY = "DAILY",
     WEEK_END = "WEEK_END",
     YEARLY = "YEARLY",
-    ONCE_MONTHLY = "ONCE_MONTHLY"
+    ONCE_MONTHLY = "ONCE_MONTHLY",
+    //TODO gestion du night
+    NIGHT= "NIGHT"
 }
 
-export interface PassProps {
-    id: number;
-    isEscapeGame: boolean;
-    startDate: Date;
-    endDate?: Date;
-    type: PassType;
-    orderedAreaIds: string;
-}
+@Entity()
+export class Pass {
+    @PrimaryGeneratedColumn("uuid")
+    id!: string;
 
-export interface PassCreationProps extends Optional<PassProps, "id"> {
-}
+    @Column({nullable: false})
+    isEscapeGame!: boolean;
 
-export interface PassInstance extends Model<PassProps, PassCreationProps>, PassProps {
-    setUser: BelongsToSetAssociationMixin<UserInstance, "id">;
-    getUser: BelongsToGetAssociationMixin<UserInstance>;
-    getAreas: BelongsToManyGetAssociationsMixin<AreaInstance>;
-    addArea: BelongsToManyAddAssociationsMixin<AreaInstance, "id">;
-    getPassUsages: HasManyGetAssociationsMixin<PassUsageInstance>;
-    addPassUsage: HasManyAddAssociationMixin<PassUsageInstance, "id">;
-}
+    @Column({nullable: false})
+    startDate!: Date;
 
-export default function (sequelize: Sequelize): ModelCtor<PassInstance> {
-    return sequelize.define<PassInstance>("Pass", {
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        isEscapeGame: {
-            type: DataTypes.BOOLEAN,
-        },
-        startDate: {
-            type: DataTypes.DATE
-        },
-        endDate: {
-            type: DataTypes.DATE
-        },
-        type: {
-            type: DataTypes.ENUM,
-            values: ["DAILY", "WEEK_END", "YEARLY", "ONCE_MONTHLY"],
-            allowNull: false
-        },
-        orderedAreaIds: {
-            type: DataTypes.STRING,
-            get(): string[] {
-                if (this.getDataValue('orderedAreaIds')) {
-                    return this.getDataValue('orderedAreaIds').split(';');
-                }
-                return [];
-            },
-            set(val: string[]) {
-                console.log(val);
-                this.setDataValue('orderedAreaIds', val.join(';'));
-            },
-        },
-    }, {
-        freezeTableName: true,
-        underscored: true,
-        timestamps: false
-    });
+    @Column({nullable: false})
+    endDate!: Date;
+
+    @Column({nullable: false, type: "enum", enum: PassType})
+    type!: PassType;
+
+    @OneToMany(() => PassAreas, passArea => passArea.pass)
+    areas!: PassAreas[];
+
+    @ManyToOne(()=> User, user => user.passes)
+    user!: User;
+
+    @OneToMany(()=> PassUsage, passUsage => passUsage.pass)
+    passUsages!: PassUsage[];
 }

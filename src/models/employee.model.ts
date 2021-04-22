@@ -1,17 +1,8 @@
-import {
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
-    DataTypes,
-    HasManyAddAssociationMixin,
-    HasManyGetAssociationsMixin,
-    Model,
-    ModelCtor,
-    Optional,
-    Sequelize
-} from "sequelize";
-import {UserInstance} from "./user.model";
-import {MaintenanceInstance} from "./maintenance.model";
-import {TreatmentInstance} from "./treatment.model";
+import {User} from "./user.model";
+import {Maintenance} from "./maintenance.model";
+import {Treatment} from "./treatment.model";
+import {Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Presence} from "./presence.model";
 
 export enum EmployeeType {
     ADMIN = "ADMIN",
@@ -21,48 +12,34 @@ export enum EmployeeType {
     SERVICE_AGENT = "SERVICE_AGENT"
 }
 
-export interface EmployeeProps {
-    id: number;
-    firstname: string;
-    lastname: string;
-    type: EmployeeType;
-}
+@Entity()
+export class Employee{
+    @PrimaryGeneratedColumn("uuid")
+    id!: string;
 
-export interface EmployeeCreationProps extends Optional<EmployeeProps, "id"> {
-}
+    @Column({nullable:false})
+    firstname!: string;
 
-export interface EmployeeInstance extends Model<EmployeeProps, EmployeeCreationProps>, EmployeeProps {
-    getTreatments: HasManyGetAssociationsMixin<TreatmentInstance>;
-    addTreatment: HasManyAddAssociationMixin<TreatmentInstance, "id">;
-    getMaintenance: HasManyGetAssociationsMixin<MaintenanceInstance>;
-    addMaintenance: HasManyAddAssociationMixin<MaintenanceInstance, "id">;
-    setUser: BelongsToSetAssociationMixin<UserInstance, "id">;
-    getUser: BelongsToGetAssociationMixin<UserInstance>;
-}
+    @Column({nullable:false})
+    lastname!: string;
 
-export default function (sequelize: Sequelize): ModelCtor<EmployeeInstance> {
-    return sequelize.define<EmployeeInstance>("Employee", {
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        firstname: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        lastname: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        type: {
-            type: DataTypes.ENUM,
-            values: [EmployeeType.ADMIN, EmployeeType.VETERINARY, EmployeeType.SELLER, EmployeeType.RECEPTION, EmployeeType.SERVICE_AGENT],
-            allowNull: false
-        }
-    }, {
-        freezeTableName: true,
-        underscored: true,
-        timestamps: false
-    });
+    @Column({
+        type: "enum",
+        enum: EmployeeType,
+        nullable: false
+    })
+    type!: EmployeeType;
+
+    @OneToOne(() => User, user => user.employee)
+    user!: User;
+
+    @OneToMany(() => Maintenance, maintenance => maintenance.employee)
+    maintenances!: Maintenance[];
+
+    @OneToMany(() => Treatment, treatment => treatment.employee)
+    treatments!: Treatment[];
+
+    @OneToMany(() => Presence, presence => presence.employee)
+    presences!: Presence[];
+
 }

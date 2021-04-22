@@ -1,44 +1,17 @@
-import {
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
-    DataTypes,
-    Model,
-    ModelCtor,
-    Optional,
-    Sequelize
-} from "sequelize";
-import {PassUsageInstance} from "./pass_usage.model";
-import {AreaInstance} from "./area.model";
+import {PassUsage} from "./pass_usage.model";
+import {Area} from "./area.model";
+import {Column, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 
-export interface AreaAccessProps {
-    id: number;
-    useDate: Date;
-}
+export class AreaAccess {
+    @PrimaryGeneratedColumn("uuid")
+    id!: string;
 
-export interface AreaAccessCreationProps extends Optional<AreaAccessProps, "id"> {
-}
+    @Column({nullable: false})
+    useDate!: Date;
 
-export interface AreaAccessInstance extends Model<AreaAccessProps, AreaAccessCreationProps>, AreaAccessProps {
-    setPassUsage: BelongsToSetAssociationMixin<PassUsageInstance, "id">;
-    getPassUsage: BelongsToGetAssociationMixin<PassUsageInstance>;
-    setArea: BelongsToSetAssociationMixin<AreaInstance, "id">;
-    getArea: BelongsToGetAssociationMixin<AreaInstance>;
-}
+    @ManyToOne(()=> Area, area => area.areaAccesses)
+    area!: Area;
 
-export default function (sequelize: Sequelize): ModelCtor<AreaAccessInstance> {
-    return sequelize.define<AreaAccessInstance>("AreaAccess", {
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        useDate: {
-            type: DataTypes.DATE,
-            allowNull: false
-        },
-    }, {
-        freezeTableName: true,
-        underscored: true,
-        timestamps: false
-    });
+    @ManyToOne(()=> PassUsage, passUsage => passUsage.areaAccesses)
+    passUsage!: PassUsage;
 }
