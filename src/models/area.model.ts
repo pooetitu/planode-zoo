@@ -63,7 +63,7 @@ export default function (sequelize: Sequelize): ModelCtor<AreaInstance> {
             type: DataTypes.INTEGER
         },
         openingTime: {
-            type: DataTypes.DATE,
+            type: DataTypes.TIME,
             allowNull: false
         },
         disabledAccess: {

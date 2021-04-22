@@ -4,10 +4,9 @@ import {SessionInstance} from "../models/session.model";
 import {SequelizeManager} from "../models/index.model";
 import {AreaCreationProps, AreaInstance} from "../models/area.model";
 import {AreaAccessInstance} from "../models/area_access.model";
+import {AnimalInstance} from "../models/animal.model";
 
 export class AreaController {
-
-
     private static instance: AreaController;
     Area: ModelCtor<AreaInstance>;
     AreaAccess: ModelCtor<AreaAccessInstance>;
@@ -43,52 +42,26 @@ export class AreaController {
         });
     }
 
-    public async deleteAreaByName(name: string) {
-        await this.Area.destroy({
-            where: {
-                name
-            }
-        });
+    public async getAll(): Promise<AreaInstance[] | null> {
+        return await this.Area.findAll();
     }
 
     public async deleteAreaById(id: string) {
-        await this.Area.destroy({
-            where: {
-                id
-            }
-        })
-    }
-
-    public async updateAreaById(id: string, props: AreaCreationProps): Promise<boolean> {
-        const area = await this.Area.findOne({
+        return await this.Area.destroy({
             where: {
                 id
             }
         });
-        if (area !== null) {
-            await area.update({
-                ...props
-            })
-            return true;
-        } else {
-            return false;
-        }
     }
 
-    public async updateAreaByName(name: string, props: AreaCreationProps): Promise<boolean> {
-        const area = await this.Area.findOne({
-            where: {
-                name
-            }
-        });
-        if (area !== null) {
+    public async updateArea(area: AreaInstance, props: AreaCreationProps) {
             await area.update({
                 ...props
-            })
-            return true;
-        } else {
-            return false;
-        }
+            });
     }
 
+    public async addAnimal(area: AreaInstance, animal: AnimalInstance) {
+        await area.addAnimal(animal);
+        await animal.setArea(area);
+    }
 }

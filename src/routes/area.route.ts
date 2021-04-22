@@ -1,5 +1,6 @@
 import express from "express";
 import {AreaController} from "../controllers/area.controller";
+import {AnimalController} from "../controllers/animal.controller";
 
 const areaRouter = express.Router();
 
@@ -63,7 +64,7 @@ const areaRouter = express.Router();
 
 /**
  * @swagger
- * /area/zoo/{areaId}/{passId}:
+ * /area/{areaId}/{passId}:
  *  post:
  *      summary: Create an area
  *      tags: [Area]
@@ -80,31 +81,21 @@ const areaRouter = express.Router();
  *        404:
  *          description: The Access was not found
  */
-areaRouter.post("/zoo/area", async function (req, res) {
-    //TODO à tester
+areaRouter.post("/", async function (req, res) {
     const areaController = await AreaController.getInstance();
-    const id = req.body.id;
-    const name = req.body.name;
-    const type = req.body.type;
-    const description = req.body.description;
-    const capacity = req.body.capacity;
-    const duration = req.body.duration;
-    const openingTime = req.body.openingTime;
-    const disabledAccess = req.body.disabledAccess;
-    const area = await areaController.createArea(req.body);
-    if (area === null) {
-        res.status(400).end();
-        return;
-    } else {
-        res.status(400).end();
+    try {
+        const area = await areaController.createArea({...req.body});
+        res.json(area);
     }
-
-
+    catch (err){
+        res.status(400).send(err).end();
+        return;
+    }
 });
 
 /**
  * @swagger
- * /area/zoo/{areaId}/{passId}:
+ * /area/{areaId}/{passId}:
  *  get:
  *      summary: Create an area
  *      tags: [Area]
@@ -121,7 +112,7 @@ areaRouter.post("/zoo/area", async function (req, res) {
  *        404:
  *          description: The Access was not found
  */
-areaRouter.get("/zoo/:areaId", async function (req, res) {
+areaRouter.get("/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
     const area = await areaController.getAreaById(areaId);
@@ -129,15 +120,24 @@ areaRouter.get("/zoo/:areaId", async function (req, res) {
         res.status(400).end();
         return;
     } else {
-        res.status(400).end();
+        res.json(area);
     }
+});
 
-
+areaRouter.get("/", async function (req, res) {
+    const areaController = await AreaController.getInstance();
+    const area = await areaController.getAll();
+    if (area === null) {
+        res.status(400).end();
+        return;
+    } else {
+        res.json(area);
+    }
 });
 
 /**
  * @swagger
- * /area/zoo/{areaId}/{passId}:
+ * /area/{areaId}/{passId}:
  *  put:
  *      summary: Create an area
  *      tags: [Area]
@@ -154,10 +154,39 @@ areaRouter.get("/zoo/:areaId", async function (req, res) {
  *        404:
  *          description: The Access was not found
  */
-areaRouter.put("/zoo/:areaId", async function (req, res) {
-    //TODO put area
+areaRouter.put("/:areaId", async function (req, res) {
+    const areaId = req.params.areaId;
+    const areaController = await AreaController.getInstance();
+    const area = await areaController.getAreaById(areaId);
+    if(area === null){
+        res.status(400).end();
+        return;
+    }
+    try {
+        await areaController.updateArea(area, {...req.body});
+        res.status(204).end();
+    }catch (err) {
+        res.status(400).send(err).end();
+    }
+});
 
-
+areaRouter.put("/:areaId/:animalId", async function (req, res) {
+    const areaId = req.params.areaId;
+    const animalId = req.params.animalId;
+    const areaController = await AreaController.getInstance();
+    const area = await areaController.getAreaById(areaId);
+    if(area === null){
+        res.status(400).end();
+        return;
+    }
+    const animalController = await AnimalController.getInstance();
+    const animal = await animalController.getAnimal(animalId);
+    if(animal === null){
+        res.status(400).end();
+        return;
+    }
+    await areaController.addAnimal(area, animal);
+    res.status(204).end();
 });
 
 /**
@@ -179,20 +208,17 @@ areaRouter.put("/zoo/:areaId", async function (req, res) {
  *        404:
  *          description: The Access was not found
  */
-areaRouter.delete("/zoo/:areaId", async function (req, res) {
+areaRouter.delete("/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
     const area = await areaController.deleteAreaById(areaId);
-    if (area === null) {
+    if (area < 1) {
         res.status(400).end();
         return;
     } else {
-        res.status(400).end();
+        res.status(204).send("Deleted area").end();
     }
-
-
 });
-
 
 export {
     areaRouter
