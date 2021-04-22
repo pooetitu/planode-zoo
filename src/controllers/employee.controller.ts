@@ -1,63 +1,55 @@
-import {ModelCtor, Op} from "sequelize";
-import {UserInstance} from "../models/user.model";
-import {SessionInstance} from "../models/session.model";
-import {SequelizeManager} from "../models/index.model";
-import {EmployeeCreationProps, EmployeeInstance} from "../models/employee.model";
+import {Employee,  EmployeeProps} from "../models/employee.model";
+import {getRepository, Repository} from "typeorm";
+import {User} from "../models/user.model";
 
 export class EmployeeController {
 
     private static instance: EmployeeController;
 
-    Session: ModelCtor<SessionInstance>;
-    Employee: ModelCtor<EmployeeInstance>;
-    User: ModelCtor<UserInstance>;
+    private employeeRepository: Repository<Employee>;
 
-    private constructor(Session: ModelCtor<SessionInstance>, Employee: ModelCtor<EmployeeInstance>, User: ModelCtor<UserInstance>) {
-        this.User = User;
-        this.Session = Session;
-        this.Employee = Employee;
+    private constructor() {
+        this.employeeRepository = getRepository(Employee);
     }
 
     public static async getInstance(): Promise<EmployeeController> {
         if (EmployeeController.instance === undefined) {
-            const {Session, Employee, User} = await SequelizeManager.getInstance();
-            EmployeeController.instance = new EmployeeController(Session, Employee, User);
+            EmployeeController.instance = new EmployeeController();
         }
         return EmployeeController.instance;
     }
 
-    async createEmployee(props: EmployeeCreationProps, user: UserInstance): Promise<EmployeeInstance | null> {
-        const employee = await this.Employee.create({...props});
-        await employee.setUser(user);
-        await user.setEmployee(employee);
+    async createEmployee(props: EmployeeProps): Promise<Employee | null> {
+        const employee = this.employeeRepository.create({...props});
+        await this.employeeRepository.save(employee);
         return employee;
     }
 
-    async deleteEmployee(user: UserInstance): Promise<boolean> {
-        const employee = await user.getEmployee();
-        if (employee === null) {
-            return false;
-        }
-        await employee.destroy();
+    async deleteEmployee(user: User): Promise<boolean> {
+        await this.employeeRepository.remove(user.employee);
         return true;
     }
 
-    async getEmployeeByToken(token: string): Promise<EmployeeInstance | null> {
-        return await this.Session.findOne({
-            where: {token}
-        }).then(session => session!.getUser().then(user => user!.getEmployee()));
+    async getEmployeeByToken(token: string): Promise<Employee> {
+        return await this.employeeRepository.createQueryBuilder()
+            .innerJoin("employee.user","user")
+            .innerJoin("user.session","session")
+            .where("session.token = :token", {token})
+            .getOneOrFail();
     }
 
-    async getEmployeeById(id: string): Promise<EmployeeInstance | null> {
-        return await this.Employee.findOne({where: {id}});
+    async getEmployeeById(id: string): Promise<Employee> {
+        return await this.employeeRepository.findOneOrFail(id);
     }
 
     async getAllUser() {
-        return await this.Employee.findAll();
+        return await this.employeeRepository.find();
     }
 
     async getEmployeeByUserId(userId: string) {
-       // @ts-ignore
-        return await this.Employee.findOne({where: {"$user_id$": {[Op.eq]:userId}}});
+        return await this.employeeRepository.createQueryBuilder()
+            .innerJoin("employee.user", "user")
+            .where("user.id = :userId",{userId})
+            .getOne();
     }
 }

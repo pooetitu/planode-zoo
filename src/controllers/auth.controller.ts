@@ -1,95 +1,62 @@
-import {ModelCtor} from "sequelize";
-import {UserCreationProps, UserInstance} from "../models/user.model";
-import {SessionInstance} from "../models/session.model";
-import {SequelizeManager} from "../models/index.model";
+import {User, UserProps} from "../models/user.model";
+import {Session} from "../models/session.model";
 import {compare, hash} from "bcrypt";
+import {getRepository, Repository} from "typeorm";
 
 export class AuthController {
 
     private static instance: AuthController;
-    User: ModelCtor<UserInstance>;
-    Session: ModelCtor<SessionInstance>;
+    private userRepository: Repository<User>;
+    private sessionRepository: Repository<Session>;
 
-    private constructor(User: ModelCtor<UserInstance>, Session: ModelCtor<SessionInstance>) {
-        this.User = User;
-        this.Session = Session;
+    private constructor() {
+        this.userRepository = getRepository(User);
+        this.sessionRepository = getRepository(Session);
     }
 
     public static async getInstance(): Promise<AuthController> {
         if (AuthController.instance === undefined) {
-            const {User, Session} = await SequelizeManager.getInstance();
-            AuthController.instance = new AuthController(User, Session);
+            AuthController.instance = new AuthController();
         }
         return AuthController.instance;
     }
 
-    public async subscribe(props: UserCreationProps):
-        Promise<UserInstance | null> {
+    public async subscribe(props: UserProps):Promise<User> {
         const passwordHashed = await hash(props.password, 5);
-        return this.User.create({
+        const user = this.userRepository.create({
             ...props,
             password: passwordHashed
         });
+        await this.userRepository.save(user);
+        return user;
     }
 
-    public async login(login: string, password: string): Promise<SessionInstance | null> {
-        const user = await this.User.findOne({
-            where: {
-                login: username
-            }
-        });
-        if (user === null) {
+    public async login(username: string, password: string): Promise<Session | null> {
+        const user = await this.userRepository.findOne({where: {username}});
+        if (user === undefined) {
             return null;
         }
         const isSamePassword = await compare(password, user.password);
         if (!isSamePassword) {
             return null;
         }
-        const token = await hash(Date.now() + login, 5);
-        const session = await this.Session.create({
-            token
-        });
-        await session.setUser(user);
-        await user.addSession(session);
+        const token = await hash(Date.now() + username, 5);
+        const session = this.sessionRepository.create({token});
+        user.sessions.push(session);
+        await this.userRepository.save(user);
         return session;
     }
 
 
     public async logout(token: string) {
-        await this.Session.destroy({
-            where: {
-                token
-            }
-        });
+        await this.sessionRepository.delete({token});
     }
 
-    public async getSession(token: string): Promise<SessionInstance | null> {
-        return this.Session.findOne({
-            where: {
-                token
-            }
-        });
+    public async getSession(token: string): Promise<Session> {
+        return this.sessionRepository.findOneOrFail({token});
     }
 
-    public async getUserById(id: string): Promise<UserInstance | null> {
-        return this.User.findOne({
-            include: [{
-                model: this.Session,
-                where: {
-                    id
-                }
-            }]
-        });
-    }
-
-    public async getUserByToken(token: string): Promise<UserInstance | null> {
-        return this.User.findOne({
-            include: [{
-                model: this.Session,
-                where: {
-                    token
-                }
-            }]
-        });
+    public async getUserById(id: string): Promise<User> {
+        return this.userRepository.findOneOrFail(id);
     }
 }

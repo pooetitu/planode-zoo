@@ -156,13 +156,12 @@ areaRouter.get("/", async function (req, res) {
 areaRouter.put("/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
-    const area = await areaController.getAreaById(areaId);
-    if (area === null) {
+    if (areaId === undefined) {
         res.status(400).end();
         return;
     }
     try {
-        await areaController.updateArea(area, {...req.body});
+        await areaController.updateArea(areaId, {...req.body});
         res.status(204).end();
     } catch (err) {
         res.status(400).send(err).end();
@@ -211,7 +210,7 @@ areaRouter.delete("/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
     const area = await areaController.deleteAreaById(areaId);
-    if (area < 1) {
+    if (area) {
         res.status(400).end();
         return;
     } else {

@@ -1,67 +1,46 @@
-import {ModelCtor} from "sequelize";
-import {UserInstance} from "../models/user.model";
-import {SessionInstance} from "../models/session.model";
-import {SequelizeManager} from "../models/index.model";
-import {AreaCreationProps, AreaInstance} from "../models/area.model";
-import {AreaAccessInstance} from "../models/area_access.model";
-import {AnimalInstance} from "../models/animal.model";
+import {Area, AreaProps} from "../models/area.model";
+import {getRepository} from "typeorm";
+import {Animal} from "../models/animal.model";
 
 export class AreaController {
     private static instance: AreaController;
-    Area: ModelCtor<AreaInstance>;
-    AreaAccess: ModelCtor<AreaAccessInstance>;
-    User: ModelCtor<UserInstance>;
-    Session: ModelCtor<SessionInstance>;
 
-    private constructor(User: ModelCtor<UserInstance>, Session: ModelCtor<SessionInstance>, Area: ModelCtor<AreaInstance>, AreaAccess: ModelCtor<AreaAccessInstance>) {
-        this.User = User;
-        this.Session = Session;
-        this.Area = Area;
-        this.AreaAccess = AreaAccess;
+    private constructor() {
     }
 
     public static async getInstance(): Promise<AreaController> {
         if (AreaController.instance === undefined) {
-            const {User, Session, Area, AreaAccess} = await SequelizeManager.getInstance();
-            AreaController.instance = new AreaController(User, Session, Area, AreaAccess);
+            AreaController.instance = new AreaController();
         }
         return AreaController.instance;
     }
 
-    public async createArea(props: AreaCreationProps): Promise<AreaInstance | null> {
-        return await this.Area.create({
-            ...props
-        });
+    public async createArea(props: AreaProps): Promise<Area | null> {
+        const areaRepository = getRepository(Area);
+        const area = areaRepository.create(props);
+        return await areaRepository.save(area);
     }
 
-    public async getAreaById(id: string): Promise<AreaInstance | null> {
-        return await this.Area.findOne({
-            where: {
-                id
-            }
-        });
+    public async getAreaById(id: string): Promise<Area> {
+        return await getRepository(Area).findOneOrFail(id);
     }
 
-    public async getAll(): Promise<AreaInstance[] | null> {
-        return await this.Area.findAll();
+    public async getAll(): Promise<Area[]> {
+        return await getRepository(Area).find();
     }
 
-    public async deleteAreaById(id: string) {
-        return await this.Area.destroy({
-            where: {
-                id
-            }
-        });
+    public async deleteAreaById(id: string): Promise<boolean> {
+        const result = await getRepository(Area).softDelete(id)
+        return !(result.affected === undefined || result.affected <= 0);
     }
 
-    public async updateArea(area: AreaInstance, props: AreaCreationProps) {
-        await area.update({
-            ...props
-        });
+    public async updateArea(id: string, props: AreaProps) {
+        const result = await getRepository(Area).update(id, props);
+        return !(result.affected === undefined || result.affected <= 0);
     }
 
-    public async addAnimal(area: AreaInstance, animal: AnimalInstance) {
-        await area.addAnimal(animal);
-        await animal.setArea(area);
+    public async addAnimal(area: Area, animal: Animal) {
+        area.animals.push(animal);
+        await getRepository(Area).save(area);
     }
 }

@@ -7,12 +7,11 @@ const animalRouter = express.Router();
 animalRouter.get("/:animalId", async function (req, res) {
     const animalId = req.params.animalId;
     const animalController = await AnimalController.getInstance();
-    const animal = await animalController.getAnimal(animalId);
-    if (animal === null) {
-        res.status(400).end();
-        return;
-    } else {
+    try{
+        const animal = await animalController.getAnimal(animalId);
         res.json(animal);
+    }catch (err){
+        res.status(400).json(err).end();
     }
 });
 
@@ -48,12 +47,11 @@ animalRouter.put("/:animalId", async function (req, res) {
     const animalId = req.params.animalId;
 
     const animalController = await AnimalController.getInstance();
-    const animal = await animalController.getAnimal(animalId);
-    if (animal === null) {
+    if (animalId === undefined) {
         res.status(400).end();
         return;
     }
-    await animalController.updateAnimal(animal, {...req.body});
+    await animalController.updateAnimal(animalId, {...req.body});
     res.status(204).end();
 });
 

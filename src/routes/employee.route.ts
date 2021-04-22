@@ -26,19 +26,14 @@ const employeeRouter = express.Router();
  */
 employeeRouter.post("/:userId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const userId = req.params.userId;
-
-    const authController = await AuthController.getInstance();
-    const user = await authController.getUserById(userId);
-    if (user === null) {
-        res.status(400).end();
-        return;
-    }
-    const employeeController = await EmployeeController.getInstance();
     try {
-        const employee = await employeeController.createEmployee({...req.body}, user);
+        const authController = await AuthController.getInstance();
+        const user = await authController.getUserById(userId);
+        const employeeController = await EmployeeController.getInstance();
+        const employee = await employeeController.createEmployee({...req.body, user});
         res.status(201).json(employee);
     } catch (err) {
-        res.status(409).send(err).end();
+        res.status(400).send(err).end();
     }
 });
 
@@ -64,16 +59,16 @@ employeeRouter.post("/:userId", managementMiddleware(EmployeeType.ADMIN), async 
 employeeRouter.delete("/:userId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const userId = req.params.userId;
     const authController = await AuthController.getInstance();
-    const user = await authController.getUserById(userId);
-    if (userId === undefined || user === null) {
-        res.status(400).end();
-        return;
-    }
-    const employeeController = await EmployeeController.getInstance();
-    const isDeleted = await employeeController.deleteEmployee(user);
-    if (isDeleted) {
-        res.status(204).end();
-    } else {
+    try {
+        const user = await authController.getUserById(userId);
+        const employeeController = await EmployeeController.getInstance();
+        const isDeleted = await employeeController.deleteEmployee(user);
+        if (isDeleted) {
+            res.status(204).end();
+        } else {
+            res.status(400).end();
+        }
+    }catch (err){
         res.status(400).end();
     }
 });
@@ -85,10 +80,10 @@ employeeRouter.get("/:employeeId", async function (req, res) {
         return;
     }
     const employeeController = await EmployeeController.getInstance();
-    const employee = await employeeController.getEmployeeById(employeeId);
-    if (employee !== null) {
+    try {
+        const employee = await employeeController.getEmployeeById(employeeId);
         res.status(201).json(employee);
-    } else {
+    }catch (err){
         res.status(400).end();
     }
 });

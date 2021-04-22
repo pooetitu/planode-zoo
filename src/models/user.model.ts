@@ -11,24 +11,30 @@ import {Session} from "./session.model";
 import {Employee} from "./employee.model";
 import {Pass} from "./pass.model";
 
+export interface UserProps{
+    username: string;
+    password: string;
+    email: string;
+}
+
 @Entity()
-export class User{
+export class User implements UserProps {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @Column({nullable: false})
+    @Column({unique: true, nullable: false})
     username!: string;
 
     @Column({nullable: false})
     password!: string;
 
-    @Column({nullable:false})
+    @Column({unique: true, nullable:false})
     email!: string;
 
     @OneToMany(() => Pass, pass => pass.user)
     passes!: Pass[];
 
-    @OneToMany(() => Session, session => session.user, {cascade:["remove"]})
+    @OneToMany(() => Session, session => session.user, {cascade:true})
     sessions!: Session[];
 
     @OneToOne(()=> Employee, employee => employee.user,{cascade:["update", "soft-remove"]})

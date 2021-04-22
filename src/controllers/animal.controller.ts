@@ -1,41 +1,42 @@
-import {ModelCtor} from "sequelize";
-import {SequelizeManager} from "../models/index.model";
-import {AnimalCreationProps, AnimalInstance} from "../models/animal.model";
+import {getRepository, Repository} from "typeorm";
+import {Animal, AnimalProps} from "../models/animal.model";
 
 export class AnimalController {
 
     private static instance: AnimalController;
-    Animal: ModelCtor<AnimalInstance>;
+    private animalRepository: Repository<Animal>;
 
-    private constructor(Animal: ModelCtor<AnimalInstance>) {
-        this.Animal = Animal;
+    private constructor() {
+        this.animalRepository = getRepository(Animal);
     }
 
     public static async getInstance(): Promise<AnimalController> {
         if (AnimalController.instance === undefined) {
-            const {Animal} = await SequelizeManager.getInstance();
-            AnimalController.instance = new AnimalController(Animal);
+            AnimalController.instance = new AnimalController();
         }
         return AnimalController.instance;
     }
 
-    public async getAnimal(id: string): Promise<AnimalInstance | null> {
-        return this.Animal.findOne({where: {id}});
+    public async getAnimal(id: string): Promise<Animal> {
+        return await this.animalRepository.findOneOrFail(id);
     }
 
-    public async createAnimal(props: AnimalCreationProps): Promise<AnimalInstance | null> {
-        return await this.Animal.create({...props});
+    public async createAnimal(props: AnimalProps): Promise<Animal> {
+        const animal = this.animalRepository.create(props);
+        return await this.animalRepository.save(animal);
     }
 
-    public async getAllAnimals(): Promise<AnimalInstance[]> {
-        return this.Animal.findAll();
+    public async getAllAnimals(): Promise<Animal[]> {
+        return this.animalRepository.find();
     }
 
-    public async updateAnimal(animal: AnimalInstance, props: AnimalCreationProps) {
-        await animal.update({...props});
+    public async updateAnimal(id: string, props: AnimalProps) {
+        const result = await this.animalRepository.update(id, props);
+        return !(result.affected === undefined || result.affected <= 0);
     }
 
     public async deleteAnimal(id: string) {
-        return await this.Animal.destroy({where: {id}});
+        const result = await this.animalRepository.softDelete(id);
+        return !(result.affected === undefined || result.affected <= 0);
     }
 }
