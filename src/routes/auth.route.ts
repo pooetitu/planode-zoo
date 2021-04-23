@@ -115,9 +115,14 @@ authRouter.post("/login", async function (req, res) {
  */
 authRouter.delete("/logout", authMiddleware, async function (req, res) {
     const token = req.headers["authorization"] as string;
-    const authController = await AuthController.getInstance();
-    await authController.logout(token);
-    res.send("sup la session");
+    try {
+        const authController = await AuthController.getInstance();
+        await authController.logout(token);
+        res.send("Session close");
+    }
+    catch (err){
+        res.status(400).send("Impossible de fermer la session");
+    }
 });
 
 export {

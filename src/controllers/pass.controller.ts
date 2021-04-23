@@ -1,73 +1,57 @@
-import {ModelCtor} from "sequelize";
-import {UserInstance} from "../models/user.model";
-import {SessionInstance} from "../models/session.model";
-import {SequelizeManager} from "../models/index.model";
-import {PassCreationProps, PassInstance, passMap} from "../models/pass.model";
+import {Pass, passMap, PassProps} from "../models/pass.model";
+import {User} from "../models/user.model";
+import {getRepository, Repository} from "typeorm";
+import {PassAreas} from "../models/pass_areas.model";
 import {AreaController} from "./area.controller";
 
 export class PassController {
 
     private static instance: PassController;
-    User: ModelCtor<UserInstance>;
-    Session: ModelCtor<SessionInstance>;
-    Pass: ModelCtor<PassInstance>;
 
-    private constructor(User: ModelCtor<UserInstance>, Session: ModelCtor<SessionInstance>, Pass: ModelCtor<PassInstance>) {
-        this.User = User;
-        this.Session = Session;
-        this.Pass = Pass;
+    private passRepository: Repository<Pass>;
+    private constructor() {
+        this.passRepository = getRepository(Pass);
     }
 
     public static async getInstance(): Promise<PassController> {
         if (PassController.instance === undefined) {
-            const {User, Session, Pass} = await SequelizeManager.getInstance();
-            PassController.instance = new PassController(User, Session, Pass);
+            PassController.instance = new PassController();
         }
         return PassController.instance;
     }
 
-    public async getAllPass(): Promise<PassInstance[] | null> {
-        return await this.Pass.findAll();
+    public async getAllPass(): Promise<Pass[]> {
+        return await this.passRepository.find();
     }
 
-    public async getPassById(id: string): Promise<PassInstance | null> {
-        return await this.Pass.findOne({
-            where: {
-                id
-            }
-        });
+    public async getPassById(id: string): Promise<Pass> {
+        return await this.passRepository.findOneOrFail(id);
     }
 
-    public async createPass(props: PassCreationProps, user: UserInstance): Promise<PassInstance | null> {
-        const endDate = new Date(props.startDate);
-        endDate.setDate(props.startDate.getDate() + passMap[props.type])
-        const pass = await this.Pass.create({
+    public async createPass(props: PassProps, user: User): Promise<Pass> {
+        const startDate = new Date(props.startDate);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + passMap[props.type])
+        const pass = this.passRepository.create({
             ...props,
-            endDate: endDate
+            endDate,
+            startDate
         });
-        const areaIds: string[] = pass.get("orderedAreaIds") as unknown as string[];
-        if (areaIds.length > 0) {
-            const areaController = await AreaController.getInstance();
-            for (const areaId of areaIds) {
-                const area = await areaController.getAreaById(areaId);
-                if (area === null) {
-                    await pass.destroy();
-                    return null;
-                }
-                await pass.addArea([area]);
-                await area.addPass([pass]);
+        const areaController = await AreaController.getInstance();
+        for (const areaId of props.areaIds) {
+            const area = await areaController.getAreaById(areaId);
+            if (area === null) {
+                throw {error: "Area with id: " + areaId + "doesn't exist"};
             }
+            const passArea = getRepository(PassAreas).create({pass,area});
+            pass.areas.push(passArea);
         }
-        await pass.setUser(user);
-        await user.addPass(pass);
-        return pass;
+        pass.user = user;
+        return await this.passRepository.save(pass);
     }
 
-    public async deletePassById(id: string) {
-        await this.Pass.destroy({
-            where: {
-                id
-            }
-        })
+    public async deletePassById(id: string): Promise<boolean> {
+        const result = await this.passRepository.softDelete(id);
+        return !(result.affected === undefined || result.affected <= 0);
     }
 }

@@ -2,6 +2,10 @@ import {Employee} from "./employee.model";
 import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Area} from "./area.model";
 
+export interface MaintenanceProps {
+    maintenanceDate: Date;
+}
+
 @Entity()
 export class Maintenance{
     @PrimaryGeneratedColumn("uuid")

@@ -48,23 +48,12 @@ const passRouter = express.Router();
  */
 passRouter.post("/", authMiddleware, async function (req, res) {
     const passController = await PassController.getInstance();
-    const type = req.body.type;
-    const startDate = req.body.startDate;
-    const isEscapeGame = req.body.isEscapeGame;
-    const orderedAreaIds = req.body.orderedAreaIds;
     const user = req.body.user;
-
-    if (user === null) {
+    if (user === null || req.body.areaIds === undefined || req.body.areaIds.length <= 0) {
         res.status(400).end();
         return;
     }
-
-    const pass = await passController.createPass({
-        type,
-        startDate: new Date(startDate),
-        isEscapeGame,
-        orderedAreaIds
-    }, user);
+    const pass = await passController.createPass({...req.body}, user);
     if (pass === null) {
         res.status(400).end();
         return;

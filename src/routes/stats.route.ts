@@ -1,5 +1,5 @@
 import express from "express";
-import {StatsController, StatsPeriods} from "../controllers/stats.controller";
+import {StatsController} from "../controllers/stats.controller";
 import {AreaController} from "../controllers/area.controller";
 
 const statsRouter = express.Router();
@@ -77,7 +77,7 @@ statsRouter.get("/zoo/week/:date", async function (req, res) {
         return;
     }
     const statsController = await StatsController.getInstance();
-    res.json({"attendance": await statsController.getZooAttendance(new Date(date), StatsPeriods.WEEK)});
+    res.json({"attendance": await statsController.getZooAttendance(new Date(date), "WEEK")});
 });
 
 /**
@@ -106,7 +106,7 @@ statsRouter.get("/zoo/day/:date", async function (req, res) {
         return;
     }
     const statsController = await StatsController.getInstance();
-    res.json({"attendance": await statsController.getZooAttendance(new Date(date), StatsPeriods.DAY)});
+    res.json({"attendance": await statsController.getZooAttendance(new Date(date), "DATE")});
 });
 
 /**
@@ -170,14 +170,8 @@ statsRouter.get("/area/day/:areaId/:date", async function (req, res) {
         res.status(400).end();
         return;
     }
-    const areaController = await AreaController.getInstance();
-    const area = await areaController.getAreaById(areaId);
-    if (area === null) {
-        res.status(404).end();
-        return;
-    }
     const statsController = await StatsController.getInstance();
-    res.json({"attendance": await statsController.getAreaAttendance(new Date(date), StatsPeriods.DAY, area)});
+    res.json({"attendance": await statsController.getAreaAttendance(new Date(date), "DATE", areaId)});
 });
 
 /**
@@ -206,14 +200,8 @@ statsRouter.get("/area/week/:areaId/:date", async function (req, res) {
         res.status(400).end();
         return;
     }
-    const areaController = await AreaController.getInstance();
-    const area = await areaController.getAreaById(areaId);
-    if (area === null) {
-        res.status(404).end();
-        return;
-    }
     const statsController = await StatsController.getInstance();
-    res.json({"attendance": await statsController.getAreaAttendance(new Date(date), StatsPeriods.WEEK, area)});
+    res.json({"attendance": await statsController.getAreaAttendance(new Date(date), "WEEK", areaId)});
 });
 
 export {

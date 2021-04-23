@@ -1,4 +1,4 @@
-import {Employee,  EmployeeProps} from "../models/employee.model";
+import {Employee, EmployeeProps} from "../models/employee.model";
 import {getRepository, Repository} from "typeorm";
 import {User} from "../models/user.model";
 
@@ -32,9 +32,9 @@ export class EmployeeController {
 
     async getEmployeeByToken(token: string): Promise<Employee> {
         return await this.employeeRepository.createQueryBuilder()
-            .innerJoin("employee.user","user")
-            .innerJoin("user.session","session")
-            .where("session.token = :token", {token})
+            .leftJoin("Employee.user","User")
+            .leftJoin("User.sessions","Session")
+            .where("Session.token = :token", {token})
             .getOneOrFail();
     }
 

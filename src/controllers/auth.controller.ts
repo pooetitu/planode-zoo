@@ -42,14 +42,13 @@ export class AuthController {
         }
         const token = await hash(Date.now() + username, 5);
         const session = this.sessionRepository.create({token});
-        user.sessions.push(session);
-        await this.userRepository.save(user);
+        session.user = user;
+        await this.sessionRepository.save(session);
         return session;
     }
 
-
     public async logout(token: string) {
-        await this.sessionRepository.delete({token});
+        await this.sessionRepository.softDelete({token}).catch(err => console.log(err + "a"));
     }
 
     public async getSession(token: string): Promise<Session> {

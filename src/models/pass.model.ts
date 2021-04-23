@@ -3,7 +3,7 @@ import {PassUsage} from "./pass_usage.model";
 import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {PassAreas} from "./pass_areas.model";
 
-export const passMap = {"DAILY": 0, "WEEK_END": 1, "YEARLY": 365, "ONCE_MONTHLY": 365};
+export const passMap = {"DAILY": 0, "WEEK_END": 1, "YEARLY": 365, "ONCE_MONTHLY": 365, "NIGHT": 0};
 
 export enum PassType {
     DAILY = "DAILY",
@@ -12,6 +12,13 @@ export enum PassType {
     ONCE_MONTHLY = "ONCE_MONTHLY",
     //TODO gestion du night
     NIGHT= "NIGHT"
+}
+
+export interface PassProps {
+    isEscapeGame: boolean;
+    startDate: Date;
+    type: PassType;
+    areaIds: string[];
 }
 
 @Entity()

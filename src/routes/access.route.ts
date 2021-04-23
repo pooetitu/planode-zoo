@@ -48,7 +48,7 @@ const accessRouter = express.Router();
  *        404:
  *          description: The Access was not found
  */
-accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMiddleware, async function (req, res) {
+accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), zooAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
     const pass = await passController.getPassById(passId);
@@ -57,48 +57,11 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMi
         return;
     }
     const accessController = await AccessController.getInstance();
-    const passUsage = await accessController.accessZoo(pass);
-    if (passUsage !== null) {
-        res.status(201);
-        res.json(passUsage);
-    } else {
-        res.status(409).end();
-    }
-});
-
-/**
- * @swagger
- * /access/zoo/{passId}:
- *  put:
- *      summary: Update access of the pass
- *      tags: [Access]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
- *      responses:
- *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
- */
-accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMiddleware, async function (req, res) {
-    const passId = req.params.passId;
-    const passController = await PassController.getInstance();
-    const pass = await passController.getPassById(passId);
-    if (pass === null) {
-        res.status(400).end();
-        return;
-    }
-    const accessController = await AccessController.getInstance();
-    const deleted = await accessController.leaveZoo(pass);
-    if (deleted !== null) {
-        res.status(204).end();
-    } else {
-        res.status(409).end();
+    try {
+        const passUsage = await accessController.accessZoo(pass);
+        res.status(201).json(passUsage);
+    }catch (err) {
+        res.status(409).send(err).end();
     }
 });
 

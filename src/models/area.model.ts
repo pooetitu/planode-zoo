@@ -31,7 +31,7 @@ export class Area implements AreaProps {
     @Column({nullable:false})
     type!: string;
 
-    @Column({type:"multilinestring"})
+    @Column({default:""})
     description!: string;
 
     @Column({nullable: false})

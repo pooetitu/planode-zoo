@@ -1,7 +1,8 @@
 import {PassUsage} from "./pass_usage.model";
 import {Area} from "./area.model";
-import {Column, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 
+@Entity()
 export class AreaAccess {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

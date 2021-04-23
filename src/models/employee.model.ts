@@ -1,7 +1,7 @@
 import {User} from "./user.model";
 import {Maintenance} from "./maintenance.model";
 import {Treatment} from "./treatment.model";
-import {Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Presence} from "./presence.model";
 
 export enum EmployeeType {
@@ -37,6 +37,7 @@ export class Employee{
     type!: EmployeeType;
 
     @OneToOne(() => User, user => user.employee)
+    @JoinColumn()
     user!: User;
 
     @OneToMany(() => Maintenance, maintenance => maintenance.employee)

@@ -114,12 +114,12 @@ areaRouter.post("/", async function (req, res) {
 areaRouter.get("/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
-    const area = await areaController.getAreaById(areaId);
-    if (area === null) {
-        res.status(400).end();
-        return;
-    } else {
+    try{
+        const area = await areaController.getAreaById(areaId);
         res.json(area);
+    }
+    catch (err) {
+        res.status(400).send(err).end();
     }
 });
 

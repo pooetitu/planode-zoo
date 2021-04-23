@@ -55,7 +55,6 @@ managementRouter.use("/employee", employeeRouter);
 managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const token = req.headers["authorization"] as string;
     const name = req.body.name;
-    const date = req.body.date;
     const description = req.body.description;
     const animalId = req.body.animalId;
     const employeeController = await EmployeeController.getInstance();
@@ -63,7 +62,6 @@ managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY
     const veterinary = await employeeController.getEmployeeByToken(token);
     const animal = await animalController.getAnimal(animalId);
     if (name === undefined ||
-        date === undefined ||
         description === undefined ||
         veterinary === null ||
         animal === null) {
@@ -71,7 +69,7 @@ managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY
         return;
     }
     const managementController = await ManagementController.getInstance();
-    const treatment = await managementController.treatAnimal({description, date, name}, veterinary, animal);
+    const treatment = await managementController.treatAnimal({description, name}, veterinary, animal);
     if (treatment !== null) {
         res.status(201);
         res.json(treatment);
@@ -114,7 +112,7 @@ managementRouter.post("/maintenance", managementMiddleware(EmployeeType.ADMIN), 
         return;
     }
     const managementController = await ManagementController.getInstance();
-    const maintenance = await managementController.lockArea({maintenanceDate}, admin, area);
+    const maintenance = await managementController.setAreaMaintenanceDate({maintenanceDate}, admin, area);
     if (maintenance !== null) {
         res.status(201);
         res.json(maintenance);
