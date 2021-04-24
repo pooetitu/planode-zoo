@@ -49,16 +49,15 @@ const passRouter = express.Router();
 passRouter.post("/", authMiddleware, async function (req, res) {
     const passController = await PassController.getInstance();
     const user = req.body.user;
-    if (user === null || req.body.areaIds === undefined || req.body.areaIds.length <= 0) {
+    if (!user || req.body.areaIds === undefined || req.body.areaIds.length <= 0) {
         res.status(400).end();
         return;
     }
-    const pass = await passController.createPass({...req.body}, user);
-    if (pass === null) {
-        res.status(400).end();
-        return;
-    } else {
+    try {
+        const pass = await passController.createPass({...req.body}, user);
         res.json(pass);
+    }catch (err) {
+        res.status(400).send(err).end();
     }
 });
 
