@@ -54,11 +54,13 @@ export class PassController {
             endDate,
             startDate
         }));
+        let order = 0;
         const areaController = await AreaController.getInstance();
         for (const areaId of props.areaIds) {
             const area = await areaController.getAreaById(areaId);
-            const passArea = getRepository(PassAreas).create({pass,area});
+            const passArea = getRepository(PassAreas).create({pass, area, order});
             await this.passAreasRepository.save(passArea);
+            order++;
         }
         pass.user = user;
         return pass;

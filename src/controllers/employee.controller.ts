@@ -25,8 +25,8 @@ export class EmployeeController {
         return employee;
     }
 
-    async deleteEmployee(user: User): Promise<boolean> {
-        await this.employeeRepository.remove(user.employee);
+    async deleteEmployee(employee: string): Promise<boolean> {
+        await this.employeeRepository.softDelete(employee);
         return true;
     }
 

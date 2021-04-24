@@ -11,6 +11,7 @@ export enum EmployeeType {
     RECEPTION = "RECEPTION",
     SERVICE_AGENT = "SERVICE_AGENT"
 }
+
 export interface EmployeeProps{
     firstname: string;
     lastname: string;

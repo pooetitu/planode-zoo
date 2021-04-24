@@ -6,10 +6,12 @@ import {AnimalController} from "../controllers/animal.controller";
 import {AreaController} from "../controllers/area.controller";
 import {EmployeeType} from "../models/employee.model";
 import {employeeRouter} from "./employee.route";
+import {authMiddleware} from "../middlewares/auth.middleware";
 
 const managementRouter = express.Router();
 
 managementRouter.use("/employee", employeeRouter);
+
 /**
  * @swagger
  * tags:
@@ -54,25 +56,19 @@ managementRouter.use("/employee", employeeRouter);
  */
 managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const token = req.headers["authorization"] as string;
-    const name = req.body.name;
-    const description = req.body.description;
     const animalId = req.body.animalId;
     const employeeController = await EmployeeController.getInstance();
     const animalController = await AnimalController.getInstance();
     const veterinary = await employeeController.getEmployeeByToken(token);
     const animal = await animalController.getAnimal(animalId);
-    if (name === undefined ||
-        description === undefined ||
-        veterinary === null ||
-        animal === null) {
+    if (veterinary === null || animal === null) {
         res.status(400).end();
         return;
     }
     const managementController = await ManagementController.getInstance();
-    const treatment = await managementController.treatAnimal({description, name}, veterinary, animal);
+    const treatment = await managementController.treatAnimal({...req.body}, veterinary, animal);
     if (treatment !== null) {
-        res.status(201);
-        res.json(treatment);
+        res.status(201).json(treatment);
     } else {
         res.status(409).end();
     }

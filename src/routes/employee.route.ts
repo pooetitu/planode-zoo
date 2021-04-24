@@ -56,20 +56,18 @@ employeeRouter.post("/:userId", managementMiddleware(EmployeeType.ADMIN), async 
  *        404:
  *          description: The Access was not found
  */
-employeeRouter.delete("/:userId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
-    const userId = req.params.userId;
-    const authController = await AuthController.getInstance();
+employeeRouter.delete("/:employeeId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+    const employeeId = req.params.employeeId;
     try {
-        const user = await authController.getUserById(userId);
         const employeeController = await EmployeeController.getInstance();
-        const isDeleted = await employeeController.deleteEmployee(user);
+        const isDeleted = await employeeController.deleteEmployee(employeeId);
         if (isDeleted) {
             res.status(204).end();
         } else {
             res.status(400).end();
         }
-    }catch (err){
-        res.status(400).end();
+    } catch (err){
+        res.status(400).send(err).end();
     }
 });
 
@@ -84,7 +82,7 @@ employeeRouter.get("/:employeeId", async function (req, res) {
         const employee = await employeeController.getEmployeeById(employeeId);
         res.status(201).json(employee);
     }catch (err){
-        res.status(404).end();
+        res.status(404).send(err).end();
     }
 });
 
@@ -109,7 +107,7 @@ employeeRouter.get("/user/:userId", async function (req, res) {
         const employee = await employeeController.getEmployeeByUserId(userId);
         res.json(employee).end();
     }
-    catch (err){
+    catch (err) {
         res.status(404).send(err).end();
     }
 });

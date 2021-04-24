@@ -3,6 +3,7 @@ import {AuthController} from "../controllers/auth.controller";
 
 export async function authMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
     const token = req.headers["authorization"];
+    console.log(token)
     if (token !== undefined) {
         try{
             const authController = await AuthController.getInstance();

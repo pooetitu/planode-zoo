@@ -1,9 +1,15 @@
-import {Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Pass} from "./pass.model";
 import {Area} from "./area.model";
 
+export interface PassAreasProps {
+    pass: Pass;
+    area: Area;
+    order: number;
+}
+
 @Entity()
-export class PassAreas {
+export class PassAreas implements PassAreasProps {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
@@ -12,4 +18,7 @@ export class PassAreas {
 
     @ManyToOne(() => Area, area => area.passes)
     area!: Area;
+
+    @Column()
+    order!: number;
 }

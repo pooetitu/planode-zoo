@@ -85,7 +85,7 @@ export class AccessController {
             .leftJoin("Area.passes", "PassAreas")
             .where("PassAreas.pass = :passId", {passId})
             .where("Area.id NOT IN ("+ areaInMaintenance.getSql() +")")
-            .orderBy("PassAreas.id","ASC")
+            .orderBy("PassAreas.order","ASC")
             .getMany();
     }
 
