@@ -5,7 +5,6 @@ export function managementMiddleware(type: EmployeeType): (req: Request, res: Re
     return async function (req: Request, res: Response, next: NextFunction) {
         try {
             const employee = req.body.user.employee;
-            console.log(employee)
             if (employee !== null && employee.type === type) {
                 next();
                 return;

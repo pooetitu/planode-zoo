@@ -137,7 +137,6 @@ managementRouter.post("/maintenance", managementMiddleware(EmployeeType.ADMIN), 
  */
 managementRouter.get("/suggest-maintenance-month/:areaId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.params.areaId;
-    console.log(areaId + "aaa");
     if (!areaId) {
         res.status(400).send("you must pass an areaId").end();
         return;

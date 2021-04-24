@@ -35,15 +35,17 @@ export class AccessController {
         const currentDate = new Date(Date.now());
         currentDate.setHours(0, 0, 0);
         const passUsage = await this.passUsageRepository.createQueryBuilder()
-            .where("DATE(NOW()) = DATE(`use_date`) AND id = :passId", {passId})
-            .getOneOrFail();
-        passUsage.leaveDate = undefined;
-        if (passUsage.useDate === currentDate) {
-            return passUsage;
-        } else {
-            const passUsage = await this.passUsageRepository.create({useDate: currentDate});
+            .where("DATE(NOW()) = DATE(createdAt) AND passId = :passId", {passId})
+            .withDeleted()
+            .getOne();
+        console.log(passUsage)
+        if(passUsage === undefined){
+            const passUsage = await this.passUsageRepository.create();
             passUsage.pass = pass;
             return await this.passUsageRepository.save(passUsage);
+        }
+        else{
+            return await this.passUsageRepository.recover(passUsage);
         }
     }
 
@@ -64,14 +66,17 @@ export class AccessController {
 
     public async canAccessZoo(pass: Pass): Promise<Boolean> {
         const currentDate = new Date();
-        if (pass.endDate === undefined || !(pass.startDate <= currentDate && pass.endDate >= currentDate)) {
+        currentDate.setHours(0,0,0)
+        if (pass.endDate === undefined || (currentDate <= pass.startDate && currentDate >= pass.endDate)) {
             return false;
         }
         if (pass.type === PassType.ONCE_MONTHLY) {
+            const passId = pass.id;
             const passUsage = await this.passUsageRepository.createQueryBuilder()
-                .where("MONTH(NOW()) = MONTH(useDate)")
-                .getOneOrFail();
-            if (passUsage.useDate !== currentDate) {
+                .where("MONTH(NOW()) = MONTH(createdAt)")
+                .where("passId = :passId", {passId})
+                .getOne();
+            if (passUsage !== undefined && passUsage.createdAt.getDate() !== currentDate.getDate()) {
                 return false;
             }
         }
@@ -87,7 +92,7 @@ export class AccessController {
         if (pass.isEscapeGame) {
             const countAccess = await this.areaAccessRepository.createQueryBuilder()
                 .leftJoin("AreaAccess.passUsage", "PassUsage")
-                .where("PassUsage.pass = :passId AND DATE(PassUsage.useDate) = DATE(NOW())", {passId})
+                .where("PassUsage.pass = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
                 .getCount();
             return passAreas[countAccess].id === area.id;
         }
@@ -96,13 +101,12 @@ export class AccessController {
 
     public async accessArea(pass: Pass, area: Area): Promise<AreaAccess | null> {
         const areaId = area.id;
+        const passId = pass.id;
         if (await this.canAccessArea(pass, area)) {
             const passUsage = await this.passUsageRepository.createQueryBuilder()
-                .where("DATE(NOW()) = DATE(useDate) AND user = :id", {areaId})
+                .where("DATE(NOW()) = DATE(createdAt) AND passId = :passId", {passId})
                 .getOneOrFail();
-            const areaAccess = this.areaAccessRepository.create({
-                useDate: new Date()
-            });
+            const areaAccess = this.areaAccessRepository.create({useDate: new Date()});
             if (areaAccess !== null) {
                 areaAccess.passUsage = passUsage;
                 areaAccess.area = area;
@@ -114,12 +118,11 @@ export class AccessController {
 
     public async leaveZoo(passId: string): Promise<PassUsage> {
         const passUsage = await this.passUsageRepository.createQueryBuilder()
-            .where("DATE(NOW()) = DATE(PassUsage.useDate)")
+            .where("DATE(NOW()) = DATE(PassUsage.createdAt)")
             .leftJoin("PassUsage.pass", "Pass")
-            .where("Pass.id = passId", {passId})
+            .where("Pass.id = :passId", {passId})
             .getOneOrFail();
-        passUsage.leaveDate = new Date(Date.now());
-        await this.passUsageRepository.save(passUsage);
+        await this.passUsageRepository.softRemove(passUsage);
         return passUsage;
     }
 

@@ -48,7 +48,7 @@ export class AuthController {
     }
 
     public async logout(token: string) {
-        await this.sessionRepository.softDelete({token}).catch(err => console.log(err + "a"));
+        await this.sessionRepository.softDelete({token});
     }
 
     public async getSession(token: string): Promise<Session> {

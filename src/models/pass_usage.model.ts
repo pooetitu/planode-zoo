@@ -1,17 +1,25 @@
 import {Pass} from "./pass.model";
 import {AreaAccess} from "./area_access.model";
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    DeleteDateColumn,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn
+} from "typeorm";
 
 @Entity()
 export class PassUsage {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @Column()
-    useDate!: Date;
+    @CreateDateColumn()
+    createdAt!: Date;
 
-    @Column({nullable: true})
-    leaveDate?: Date;
+    @DeleteDateColumn()
+    deleteAt?: Date;
 
     @ManyToOne(() => Pass, pass => pass.passUsages)
     pass!: Pass;
