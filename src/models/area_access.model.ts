@@ -10,9 +10,9 @@ export class AreaAccess {
     @Column({nullable: false})
     useDate!: Date;
 
-    @ManyToOne(()=> Area, area => area.areaAccesses)
+    @ManyToOne(() => Area, area => area.areaAccesses)
     area!: Area;
 
-    @ManyToOne(()=> PassUsage, passUsage => passUsage.areaAccesses)
+    @ManyToOne(() => PassUsage, passUsage => passUsage.areaAccesses)
     passUsage!: PassUsage;
 }

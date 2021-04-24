@@ -69,7 +69,7 @@ authRouter.post("/signup", async function (req, res) {
     try {
         const user = await authController.subscribe({...req.body});
         res.status(201).json(user);
-    }catch (err) {
+    } catch (err) {
         res.status(409).send(err).end();
     }
 });
@@ -141,8 +141,7 @@ authRouter.delete("/logout", authMiddleware, async function (req, res) {
         const authController = await AuthController.getInstance();
         await authController.logout(token);
         res.send("Session close");
-    }
-    catch (err){
+    } catch (err) {
         res.status(400).send("Impossible de fermer la session");
     }
 });

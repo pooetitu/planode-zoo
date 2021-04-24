@@ -33,60 +33,54 @@ export class AccessController {
     public async accessZoo(pass: Pass): Promise<PassUsage> {
         const passId = pass.id;
         const currentDate = new Date(Date.now());
-        currentDate.setHours(0,0,0);
+        currentDate.setHours(0, 0, 0);
         const passUsage = await this.passUsageRepository.createQueryBuilder()
-            .where("DATE(NOW()) = DATE(`use_date`) AND id = :passId",{passId})
-            .getOneOrFail();
-        passUsage.leaveDate = undefined;
-        if (passUsage.useDate === currentDate) {
-            return passUsage;
-        } else {
-            const passUsage = await this.passUsageRepository.create({useDate: currentDate});
+            .where("DATE(NOW()) = DATE(createdAt) AND passId = :passId", {passId})
+            .withDeleted()
+            .getOne();
+        console.log(passUsage)
+        if(passUsage === undefined){
+            const passUsage = await this.passUsageRepository.create();
             passUsage.pass = pass;
             return await this.passUsageRepository.save(passUsage);
+        }
+        else{
+            return await this.passUsageRepository.recover(passUsage);
         }
     }
 
     public async zooCanOpen(date: Date): Promise<Boolean> {
-        const presenceDate = date || "NOW()";
+        const absenceDate = date || "NOW()";
+        const absentEmployees = await this.employeeRepository.createQueryBuilder()
+            .select("Employee.id")
+            .leftJoin("Employee.absences", "Absence")
+            .where("WEEK(:absenceDate) = WEEK(Absence.absenceDate)");
         const presentEmployees = await this.employeeRepository.createQueryBuilder()
-                .leftJoin("Employee.presences", "Presence")
-                .where("WEEK(:presenceDate) = WEEK(Presence.presenceDate)", {presenceDate})
-                .getMany();
-        return (this.containsType(presentEmployees, EmployeeType.RECEPTION) !== undefined ||
-            this.containsType(presentEmployees, EmployeeType.VETERINARY) !== undefined ||
-            this.containsType(presentEmployees, EmployeeType.SELLER) !== undefined ||
-            this.containsType(presentEmployees, EmployeeType.SERVICE_AGENT) !== undefined);
+            .where(" id NOT IN (" + absentEmployees.getSql() + ")", {absenceDate})
+            .getMany();
+        return (this.containsType(presentEmployees, EmployeeType.RECEPTION) ||
+            this.containsType(presentEmployees, EmployeeType.VETERINARY) ||
+            this.containsType(presentEmployees, EmployeeType.SELLER) ||
+            this.containsType(presentEmployees, EmployeeType.SERVICE_AGENT));
     }
 
     public async canAccessZoo(pass: Pass): Promise<Boolean> {
         const currentDate = new Date();
-        if (pass.endDate === undefined || !(pass.startDate <= currentDate && pass.endDate >= currentDate)) {
+        currentDate.setHours(0,0,0)
+        if (pass.endDate === undefined || (currentDate <= pass.startDate && currentDate >= pass.endDate)) {
             return false;
         }
         if (pass.type === PassType.ONCE_MONTHLY) {
+            const passId = pass.id;
             const passUsage = await this.passUsageRepository.createQueryBuilder()
-                .where("MONTH(NOW()) = MONTH(useDate)")
-                .getOneOrFail();
-            if (passUsage.useDate !== currentDate) {
+                .where("MONTH(NOW()) = MONTH(createdAt)")
+                .where("passId = :passId", {passId})
+                .getOne();
+            if (passUsage !== undefined && passUsage.createdAt.getDate() !== currentDate.getDate()) {
                 return false;
             }
         }
         return true;
-    }
-
-    private async getAccessibleAreas(passId: string): Promise<Area[]>{
-        const areaInMaintenance = this.areaRepository.createQueryBuilder()
-            .select("id")
-            .leftJoin("Area.maintenances", "Maintenance")
-            .where("MONTH(NOW()) = MONTH(Maintenance.maintenanceDate)");
-         return await this.areaRepository.createQueryBuilder()
-            .select("id")
-            .leftJoin("Area.passes", "PassAreas")
-            .where("PassAreas.pass = :passId", {passId})
-            .where("Area.id NOT IN ("+ areaInMaintenance.getSql() +")")
-            .orderBy("PassAreas.order","ASC")
-            .getMany();
     }
 
     public async canAccessArea(pass: Pass, area: Area): Promise<Boolean> {
@@ -97,8 +91,8 @@ export class AccessController {
         }
         if (pass.isEscapeGame) {
             const countAccess = await this.areaAccessRepository.createQueryBuilder()
-                .leftJoin("AreaAccess.passUsage","PassUsage")
-                .where("PassUsage.pass = :passId AND DATE(PassUsage.useDate) = DATE(NOW())", {passId})
+                .leftJoin("AreaAccess.passUsage", "PassUsage")
+                .where("PassUsage.pass = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
                 .getCount();
             return passAreas[countAccess].id === area.id;
         }
@@ -107,13 +101,12 @@ export class AccessController {
 
     public async accessArea(pass: Pass, area: Area): Promise<AreaAccess | null> {
         const areaId = area.id;
+        const passId = pass.id;
         if (await this.canAccessArea(pass, area)) {
             const passUsage = await this.passUsageRepository.createQueryBuilder()
-                    .where("DATE(NOW()) = DATE(useDate) AND user = :id", {areaId})
-                    .getOneOrFail();
-            const areaAccess = this.areaAccessRepository.create({
-                useDate: new Date()
-            });
+                .where("DATE(NOW()) = DATE(createdAt) AND passId = :passId", {passId})
+                .getOneOrFail();
+            const areaAccess = this.areaAccessRepository.create({useDate: new Date()});
             if (areaAccess !== null) {
                 areaAccess.passUsage = passUsage;
                 areaAccess.area = area;
@@ -123,18 +116,31 @@ export class AccessController {
         return null;
     }
 
-    private containsType(presentEmployees: Employee[], type: EmployeeType): boolean {
-        return presentEmployees.some(e => e.type === type);
-    }
-
     public async leaveZoo(passId: string): Promise<PassUsage> {
         const passUsage = await this.passUsageRepository.createQueryBuilder()
-            .where("DATE(NOW()) = DATE(PassUsage.useDate)")
+            .where("DATE(NOW()) = DATE(PassUsage.createdAt)")
             .leftJoin("PassUsage.pass", "Pass")
-            .where("Pass.id = passId", {passId})
+            .where("Pass.id = :passId", {passId})
             .getOneOrFail();
-        passUsage.leaveDate = new Date(Date.now());
-        await this.passUsageRepository.save(passUsage);
+        await this.passUsageRepository.softRemove(passUsage);
         return passUsage;
+    }
+
+    private async getAccessibleAreas(passId: string): Promise<Area[]> {
+        const areaInMaintenance = this.areaRepository.createQueryBuilder()
+            .select("id")
+            .leftJoin("Area.maintenances", "Maintenance")
+            .where("MONTH(NOW()) = MONTH(Maintenance.maintenanceDate)");
+        return await this.areaRepository.createQueryBuilder()
+            .select("id")
+            .leftJoin("Area.passes", "PassAreas")
+            .where("PassAreas.pass = :passId", {passId})
+            .where("Area.id NOT IN (" + areaInMaintenance.getSql() + ")")
+            .orderBy("PassAreas.order", "ASC")
+            .getMany();
+    }
+
+    private containsType(presentEmployees: Employee[], type: EmployeeType): boolean {
+        return presentEmployees.some(e => e.type === type);
     }
 }

@@ -30,7 +30,7 @@ export class ManagementController {
         const maintenance = this.maintenanceRepository.create({
             ...props
         });
-        maintenance.employee =admin;
+        maintenance.employee = admin;
         maintenance.area = area;
         return await this.maintenanceRepository.save(maintenance);
     }
@@ -48,20 +48,11 @@ export class ManagementController {
     /*TODO
     Trouver un moyen d'avoir les mois n'ayant aucun acces a un espace
      */
-    public async suggestedMaintenanceDate(area: Area): Promise<number> {
-        const areaId = area.id;
+    public async suggestedMaintenanceDate(areaId: string): Promise<number> {
         const result = await this.areaAccessRepository.createQueryBuilder()
-            .leftJoin("AreaAccess.area","Area")
-            .where(qb => {
-                return "SELECT m FROM" +
-                    " (SELECT 1 m UNION ALL SELECT 2 UNION ALL" +
-                    " SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT" +
-                    " 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION" +
-                    " ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT" +
-                    " 10 UNION ALL SELECT 11 UNION ALL SELECT 12) months"
-            })
-            .where("Area.id = :areaId",{areaId})
-            .where("YEAR(NOW())-1 = YEAR(useDate)")
+            .leftJoin("AreaAccess.area", "Area")
+            .where("Area.id = :areaId", {areaId})
+            .where("DATE(NOW())-1 = DATE(useDate)")
             .groupBy("MONTH(useDate)")
             .select("COUNT(*)", "count")
             .getRawMany();

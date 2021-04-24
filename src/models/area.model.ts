@@ -2,7 +2,8 @@ import {Animal} from "./animal.model";
 import {AreaAccess} from "./area_access.model";
 import {
     Column,
-    CreateDateColumn, DeleteDateColumn,
+    CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -28,28 +29,28 @@ export class Area implements AreaProps {
     @Column({nullable: false})
     name!: string;
 
-    @Column({nullable:false})
+    @Column({nullable: false})
     type!: string;
 
-    @Column({default:""})
+    @Column({default: ""})
     description!: string;
 
     @Column({nullable: false})
     duration!: number;
 
-    @Column({nullable: false, type:"time"})
+    @Column({nullable: false, type: "time"})
     openingTime!: Date;
 
-    @Column({default: false, type:"boolean"})
+    @Column({default: false, type: "boolean"})
     disabledAccess!: boolean;
 
     @OneToMany(() => PassAreas, passArea => passArea.area, {cascade: true})
     passes!: PassAreas[];
 
-    @OneToMany(() => Animal, animal=> animal.area, {cascade:["insert", "update"]})
+    @OneToMany(() => Animal, animal => animal.area, {cascade: ["insert", "update"]})
     animals!: Animal[]
 
-    @OneToMany(() => AreaAccess, areaAccess => areaAccess.area, {cascade:true})
+    @OneToMany(() => AreaAccess, areaAccess => areaAccess.area, {cascade: true})
     areaAccesses!: AreaAccess[];
 
     @OneToMany(() => Maintenance, maintenance => maintenance.area, {cascade: true})

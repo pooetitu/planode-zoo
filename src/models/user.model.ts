@@ -1,6 +1,7 @@
 import {
     Column,
-    CreateDateColumn, DeleteDateColumn,
+    CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     OneToMany,
     OneToOne,
@@ -11,7 +12,7 @@ import {Session} from "./session.model";
 import {Employee} from "./employee.model";
 import {Pass} from "./pass.model";
 
-export interface UserProps{
+export interface UserProps {
     username: string;
     password: string;
     email: string;
@@ -28,16 +29,16 @@ export class User implements UserProps {
     @Column({nullable: false})
     password!: string;
 
-    @Column({unique: true, nullable:false})
+    @Column({unique: true, nullable: false})
     email!: string;
 
     @OneToMany(() => Pass, pass => pass.user)
     passes!: Pass[];
 
-    @OneToMany(() => Session, session => session.user, {cascade:true})
+    @OneToMany(() => Session, session => session.user, {cascade: true})
     sessions!: Session[];
 
-    @OneToOne(()=> Employee, employee => employee.user,{cascade:["update", "soft-remove"]})
+    @OneToOne(() => Employee, employee => employee.user, {cascade: ["update", "soft-remove"]})
     employee!: Employee;
 
     @CreateDateColumn()

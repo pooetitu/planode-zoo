@@ -5,6 +5,7 @@ import {Animal} from "../models/animal.model";
 export class AreaController {
     private static instance: AreaController;
     private areaRepository: Repository<Area>;
+
     private constructor() {
         this.areaRepository = getRepository(Area);
     }

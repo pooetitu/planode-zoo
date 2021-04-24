@@ -3,7 +3,7 @@ import {PassUsage} from "./pass_usage.model";
 import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {PassAreas} from "./pass_areas.model";
 
-export const passMap = {"DAILY": 0, "WEEK_END": 1, "YEARLY": 365, "ONCE_MONTHLY": 365, "NIGHT": 0};
+export const passMap = {"DAILY": 1, "WEEK_END": 2, "YEARLY": 365, "ONCE_MONTHLY": 365, "NIGHT": 1};
 
 export enum PassType {
     DAILY = "DAILY",
@@ -11,7 +11,7 @@ export enum PassType {
     YEARLY = "YEARLY",
     ONCE_MONTHLY = "ONCE_MONTHLY",
     //TODO gestion du night
-    NIGHT= "NIGHT"
+    NIGHT = "NIGHT"
 }
 
 export interface PassProps {
@@ -41,9 +41,9 @@ export class Pass {
     @OneToMany(() => PassAreas, passArea => passArea.pass)
     areas!: PassAreas[];
 
-    @ManyToOne(()=> User, user => user.passes)
+    @ManyToOne(() => User, user => user.passes)
     user!: User;
 
-    @OneToMany(()=> PassUsage, passUsage => passUsage.pass)
+    @OneToMany(() => PassUsage, passUsage => passUsage.pass)
     passUsages!: PassUsage[];
 }

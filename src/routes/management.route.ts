@@ -6,7 +6,6 @@ import {AnimalController} from "../controllers/animal.controller";
 import {AreaController} from "../controllers/area.controller";
 import {EmployeeType} from "../models/employee.model";
 import {employeeRouter} from "./employee.route";
-import {authMiddleware} from "../middlewares/auth.middleware";
 
 const managementRouter = express.Router();
 
@@ -136,18 +135,19 @@ managementRouter.post("/maintenance", managementMiddleware(EmployeeType.ADMIN), 
  *        404:
  *          description: The Access was not found
  */
-managementRouter.get("/suggest-maintenance-month", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
-    const areaId = req.body.areaId;
-    const areaController = await AreaController.getInstance();
-    const area = await areaController.getAreaById(areaId);
-    if (area === null) {
-        res.status(400).end();
+managementRouter.get("/suggest-maintenance-month/:areaId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+    const areaId = req.params.areaId;
+    if (!areaId) {
+        res.status(400).send("you must pass an areaId").end();
         return;
     }
     const managementController = await ManagementController.getInstance();
-    const date = await managementController.suggestedMaintenanceDate(area);
-    res.status(200);
-    res.json({"month": date});
+    try {
+        const date = await managementController.suggestedMaintenanceDate(areaId);
+        res.status(200).json({"month": date}).end();
+    } catch (err) {
+        res.status(404).send(err).end();
+    }
 });
 
 export {

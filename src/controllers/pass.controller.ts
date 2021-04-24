@@ -11,6 +11,7 @@ export class PassController {
 
     private passRepository: Repository<Pass>;
     private passAreasRepository: Repository<PassAreas>;
+
     private constructor() {
         this.passRepository = getRepository(Pass);
         this.passAreasRepository = getRepository(PassAreas);
@@ -26,7 +27,7 @@ export class PassController {
     public async getAllPass(userId: string): Promise<Pass[]> {
         return await this.passRepository.createQueryBuilder()
             .leftJoin("Pass.user", "User")
-            .where("User.id = :userId",{userId})
+            .where("User.id = :userId", {userId})
             .getMany();
     }
 
@@ -36,14 +37,14 @@ export class PassController {
 
     public async getPassByIdForUser(id: string, userId: string): Promise<Pass> {
         return await this.passRepository.createQueryBuilder()
-            .where("Pass.id = :id",{id})
-            .leftJoin("Pass.user","User")
-            .where("User.id = :userId",{userId})
+            .where("Pass.id = :id", {id})
+            .leftJoin("Pass.user", "User")
+            .where("User.id = :userId", {userId})
             .getOneOrFail();
     }
 
     public async createPass(props: PassProps, user: User): Promise<Pass> {
-        if(props.type === PassType.NIGHT && (!user.employee || user.employee.type !== EmployeeType.ADMIN)) {
+        if (props.type === PassType.NIGHT && (!user.employee || user.employee.type !== EmployeeType.ADMIN)) {
             throw {error: "To buy a night pass you must be an administrator"};
         }
         const startDate = new Date(props.startDate);
