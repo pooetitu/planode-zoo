@@ -52,7 +52,7 @@ export class ManagementController {
         const result = await this.areaAccessRepository.createQueryBuilder()
             .leftJoin("AreaAccess.area", "Area")
             .where("Area.id = :areaId", {areaId})
-            .where("DATE(NOW())-1 = DATE(useDate)")
+            .andWhere("DATE(NOW())-1 = DATE(useDate)")
             .groupBy("MONTH(useDate)")
             .select("COUNT(*)", "count")
             .getRawMany();

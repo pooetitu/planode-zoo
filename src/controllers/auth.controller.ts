@@ -53,9 +53,9 @@ export class AuthController {
 
     public async getSession(token: string): Promise<Session> {
         return this.sessionRepository.createQueryBuilder()
-            .where("token = :token", {token})
             .leftJoinAndMapOne("Session.user", "Session.user", "User")
             .leftJoinAndMapOne("User.employee", "User.employee", "Employee")
+            .where("token = :token", {token})
             .getOneOrFail();
     }
 
