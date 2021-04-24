@@ -115,12 +115,11 @@ accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, areaAccessMiddlew
         return;
     }
     const accessController = await AccessController.getInstance();
-    const areaAccess = await accessController.accessArea(pass, area);
-    if (areaAccess !== null) {
-        res.status(201);
-        res.json(areaAccess);
-    } else {
-        res.status(409).end();
+    try{
+        const areaAccess = await accessController.accessArea(pass, area);
+        res.status(201).json(areaAccess);
+    }catch (err) {
+        res.status(409).send(err).end();
     }
 });
 
@@ -155,7 +154,7 @@ accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMi
         res.status(204).end();
     }
     catch (err) {
-        res.status(409).end();
+        res.status(409).send(err).end();
     }
 });
 

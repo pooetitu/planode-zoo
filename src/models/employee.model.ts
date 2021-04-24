@@ -2,7 +2,7 @@ import {User} from "./user.model";
 import {Maintenance} from "./maintenance.model";
 import {Treatment} from "./treatment.model";
 import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {Absence} from "./presence.model";
+import {Absence} from "./absence.model";
 
 export enum EmployeeType {
     ADMIN = "ADMIN",

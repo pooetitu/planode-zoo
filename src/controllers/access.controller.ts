@@ -93,10 +93,20 @@ export class AccessController {
             const countAccess = await this.areaAccessRepository.createQueryBuilder()
                 .leftJoin("AreaAccess.passUsage", "PassUsage")
                 .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
-                .getCount();
-            console.log(countAccess + " " +passAreas[countAccess].id)
-            console.log(passAreas)
-            return passAreas[countAccess].id === area.id;
+                .getMany();
+            console.log(countAccess)
+            if(countAccess.length > 0) {
+                const areaId = passAreas[countAccess.length-1].id
+                const areaAccess = await this.areaAccessRepository.createQueryBuilder()
+                    .leftJoin("AreaAccess.passUsage", "PassUsage")
+                    .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
+                    .andWhere("AreaAccess.areaId = :areaId", {areaId})
+                    .getOne();
+                if(areaAccess !== undefined){
+                    await this.areaAccessRepository.softRemove(areaAccess);
+                }
+            }
+            return passAreas[countAccess.length].id === area.id;
         }
         return true;
     }
@@ -117,7 +127,7 @@ export class AccessController {
         if (areaAccess !== undefined) {
             return areaAccess;
         } else {
-            const areaAccess = this.areaAccessRepository.create({useDate: new Date(), passUsage, area});
+            const areaAccess = this.areaAccessRepository.create({createdAt: new Date(), passUsage, area});
             return await this.areaAccessRepository.save(areaAccess);
         }
     }
