@@ -52,8 +52,8 @@ export class ManagementController {
         const result = await this.areaAccessRepository.createQueryBuilder()
             .leftJoin("AreaAccess.area", "Area")
             .where("Area.id = :areaId", {areaId})
-            .andWhere("DATE(NOW())-1 = DATE(useDate)")
-            .groupBy("MONTH(useDate)")
+            .andWhere("DATE(NOW())-1 = DATE(createdAt)")
+            .groupBy("MONTH(createdAt)")
             .select("COUNT(*)", "count")
             .getRawMany();
         console.log(result);/*
@@ -61,6 +61,6 @@ export class ManagementController {
             // @ts-ignore
             b.getDataValue(`totalCount`) < a.getDataValue(`totalCount`) ? b : a
         );*/
-        return 0;// access.useDate.getMonth();
+        return 0;// access.createdAt.getMonth();
     }
 }

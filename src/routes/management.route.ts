@@ -53,9 +53,9 @@ managementRouter.use("/employee", employeeRouter);
  *        404:
  *          description: The Access was not found
  */
-managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
+managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const token = req.headers["authorization"] as string;
-    const animalId = req.body.animalId;
+    const animalId = req.params.animalId;
     const employeeController = await EmployeeController.getInstance();
     const animalController = await AnimalController.getInstance();
     const veterinary = await employeeController.getEmployeeByToken(token);
@@ -92,10 +92,10 @@ managementRouter.post("/treatment", managementMiddleware(EmployeeType.VETERINARY
  *        404:
  *          description: The Access was not found
  */
-managementRouter.post("/maintenance", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+managementRouter.post("/maintenance/:areaId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const token = req.headers["authorization"] as string;
     const maintenanceDate = req.body.maintenanceDate;
-    const areaId = req.body.areaId;
+    const areaId = req.params.areaId;
     const employeeController = await EmployeeController.getInstance();
     const areaController = await AreaController.getInstance();
     const admin = await employeeController.getEmployeeByToken(token);

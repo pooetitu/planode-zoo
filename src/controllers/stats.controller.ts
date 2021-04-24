@@ -22,34 +22,35 @@ export class StatsController {
     }
 
     public async getZooRealtimeAttendance(): Promise<number> {
-        //todo ajout condition date sortie du passusage
         return await this.passUsageRepository.createQueryBuilder()
-            .where("DATE(NOW()) = DATE(useDate)")
-            .andWhere("leaveDate = NULL")
+            .where("DATE(NOW()) = DATE(createdAt)")
             .getCount();
     }
 
     public async getAreaRealtimeAttendance(area: Area): Promise<number> {
+        const areaId = area.id;
         let startDate: Date = new Date();
         let endDate: Date = new Date(startDate);
         startDate.setMinutes(startDate.getMinutes() - area.duration);
         return await this.areaAccessRepository.createQueryBuilder()
-            .where("useDate BETWEEN :startDate AND :endDate", {startDate, endDate})
+            .where("createdAt BETWEEN :startDate AND :endDate", {startDate, endDate})
+            .andWhere("areaId = :areaId", {areaId})
             .getCount();
-
     }
 
     public async getZooAttendance(date: Date, period: "WEEK" | "DATE"): Promise<number> {
         return await this.passUsageRepository.createQueryBuilder()
-            .where(":period(:date) = :period(useDate)", {period, date})
+            .select("DISTINCT ON (PassUsage.id)")
+            .leftJoin("AreaAccess.passUsage", " PassUsage")
+            .where(":period(:date) = :period(createdAt)", {period, date})
             .getCount();
     }
 
     public async getAreaAttendance(date: Date, period: "WEEK" | "DATE", areaId: string): Promise<number> {
         return await this.areaAccessRepository.createQueryBuilder()
-            .where(":period(:date) = :period(useDate)", {period, date})
+            .where(":period(:date) = :period(createdAt)", {period, date})
             .andWhere("area = :id", {areaId})
+            .withDeleted()
             .getCount();
-
     }
 }

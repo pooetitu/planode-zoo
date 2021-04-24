@@ -1,6 +1,5 @@
 import express from "express";
 import {PassController} from "../controllers/pass.controller";
-import {authMiddleware} from "../middlewares/auth.middleware";
 import {managementMiddleware} from "../middlewares/management.middleware";
 import {EmployeeType} from "../models/employee.model";
 
@@ -75,7 +74,7 @@ const passRouter = express.Router();
  *        5XX:
  *          description: Unexpected error.
  */
-passRouter.post("/", authMiddleware, async function (req, res) {
+passRouter.post("/", async function (req, res) {
     const passController = await PassController.getInstance();
     const user = req.body.user;
     if (!user || req.body.areaIds === undefined || req.body.areaIds.length <= 0) {
@@ -102,7 +101,7 @@ passRouter.post("/", authMiddleware, async function (req, res) {
  *        404:
  *          description: A pass with the specified ID was not found.
  */
-passRouter.get("/", authMiddleware, async function (req, res) {
+passRouter.get("/", async function (req, res) {
     const passController = await PassController.getInstance();
     try {
         const pass = await passController.getAllPass(req.body.user.id);
@@ -139,7 +138,7 @@ passRouter.get("/", authMiddleware, async function (req, res) {
  *        5XX:
  *          description: Unexpected error.
  */
-passRouter.get("/:passId", authMiddleware, async function (req, res) {
+passRouter.get("/:passId", async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
     try {
@@ -226,7 +225,7 @@ passRouter.put("/:passId", managementMiddleware(EmployeeType.ADMIN), async funct
  *        5XX:
  *          description: Unexpected error.
  */
-passRouter.delete("/:passId", async function (req, res) {
+passRouter.delete("/:passId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
     try {
