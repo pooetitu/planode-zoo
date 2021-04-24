@@ -6,6 +6,7 @@ export async function authMiddleware(req: express.Request, res: express.Response
     if (token !== undefined) {
         const authController = await AuthController.getInstance();
         const session = await authController.getSession(token);
+        console.log(session);
         if (session !== null) {
             req.body.user = await session.user;
             next();

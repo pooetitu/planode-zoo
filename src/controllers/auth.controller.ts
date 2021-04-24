@@ -52,7 +52,11 @@ export class AuthController {
     }
 
     public async getSession(token: string): Promise<Session> {
-        return this.sessionRepository.findOneOrFail({token});
+        return this.sessionRepository.createQueryBuilder()
+            .where("token = :token",{token})
+            .leftJoinAndMapOne("Session.user", "Session.user", "User")
+            .leftJoinAndMapOne("User.employee", "User.employee","Employee")
+            .getOneOrFail();
     }
 
     public async getUserById(id: string): Promise<User> {
