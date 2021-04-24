@@ -1,6 +1,6 @@
 import express from "express";
 import {AccessController} from "../controllers/access.controller";
-import {zooAccessMiddleware, zooOpenCheckMiddleware} from "../middlewares/access.middleware";
+import {areaAccessMiddleware, zooAccessMiddleware, zooOpenCheckMiddleware} from "../middlewares/access.middleware";
 import {PassController} from "../controllers/pass.controller";
 import {AreaController} from "../controllers/area.controller";
 
@@ -103,7 +103,7 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), z
  *        5XX:
  *          description: Unexpected error.
  */
-accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, async function (req, res) {
+accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, areaAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;
     const areaId = req.params.areaId;
     const passController = await PassController.getInstance();
@@ -145,17 +145,16 @@ accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, async function (r
  */
 accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;
-    const passController = await PassController.getInstance();
-    const pass = await passController.getPassById(passId);
-    if (pass === null) {
+    if (passId === undefined) {
         res.status(400).end();
         return;
     }
     const accessController = await AccessController.getInstance();
-    const deleted = await accessController.leaveZoo(pass.id);
-    if (deleted !== null) {
+    try{
+        await accessController.leaveZoo(passId);
         res.status(204).end();
-    } else {
+    }
+    catch (err) {
         res.status(409).end();
     }
 });

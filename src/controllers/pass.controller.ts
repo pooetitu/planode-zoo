@@ -37,9 +37,9 @@ export class PassController {
 
     public async getPassByIdForUser(id: string, userId: string): Promise<Pass> {
         return await this.passRepository.createQueryBuilder()
-            .where("Pass.id = :id", {id})
             .leftJoin("Pass.user", "User")
-            .where("User.id = :userId", {userId})
+            .where("Pass.id = :id", {id})
+            .andWhere("User.id = :userId", {userId})
             .getOneOrFail();
     }
 

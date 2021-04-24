@@ -1,6 +1,7 @@
 import express from "express";
 import {AccessController} from "../controllers/access.controller";
 import {PassController} from "../controllers/pass.controller";
+import {AreaController} from "../controllers/area.controller";
 
 export function zooOpenCheckMiddleware(accessDate: Date): (req: express.Request, res: express.Response, next: express.NextFunction) => void {
     return function (req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -30,6 +31,28 @@ export async function zooAccessMiddleware(req: express.Request, res: express.Res
         }
     } else {
         res.status(401).send("Can't find pass").end();
+        return;
+    }
+}
+export async function areaAccessMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+    const passId = req.params.passId;
+    const areaId = req.params.areaId;
+    try{
+        const passController = await PassController.getInstance();
+        const pass = await passController.getPassById(passId);
+        const areaController = await AreaController.getInstance();
+        const area = await areaController.getAreaById(areaId);
+        const accessController = await AccessController.getInstance();
+        if (await accessController.canAccessArea(pass, area)) {
+            next();
+            return;
+        } else {
+            res.status(403).send("You are not allowed to enter this area").end();
+            return;
+        }
+    }
+    catch (err){
+        res.status(401).send(err).end();
         return;
     }
 }

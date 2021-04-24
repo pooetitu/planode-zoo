@@ -25,7 +25,7 @@ export class StatsController {
         //todo ajout condition date sortie du passusage
         return await this.passUsageRepository.createQueryBuilder()
             .where("DATE(NOW()) = DATE(useDate)")
-            .where("leaveDate = NULL")
+            .andWhere("leaveDate = NULL")
             .getCount();
     }
 
@@ -48,7 +48,7 @@ export class StatsController {
     public async getAreaAttendance(date: Date, period: "WEEK" | "DATE", areaId: string): Promise<number> {
         return await this.areaAccessRepository.createQueryBuilder()
             .where(":period(:date) = :period(useDate)", {period, date})
-            .where("area = :id", {areaId})
+            .andWhere("area = :id", {areaId})
             .getCount();
 
     }

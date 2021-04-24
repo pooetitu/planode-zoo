@@ -74,7 +74,7 @@ export class AccessController {
             const passId = pass.id;
             const passUsage = await this.passUsageRepository.createQueryBuilder()
                 .where("MONTH(NOW()) = MONTH(createdAt)")
-                .where("passId = :passId", {passId})
+                .andWhere("passId = :passId", {passId})
                 .getOne();
             if (passUsage !== undefined && passUsage.createdAt.getDate() !== currentDate.getDate()) {
                 return false;
@@ -92,35 +92,41 @@ export class AccessController {
         if (pass.isEscapeGame) {
             const countAccess = await this.areaAccessRepository.createQueryBuilder()
                 .leftJoin("AreaAccess.passUsage", "PassUsage")
-                .where("PassUsage.pass = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
+                .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
                 .getCount();
+            console.log(countAccess + " " +passAreas[countAccess].id)
+            console.log(passAreas)
             return passAreas[countAccess].id === area.id;
         }
         return true;
     }
 
-    public async accessArea(pass: Pass, area: Area): Promise<AreaAccess | null> {
-        const areaId = area.id;
+    public async accessArea(pass: Pass, area: Area): Promise<AreaAccess> {
         const passId = pass.id;
-        if (await this.canAccessArea(pass, area)) {
-            const passUsage = await this.passUsageRepository.createQueryBuilder()
-                .where("DATE(NOW()) = DATE(createdAt) AND passId = :passId", {passId})
-                .getOneOrFail();
-            const areaAccess = this.areaAccessRepository.create({useDate: new Date()});
-            if (areaAccess !== null) {
-                areaAccess.passUsage = passUsage;
-                areaAccess.area = area;
-                return await this.areaAccessRepository.save(areaAccess);
-            }
+        const areaId = area.id;
+        const passUsage = await this.passUsageRepository.createQueryBuilder()
+            .where("DATE(NOW()) = DATE(createdAt) AND passId = :passId", {passId})
+            .getOneOrFail();
+        const passUsageId = passUsage.id;
+        const areaAccess = await this.areaAccessRepository.createQueryBuilder()
+            .leftJoin("AreaAccess.area", "Area")
+            .leftJoin("AreaAccess.passUsage", "PassUsage")
+            .where("Area.id = :areaId", {areaId})
+            .andWhere("PassUsage.id = :passUsageId", {passUsageId})
+            .getOne();
+        if (areaAccess !== undefined) {
+            return areaAccess;
+        } else {
+            const areaAccess = this.areaAccessRepository.create({useDate: new Date(), passUsage, area});
+            return await this.areaAccessRepository.save(areaAccess);
         }
-        return null;
     }
 
     public async leaveZoo(passId: string): Promise<PassUsage> {
         const passUsage = await this.passUsageRepository.createQueryBuilder()
-            .where("DATE(NOW()) = DATE(PassUsage.createdAt)")
             .leftJoin("PassUsage.pass", "Pass")
-            .where("Pass.id = :passId", {passId})
+            .where("DATE(NOW()) = DATE(PassUsage.createdAt)")
+            .andWhere("Pass.id = :passId", {passId})
             .getOneOrFail();
         await this.passUsageRepository.softRemove(passUsage);
         return passUsage;
@@ -128,14 +134,14 @@ export class AccessController {
 
     private async getAccessibleAreas(passId: string): Promise<Area[]> {
         const areaInMaintenance = this.areaRepository.createQueryBuilder()
-            .select("id")
+            .select("Area.id")
             .leftJoin("Area.maintenances", "Maintenance")
             .where("MONTH(NOW()) = MONTH(Maintenance.maintenanceDate)");
         return await this.areaRepository.createQueryBuilder()
-            .select("id")
+            .select("Area.id")
             .leftJoin("Area.passes", "PassAreas")
             .where("PassAreas.pass = :passId", {passId})
-            .where("Area.id NOT IN (" + areaInMaintenance.getSql() + ")")
+            .andWhere("Area.id NOT IN (" + areaInMaintenance.getSql() + ")")
             .orderBy("PassAreas.order", "ASC")
             .getMany();
     }
