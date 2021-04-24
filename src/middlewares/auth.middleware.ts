@@ -4,19 +4,16 @@ import {AuthController} from "../controllers/auth.controller";
 export async function authMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
     const token = req.headers["authorization"];
     if (token !== undefined) {
-        const authController = await AuthController.getInstance();
-        const session = await authController.getSession(token);
-        console.log(session);
-        if (session !== null) {
+        try{
+            const authController = await AuthController.getInstance();
+            const session = await authController.getSession(token);
             req.body.user = await session.user;
             next();
-            return;
-        } else {
-            res.status(403).end();
-            return;
+        }catch (err) {
+            res.status(403).send(err);
         }
     } else {
-        res.status(401).end();
+        res.status(401).send("No token found");
         return;
     }
 }

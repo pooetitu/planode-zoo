@@ -2,6 +2,7 @@ import {Area} from "../models/area.model";
 import {AreaAccess} from "../models/area_access.model";
 import {PassUsage} from "../models/pass_usage.model";
 import {getRepository, Repository} from "typeorm";
+import {Pass} from "../models/pass.model";
 
 export class StatsController {
     private static instance: StatsController;
@@ -25,6 +26,7 @@ export class StatsController {
         //todo ajout condition date sortie du passusage
          return await this.passUsageRepository.createQueryBuilder()
              .where("DATE(NOW()) = DATE(useDate)")
+             .where("leaveDate = NULL")
              .getCount();
     }
 
@@ -38,8 +40,19 @@ export class StatsController {
 
     }
 
+    public async leaveZoo(passId: string): Promise<PassUsage> {
+        const currentDate = new Date();
+        const passUsage = await this.passUsageRepository.createQueryBuilder()
+            .where("DATE(NOW()) = DATE(PassUsage.useDate)")
+            .leftJoin("PassUsage.pass", "Pass")
+            .where("Pass.id = passId", {passId})
+            .getOneOrFail();
+        passUsage.leaveDate = currentDate;
+        await this.passUsageRepository.save(passUsage);
+        return passUsage;
+    }
+
     public async getZooAttendance(date: Date, period: "WEEK" | "DATE"): Promise<number> {
-        //todo ajout condition date sortie du passusage
         return await this.passUsageRepository.createQueryBuilder()
             .where(":period(:date) = :period(useDate)",{period, date})
             .getCount();

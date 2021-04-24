@@ -1,6 +1,8 @@
 import express from "express";
 import {PassController} from "../controllers/pass.controller";
 import {authMiddleware} from "../middlewares/auth.middleware";
+import {managementMiddleware} from "../middlewares/management.middleware";
+import {EmployeeType} from "../models/employee.model";
 
 const passRouter = express.Router();
 
@@ -67,27 +69,20 @@ passRouter.post("/", authMiddleware, async function (req, res) {
  *  get:
  *      summary: Manage Authentification
  *      tags: [Pass]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
  *      responses:
  *        200:
  *          description: The Access Result
  *        404:
  *          description: The Access was not found
  */
-passRouter.get("/", async function (req, res) {
+passRouter.get("/", authMiddleware, async function (req, res) {
     const passController = await PassController.getInstance();
-    const pass = await passController.getAllPass();
-    if (pass === null) {
-        res.status(400).end();
-        return;
-    } else {
+    try{
+        const pass = await passController.getAllPass(req.body.user.id);
         res.json(pass);
+    }
+    catch (err) {
+        res.status(400).send(err).end();
     }
 });
 
@@ -110,15 +105,14 @@ passRouter.get("/", async function (req, res) {
  *        404:
  *          description: The Access was not found
  */
-passRouter.get("/:passId", async function (req, res) {
+passRouter.get("/:passId", authMiddleware, async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
-    const pass = await passController.getPassById(passId);
-    if (pass === null) {
-        res.status(400).end();
-        return;
-    } else {
+    try{
+        const pass = await passController.getPassByIdForUser(passId, req.body.user.id);
         res.json(pass);
+    }catch (err) {
+        res.status(400).send(err).end();
     }
 });
 
@@ -141,8 +135,19 @@ passRouter.get("/:passId", async function (req, res) {
  *        404:
  *          description: The Access was not found
  */
-passRouter.put("/:passId", async function (req, res) {
-
+passRouter.put("/:passId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+    const passId = req.params.passId;
+    const passController = await PassController.getInstance();
+    if (passId === undefined) {
+        res.status(400).end();
+        return;
+    }
+    try{
+        await passController.updatePass(passId, {...req.body});
+        res.status(204).end();
+    }catch (err) {
+        res.status(400).send(err).end()
+    }
 });
 
 /**
@@ -164,15 +169,14 @@ passRouter.put("/:passId", async function (req, res) {
  *        404:
  *          description: The Access was not found
  */
-passRouter.delete("/:passId", async function (req, res) {
+passRouter.delete("/:passId",async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
-    const pass = await passController.deletePassById(passId);
-    if (pass === null) {
-        res.status(400).end();
-        return;
-    } else {
+    try{
+        const pass = await passController.deletePassById(passId);
         res.json(pass);
+    }catch (err) {
+        res.status(400).send(err).end();
     }
 });
 

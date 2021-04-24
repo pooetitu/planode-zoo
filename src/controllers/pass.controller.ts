@@ -23,17 +23,27 @@ export class PassController {
         return PassController.instance;
     }
 
-    public async getAllPass(): Promise<Pass[]> {
-        return await this.passRepository.find();
+    public async getAllPass(userId: string): Promise<Pass[]> {
+        return await this.passRepository.createQueryBuilder()
+            .leftJoin("Pass.user", "User")
+            .where("User.id = :userId",{userId})
+            .getMany();
     }
 
     public async getPassById(id: string): Promise<Pass> {
         return await this.passRepository.findOneOrFail(id);
     }
 
+    public async getPassByIdForUser(id: string, userId: string): Promise<Pass> {
+        return await this.passRepository.createQueryBuilder()
+            .where("Pass.id = :id",{id})
+            .leftJoin("Pass.user","User")
+            .where("User.id = :userId",{userId})
+            .getOneOrFail();
+    }
+
     public async createPass(props: PassProps, user: User): Promise<Pass> {
-        if(props.type === PassType.NIGHT && user.employee !== null && user.employee.type !== EmployeeType.ADMIN) {
-            console.log("aa")
+        if(props.type === PassType.NIGHT && (!user.employee || user.employee.type !== EmployeeType.ADMIN)) {
             throw {error: "To buy a night pass you must be an administrator"};
         }
         const startDate = new Date(props.startDate);
@@ -56,6 +66,11 @@ export class PassController {
 
     public async deletePassById(id: string): Promise<boolean> {
         const result = await this.passRepository.softDelete(id);
+        return !(result.affected === undefined || result.affected <= 0);
+    }
+
+    async updatePass(id: string, props: PassProps) {
+        const result = await this.passRepository.update(id, props);
         return !(result.affected === undefined || result.affected <= 0);
     }
 }

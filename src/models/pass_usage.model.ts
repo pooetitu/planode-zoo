@@ -10,6 +10,9 @@ export class PassUsage {
     @Column()
     useDate!: Date;
 
+    @Column()
+    leaveDate!: Date;
+
     @ManyToOne(() => Pass, pass => pass.passUsages)
     pass!: Pass;
 
