@@ -5,7 +5,11 @@ import {buildRoutes} from "./routes/index.route";
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
-import {createConnection} from "typeorm";
+import {createConnection, getRepository} from "typeorm";
+import {configure} from "./config/passport.config";
+import passport from "passport";
+import {Session} from "./models/session.model";
+import {TypeormStore} from "connect-typeorm";
 
 config();
 
@@ -41,8 +45,23 @@ createConnection({
     entities: [__dirname + "/**/models/*.ts"],
     synchronize: true
 }).then(() => {
+    configure();
     const app: Express = express();
     app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended: false}));
+    app.use(require('cookie-parser')());
+    app.use("/", require('express-session')({
+        secret: process.env.SECRET,
+        resave: true,
+        saveUninitialized: true,
+        store: new TypeormStore({
+            cleanupLimit: 2,
+            limitSubquery: false,
+            ttl: 259200
+        }).connect(getRepository(Session)),
+    }));
+    app.use("/", passport.initialize());
+    app.use("/", passport.session());
     buildRoutes(app);
     app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
     app.listen(port, function () {

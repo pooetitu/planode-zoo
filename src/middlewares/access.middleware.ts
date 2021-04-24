@@ -34,10 +34,11 @@ export async function zooAccessMiddleware(req: express.Request, res: express.Res
         return;
     }
 }
+
 export async function areaAccessMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
     const passId = req.params.passId;
     const areaId = req.params.areaId;
-    try{
+    try {
         const passController = await PassController.getInstance();
         const pass = await passController.getPassById(passId);
         const areaController = await AreaController.getInstance();
@@ -50,8 +51,7 @@ export async function areaAccessMiddleware(req: express.Request, res: express.Re
             res.status(403).send("You are not allowed to enter this area").end();
             return;
         }
-    }
-    catch (err){
+    } catch (err) {
         res.status(401).send(err).end();
         return;
     }

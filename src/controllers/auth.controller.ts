@@ -1,6 +1,6 @@
 import {User, UserProps} from "../models/user.model";
 import {Session} from "../models/session.model";
-import {compare, hash} from "bcrypt";
+import {hash} from "bcrypt";
 import {getRepository, Repository} from "typeorm";
 
 export class AuthController {
@@ -29,34 +29,6 @@ export class AuthController {
         });
         await this.userRepository.save(user);
         return user;
-    }
-
-    public async login(username: string, password: string): Promise<Session | null> {
-        const user = await this.userRepository.findOne({where: {username}});
-        if (user === undefined) {
-            return null;
-        }
-        const isSamePassword = await compare(password, user.password);
-        if (!isSamePassword) {
-            return null;
-        }
-        const token = await hash(Date.now() + username, 5);
-        const session = this.sessionRepository.create({token});
-        session.user = user;
-        await this.sessionRepository.save(session);
-        return session;
-    }
-
-    public async logout(token: string) {
-        await this.sessionRepository.softDelete({token});
-    }
-
-    public async getSession(token: string): Promise<Session> {
-        return this.sessionRepository.createQueryBuilder()
-            .leftJoinAndMapOne("Session.user", "Session.user", "User")
-            .leftJoinAndMapOne("User.employee", "User.employee", "Employee")
-            .where("token = :token", {token})
-            .getOneOrFail();
     }
 
     public async getUserById(id: string): Promise<User> {

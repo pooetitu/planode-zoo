@@ -1,11 +1,11 @@
 import express from "express";
 import {ManagementController} from "../controllers/management.controller";
 import {managementMiddleware} from "../middlewares/management.middleware";
-import {EmployeeController} from "../controllers/employee.controller";
 import {AnimalController} from "../controllers/animal.controller";
 import {AreaController} from "../controllers/area.controller";
 import {EmployeeType} from "../models/employee.model";
 import {employeeRouter} from "./employee.route";
+import {User} from "../models/user.model";
 
 const managementRouter = express.Router();
 
@@ -54,11 +54,9 @@ managementRouter.use("/employee", employeeRouter);
  *          description: The Access was not found
  */
 managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
-    const token = req.headers["authorization"] as string;
     const animalId = req.params.animalId;
-    const employeeController = await EmployeeController.getInstance();
     const animalController = await AnimalController.getInstance();
-    const veterinary = await employeeController.getEmployeeByToken(token);
+    const veterinary = (req.user as User).employee;
     const animal = await animalController.getAnimal(animalId);
     if (veterinary === null || animal === null) {
         res.status(400).end();
@@ -93,12 +91,10 @@ managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.V
  *          description: The Access was not found
  */
 managementRouter.post("/maintenance/:areaId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
-    const token = req.headers["authorization"] as string;
     const maintenanceDate = req.body.maintenanceDate;
     const areaId = req.params.areaId;
-    const employeeController = await EmployeeController.getInstance();
     const areaController = await AreaController.getInstance();
-    const admin = await employeeController.getEmployeeByToken(token);
+    const admin = (req.user as User).employee;
     const area = await areaController.getAreaById(areaId);
     if (maintenanceDate === undefined ||
         admin === null ||

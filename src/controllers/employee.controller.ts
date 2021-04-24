@@ -1,6 +1,5 @@
 import {Employee, EmployeeProps} from "../models/employee.model";
 import {getRepository, Repository} from "typeorm";
-import {User} from "../models/user.model";
 
 export class EmployeeController {
 
@@ -28,14 +27,6 @@ export class EmployeeController {
     async deleteEmployee(employee: string): Promise<boolean> {
         await this.employeeRepository.softDelete(employee);
         return true;
-    }
-
-    async getEmployeeByToken(token: string): Promise<Employee> {
-        return await this.employeeRepository.createQueryBuilder()
-            .leftJoin("Employee.user", "User")
-            .leftJoin("User.sessions", "Session")
-            .where("Session.token = :token", {token})
-            .getOneOrFail();
     }
 
     async getEmployeeById(id: string): Promise<Employee> {

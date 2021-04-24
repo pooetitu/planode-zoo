@@ -69,7 +69,7 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), z
     try {
         const passUsage = await accessController.accessZoo(pass);
         res.status(200).json(passUsage);
-    }catch (err) {
+    } catch (err) {
         res.status(409).send(err).end();
     }
 });
@@ -115,10 +115,10 @@ accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, areaAccessMiddlew
         return;
     }
     const accessController = await AccessController.getInstance();
-    try{
+    try {
         const areaAccess = await accessController.accessArea(pass, area);
         res.status(201).json(areaAccess);
-    }catch (err) {
+    } catch (err) {
         res.status(409).send(err).end();
     }
 });
@@ -149,11 +149,10 @@ accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMi
         return;
     }
     const accessController = await AccessController.getInstance();
-    try{
+    try {
         await accessController.leaveZoo(passId);
         res.status(204).end();
-    }
-    catch (err) {
+    } catch (err) {
         res.status(409).send(err).end();
     }
 });

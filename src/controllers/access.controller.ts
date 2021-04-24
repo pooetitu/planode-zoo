@@ -39,12 +39,11 @@ export class AccessController {
             .withDeleted()
             .getOne();
         console.log(passUsage)
-        if(passUsage === undefined){
+        if (passUsage === undefined) {
             const passUsage = await this.passUsageRepository.create();
             passUsage.pass = pass;
             return await this.passUsageRepository.save(passUsage);
-        }
-        else{
+        } else {
             return await this.passUsageRepository.recover(passUsage);
         }
     }
@@ -66,7 +65,7 @@ export class AccessController {
 
     public async canAccessZoo(pass: Pass): Promise<Boolean> {
         const currentDate = new Date();
-        currentDate.setHours(0,0,0)
+        currentDate.setHours(0, 0, 0)
         if (pass.endDate === undefined || (currentDate <= pass.startDate && currentDate >= pass.endDate)) {
             return false;
         }
@@ -95,14 +94,14 @@ export class AccessController {
                 .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
                 .getMany();
             console.log(countAccess)
-            if(countAccess.length > 0) {
-                const areaId = passAreas[countAccess.length-1].id
+            if (countAccess.length > 0) {
+                const areaId = passAreas[countAccess.length - 1].id
                 const areaAccess = await this.areaAccessRepository.createQueryBuilder()
                     .leftJoin("AreaAccess.passUsage", "PassUsage")
                     .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
                     .andWhere("AreaAccess.areaId = :areaId", {areaId})
                     .getOne();
-                if(areaAccess !== undefined){
+                if (areaAccess !== undefined) {
                     await this.areaAccessRepository.softRemove(areaAccess);
                 }
             }

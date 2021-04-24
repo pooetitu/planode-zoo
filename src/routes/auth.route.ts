@@ -1,6 +1,7 @@
 import express from "express";
+import passport from "passport";
 import {AuthController} from "../controllers/auth.controller";
-import {authMiddleware} from "../middlewares/auth.middleware";
+import {ensureLoggedIn, ensureLoggedOut} from "connect-ensure-login";
 
 const authRouter = express.Router();
 
@@ -64,7 +65,7 @@ const authRouter = express.Router();
  *        5XX:
  *          description: Unexpected error.
  */
-authRouter.post("/signup", async function (req, res) {
+authRouter.post("/signup", ensureLoggedOut(), async function (req, res) {
     const authController = await AuthController.getInstance();
     try {
         const user = await authController.subscribe({...req.body});
@@ -100,23 +101,8 @@ authRouter.post("/signup", async function (req, res) {
  *        5XX:
  *          description: Unexpected error.
  */
-authRouter.post("/login", async function (req, res) {
-    const username = req.body.username;
-    const password = req.body.password;
-    if (username === undefined || password === undefined) {
-        res.status(400).end();
-        return;
-    }
-    const authController = await AuthController.getInstance();
-    const session = await authController.login(username, password);
-    if (session === null) {
-        res.status(404).end();
-        return;
-    } else {
-        res.json({
-            token: session.token
-        });
-    }
+authRouter.post('/login', ensureLoggedOut(), passport.authenticate('local'), async function (req, res) {
+    res.json(req.user);
 });
 
 /**
@@ -135,15 +121,9 @@ authRouter.post("/login", async function (req, res) {
  *        5XX:
  *          description: Unexpected error.
  */
-authRouter.delete("/logout", authMiddleware, async function (req, res) {
-    const token = req.headers["authorization"] as string;
-    try {
-        const authController = await AuthController.getInstance();
-        await authController.logout(token);
-        res.send("Session close");
-    } catch (err) {
-        res.status(400).send("Impossible de fermer la session");
-    }
+authRouter.delete('/logout', ensureLoggedIn(), async function (req, res) {
+    req.logout();
+    res.status(204).end();
 });
 
 export {

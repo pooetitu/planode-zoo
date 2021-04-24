@@ -1,14 +1,15 @@
-import {User} from "./user.model";
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, Index, PrimaryColumn} from "typeorm";
+import {ISession} from "connect-typeorm";
 
 @Entity()
-export class Session {
-    @PrimaryGeneratedColumn("uuid")
-    id!: string;
+export class Session implements ISession {
+    @Index()
+    @Column("bigint")
+    public expiredAt = Date.now();
 
-    @Column({nullable: false})
-    token!: string;
+    @PrimaryColumn("varchar", {length: 255})
+    public id = "";
 
-    @ManyToOne(() => User, user => user.sessions)
-    user!: User;
+    @Column("text")
+    public json = "";
 }

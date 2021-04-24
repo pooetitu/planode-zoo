@@ -2,6 +2,7 @@ import express from "express";
 import {PassController} from "../controllers/pass.controller";
 import {managementMiddleware} from "../middlewares/management.middleware";
 import {EmployeeType} from "../models/employee.model";
+import {User} from "../models/user.model";
 
 const passRouter = express.Router();
 
@@ -74,7 +75,7 @@ const passRouter = express.Router();
  */
 passRouter.post("/", async function (req, res) {
     const passController = await PassController.getInstance();
-    const user = req.body.user;
+    const user = (req.user as User);
     if (!user || req.body.areaIds === undefined || req.body.areaIds.length <= 0) {
         res.status(400).end();
         return;
@@ -102,7 +103,7 @@ passRouter.post("/", async function (req, res) {
 passRouter.get("/", async function (req, res) {
     const passController = await PassController.getInstance();
     try {
-        const pass = await passController.getAllPass(req.body.user.id);
+        const pass = await passController.getAllPass((req.user as User).id);
         res.json(pass);
     } catch (err) {
         res.status(400).send(err).end();
@@ -133,7 +134,7 @@ passRouter.get("/:passId", async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
     try {
-        const pass = await passController.getPassByIdForUser(passId, req.body.user.id);
+        const pass = await passController.getPassByIdForUser(passId, (req.user as User).id);
         res.json(pass);
     } catch (err) {
         res.status(400).send(err).end();

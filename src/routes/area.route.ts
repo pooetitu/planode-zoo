@@ -1,9 +1,9 @@
 import express from "express";
 import {AreaController} from "../controllers/area.controller";
 import {AnimalController} from "../controllers/animal.controller";
-import {authMiddleware} from "../middlewares/auth.middleware";
 import {managementMiddleware} from "../middlewares/management.middleware";
 import {EmployeeType} from "../models/employee.model";
+import {ensureLoggedIn} from "connect-ensure-login";
 
 const areaRouter = express.Router();
 
@@ -84,7 +84,7 @@ const areaRouter = express.Router();
  *        404:
  *          description: The Access was not found
  */
-areaRouter.post("/", authMiddleware, managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+areaRouter.post("/", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaController = await AreaController.getInstance();
     try {
         const area = await areaController.createArea({...req.body});
@@ -155,7 +155,7 @@ areaRouter.get("/", async function (req, res) {
  *        404:
  *          description: The Access was not found
  */
-areaRouter.put("/:areaId", authMiddleware, managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+areaRouter.put("/:areaId", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
     if (areaId === undefined) {
@@ -170,7 +170,7 @@ areaRouter.put("/:areaId", authMiddleware, managementMiddleware(EmployeeType.ADM
     }
 });
 
-areaRouter.put("/:areaId/:animalId", authMiddleware, managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+areaRouter.put("/:areaId/:animalId", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.params.areaId;
     const animalId = req.params.animalId;
     const areaController = await AreaController.getInstance();
@@ -208,7 +208,7 @@ areaRouter.put("/:areaId/:animalId", authMiddleware, managementMiddleware(Employ
  *        404:
  *          description: The Access was not found
  */
-areaRouter.delete("/:areaId", authMiddleware, managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+areaRouter.delete("/:areaId", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.params.areaId;
     const areaController = await AreaController.getInstance();
     const area = await areaController.deleteAreaById(areaId);
