@@ -78,7 +78,7 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), z
  * @swagger
  * /access/zoo/{areaId}/{passId}:
  *  get:
- *      summary: Return access of the pass
+ *      summary: Return access of the pass in a area
  *      tags: [Access]
  *      parameters:
  *      - in: path
@@ -132,15 +132,21 @@ accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, areaAccessMiddlew
  *      parameters:
  *      - in: path
  *        name: passId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
  *          description: The Pass Id
  *      responses:
  *        200:
- *          description: The Access Result
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
  *        404:
- *          description: The Access was not found
+ *          description: A pass with the specified ID was not found.
+ *        5XX:
+ *          description: Unexpected error.
  */
 accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;

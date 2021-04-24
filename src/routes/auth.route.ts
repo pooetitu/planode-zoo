@@ -123,6 +123,8 @@ authRouter.post("/login", async function (req, res) {
  * @swagger
  * /auth/logout:
  *  delete:
+ *      security:
+ *          - ApiKeyAuth: []
  *      summary: Request for Logout
  *      tags: [Authentification]
  *      responses:

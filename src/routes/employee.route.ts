@@ -5,12 +5,20 @@ import express from "express";
 import {managementMiddleware} from "../middlewares/management.middleware";
 
 const employeeRouter = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Employee
+ *   description: Management of the employees
+ */
+
 /**
  * @swagger
  * /management/employee/hire:
  *  post:
  *      summary: Manage Authentification
- *      tags: [Management]
+ *      tags: [Employee]
  *      parameters:
  *      - in: path
  *        name: passId
@@ -42,7 +50,7 @@ employeeRouter.post("/:userId", managementMiddleware(EmployeeType.ADMIN), async 
  * /management/employee/fire:
  *  delete:
  *      summary: Manage Authentification
- *      tags: [Management]
+ *      tags: [Employee]
  *      parameters:
  *      - in: path
  *        name: passId

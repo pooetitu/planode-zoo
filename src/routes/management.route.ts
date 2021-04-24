@@ -15,7 +15,7 @@ managementRouter.use("/employee", employeeRouter);
  * @swagger
  * tags:
  *   name: Management
- *   description: Management actions of the park
+ *   description: Manage actions of the park
  */
 
 /**
