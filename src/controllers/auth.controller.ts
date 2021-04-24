@@ -21,7 +21,7 @@ export class AuthController {
         return AuthController.instance;
     }
 
-    public async subscribe(props: UserProps):Promise<User> {
+    public async subscribe(props: UserProps): Promise<User> {
         const passwordHashed = await hash(props.password, 5);
         const user = this.userRepository.create({
             ...props,
@@ -53,9 +53,9 @@ export class AuthController {
 
     public async getSession(token: string): Promise<Session> {
         return this.sessionRepository.createQueryBuilder()
-            .where("token = :token",{token})
+            .where("token = :token", {token})
             .leftJoinAndMapOne("Session.user", "Session.user", "User")
-            .leftJoinAndMapOne("User.employee", "User.employee","Employee")
+            .leftJoinAndMapOne("User.employee", "User.employee", "Employee")
             .getOneOrFail();
     }
 

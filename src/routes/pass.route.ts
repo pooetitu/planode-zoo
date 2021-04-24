@@ -58,7 +58,7 @@ passRouter.post("/", authMiddleware, async function (req, res) {
     try {
         const pass = await passController.createPass({...req.body}, user);
         res.json(pass);
-    }catch (err) {
+    } catch (err) {
         res.status(400).send(err).end();
     }
 });
@@ -77,11 +77,10 @@ passRouter.post("/", authMiddleware, async function (req, res) {
  */
 passRouter.get("/", authMiddleware, async function (req, res) {
     const passController = await PassController.getInstance();
-    try{
+    try {
         const pass = await passController.getAllPass(req.body.user.id);
         res.json(pass);
-    }
-    catch (err) {
+    } catch (err) {
         res.status(400).send(err).end();
     }
 });
@@ -108,10 +107,10 @@ passRouter.get("/", authMiddleware, async function (req, res) {
 passRouter.get("/:passId", authMiddleware, async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
-    try{
+    try {
         const pass = await passController.getPassByIdForUser(passId, req.body.user.id);
         res.json(pass);
-    }catch (err) {
+    } catch (err) {
         res.status(400).send(err).end();
     }
 });
@@ -142,10 +141,10 @@ passRouter.put("/:passId", managementMiddleware(EmployeeType.ADMIN), async funct
         res.status(400).end();
         return;
     }
-    try{
+    try {
         await passController.updatePass(passId, {...req.body});
         res.status(204).end();
-    }catch (err) {
+    } catch (err) {
         res.status(400).send(err).end()
     }
 });
@@ -169,13 +168,13 @@ passRouter.put("/:passId", managementMiddleware(EmployeeType.ADMIN), async funct
  *        404:
  *          description: The Access was not found
  */
-passRouter.delete("/:passId",async function (req, res) {
+passRouter.delete("/:passId", async function (req, res) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
-    try{
+    try {
         const pass = await passController.deletePassById(passId);
         res.json(pass);
-    }catch (err) {
+    } catch (err) {
         res.status(400).send(err).end();
     }
 });

@@ -1,4 +1,3 @@
-
 import {Animal} from "./animal.model";
 import {
     Column,
@@ -17,7 +16,7 @@ export interface TreatmentProps {
 }
 
 @Entity()
-export class Treatment{
+export class Treatment {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 

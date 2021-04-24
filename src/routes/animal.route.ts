@@ -7,10 +7,10 @@ const animalRouter = express.Router();
 animalRouter.get("/:animalId", async function (req, res) {
     const animalId = req.params.animalId;
     const animalController = await AnimalController.getInstance();
-    try{
+    try {
         const animal = await animalController.getAnimal(animalId);
         res.json(animal);
-    }catch (err){
+    } catch (err) {
         res.status(400).json(err).end();
     }
 });

@@ -3,7 +3,7 @@ import {EmployeeType} from "../models/employee.model";
 
 export function managementMiddleware(type: EmployeeType): (req: Request, res: Response, next: NextFunction) => void {
     return async function (req: Request, res: Response, next: NextFunction) {
-        try{
+        try {
             const employee = req.body.user.employee;
             console.log(employee)
             if (employee !== null && employee.type === type) {
@@ -13,7 +13,7 @@ export function managementMiddleware(type: EmployeeType): (req: Request, res: Re
                 res.status(401).end();
                 return;
             }
-        }catch (err){
+        } catch (err) {
             res.status(401).end();
             return;
         }

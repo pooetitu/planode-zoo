@@ -32,8 +32,8 @@ export class EmployeeController {
 
     async getEmployeeByToken(token: string): Promise<Employee> {
         return await this.employeeRepository.createQueryBuilder()
-            .leftJoin("Employee.user","User")
-            .leftJoin("User.sessions","Session")
+            .leftJoin("Employee.user", "User")
+            .leftJoin("User.sessions", "Session")
             .where("Session.token = :token", {token})
             .getOneOrFail();
     }
@@ -49,7 +49,7 @@ export class EmployeeController {
     async getEmployeeByUserId(userId: string) {
         return await this.employeeRepository.createQueryBuilder()
             .innerJoin("employee.user", "user")
-            .where("user.id = :userId",{userId})
+            .where("user.id = :userId", {userId})
             .getOne();
     }
 }

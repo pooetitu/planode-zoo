@@ -66,7 +66,7 @@ employeeRouter.delete("/:employeeId", managementMiddleware(EmployeeType.ADMIN), 
         } else {
             res.status(400).end();
         }
-    } catch (err){
+    } catch (err) {
         res.status(400).send(err).end();
     }
 });
@@ -81,7 +81,7 @@ employeeRouter.get("/:employeeId", async function (req, res) {
     try {
         const employee = await employeeController.getEmployeeById(employeeId);
         res.status(201).json(employee);
-    }catch (err){
+    } catch (err) {
         res.status(404).send(err).end();
     }
 });
@@ -98,7 +98,7 @@ employeeRouter.get("/", async function (req, res) {
 
 employeeRouter.get("/user/:userId", async function (req, res) {
     const userId = req.params.userId;
-    if (userId === undefined ) {
+    if (userId === undefined) {
         res.status(400).end();
         return;
     }
@@ -106,8 +106,7 @@ employeeRouter.get("/user/:userId", async function (req, res) {
     try {
         const employee = await employeeController.getEmployeeByUserId(userId);
         res.json(employee).end();
-    }
-    catch (err) {
+    } catch (err) {
         res.status(404).send(err).end();
     }
 });

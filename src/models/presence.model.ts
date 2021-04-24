@@ -1,15 +1,14 @@
-
 import {Employee} from "./employee.model";
-import {Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity()
-export class Presence{
+export class Absence {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
     @Column()
-    presenceDate!: Date;
+    absenceDate!: Date;
 
-    @ManyToOne(() => Employee, employee => employee.presences)
+    @ManyToOne(() => Employee, employee => employee.absences)
     employee!: Employee;
 }

@@ -2,7 +2,7 @@ import {User} from "./user.model";
 import {Maintenance} from "./maintenance.model";
 import {Treatment} from "./treatment.model";
 import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {Presence} from "./presence.model";
+import {Absence} from "./presence.model";
 
 export enum EmployeeType {
     ADMIN = "ADMIN",
@@ -12,7 +12,7 @@ export enum EmployeeType {
     SERVICE_AGENT = "SERVICE_AGENT"
 }
 
-export interface EmployeeProps{
+export interface EmployeeProps {
     firstname: string;
     lastname: string;
     type: EmployeeType;
@@ -20,14 +20,14 @@ export interface EmployeeProps{
 }
 
 @Entity()
-export class Employee{
+export class Employee {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @Column({nullable:false})
+    @Column({nullable: false})
     firstname!: string;
 
-    @Column({nullable:false})
+    @Column({nullable: false})
     lastname!: string;
 
     @Column({
@@ -47,7 +47,7 @@ export class Employee{
     @OneToMany(() => Treatment, treatment => treatment.employee)
     treatments!: Treatment[];
 
-    @OneToMany(() => Presence, presence => presence.employee)
-    presences!: Presence[];
+    @OneToMany(() => Absence, absence => absence.employee)
+    absences!: Absence[];
 
 }

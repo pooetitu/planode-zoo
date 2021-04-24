@@ -12,7 +12,7 @@ import {Treatment} from "./treatment.model";
 import {Area} from "./area.model";
 
 export interface AnimalProps {
-    name:string;
+    name: string;
 }
 
 @Entity()
@@ -23,7 +23,7 @@ export class Animal implements AnimalProps {
     @Column({nullable: false})
     name!: string;
 
-    @ManyToOne(() => Area, area => area.animals, {cascade:["insert", "update"]})
+    @ManyToOne(() => Area, area => area.animals, {cascade: ["insert", "update"]})
     area!: Area;
 
     @OneToMany(() => Treatment, treatment => treatment.animal, {cascade: true})

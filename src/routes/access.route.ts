@@ -60,7 +60,7 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), z
     try {
         const passUsage = await accessController.accessZoo(pass);
         res.status(201).json(passUsage);
-    }catch (err) {
+    } catch (err) {
         res.status(409).send(err).end();
     }
 });

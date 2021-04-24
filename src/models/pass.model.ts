@@ -11,7 +11,7 @@ export enum PassType {
     YEARLY = "YEARLY",
     ONCE_MONTHLY = "ONCE_MONTHLY",
     //TODO gestion du night
-    NIGHT= "NIGHT"
+    NIGHT = "NIGHT"
 }
 
 export interface PassProps {
@@ -41,9 +41,9 @@ export class Pass {
     @OneToMany(() => PassAreas, passArea => passArea.pass)
     areas!: PassAreas[];
 
-    @ManyToOne(()=> User, user => user.passes)
+    @ManyToOne(() => User, user => user.passes)
     user!: User;
 
-    @OneToMany(()=> PassUsage, passUsage => passUsage.pass)
+    @OneToMany(() => PassUsage, passUsage => passUsage.pass)
     passUsages!: PassUsage[];
 }

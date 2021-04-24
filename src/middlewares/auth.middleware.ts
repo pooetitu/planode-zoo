@@ -5,12 +5,12 @@ export async function authMiddleware(req: express.Request, res: express.Response
     const token = req.headers["authorization"];
     console.log(token)
     if (token !== undefined) {
-        try{
+        try {
             const authController = await AuthController.getInstance();
             const session = await authController.getSession(token);
             req.body.user = await session.user;
             next();
-        }catch (err) {
+        } catch (err) {
             res.status(403).send(err);
         }
     } else {

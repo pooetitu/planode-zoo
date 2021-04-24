@@ -7,16 +7,16 @@ export interface MaintenanceProps {
 }
 
 @Entity()
-export class Maintenance{
+export class Maintenance {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
     @Column({nullable: false})
     maintenanceDate!: Date;
 
-    @ManyToOne(()=> Employee, employee => employee.maintenances)
+    @ManyToOne(() => Employee, employee => employee.maintenances)
     employee!: Employee;
 
-    @ManyToOne(()=> Area, area => area.maintenances)
+    @ManyToOne(() => Area, area => area.maintenances)
     area!: Area;
 }
