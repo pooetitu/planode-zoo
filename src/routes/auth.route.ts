@@ -8,7 +8,7 @@ const authRouter = express.Router();
  * @swagger
  * tags:
  *   name: Authentification
- *   description: Authentification actions
+ *   description: All Authentification actions
  */
 
 /**
@@ -18,33 +18,51 @@ const authRouter = express.Router();
  *     Authentification:
  *       type: object
  *       required:
- *         - passId
+ *         - username
+ *         - email
+ *         - password
  *       properties:
- *         passId:
- *           type: number
- *           description: The auto-generated id of the Pass
+ *         username:
+ *           type: string
+ *           description: The username
+ *         email:
+ *           type: string
+ *           description: The email
+ *         password:
+ *           type: string
+ *           description: The password
  *       example:
- *         id: 1564
+ *         username: noEmployee
+ *         email: noEmployee@gmail.com
+ *         password: popo
  */
 
 /**
  * @swagger
  * /auth/signup:
  *  post:
- *      summary: Manage Authentification
+ *      summary: Request for signup
  *      tags: [Authentification]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
+ *      requestBody:
+ *        description: SignUp Informations
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Authentification'
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Authentification'
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 authRouter.post("/signup", async function (req, res) {
     const authController = await AuthController.getInstance();
@@ -60,20 +78,27 @@ authRouter.post("/signup", async function (req, res) {
  * @swagger
  * /auth/login:
  *  post:
- *      summary: Create an area
+ *      summary: Request for login
  *      tags: [Authentification]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
+ *      requestBody:
+ *        description: Login information
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Authentification'
+ *              example:
+ *                  username: noEmployee
+ *                  password: popo
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 authRouter.post("/login", async function (req, res) {
     const login = req.body.login;
@@ -98,20 +123,17 @@ authRouter.post("/login", async function (req, res) {
  * @swagger
  * /auth/logout:
  *  delete:
- *      summary: Create an area
+ *      summary: Request for Logout
  *      tags: [Authentification]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 authRouter.delete("/logout", authMiddleware, async function (req, res) {
     const token = req.headers["authorization"] as string;
