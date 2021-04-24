@@ -32,6 +32,13 @@ const animalRouter = express.Router();
  *  get:
  *      summary: Get a specific Animal by ID
  *      tags: [Animal]
+ *      parameters:
+ *      - in: path
+ *        name: animalId
+ *        required: true
+ *        schema :
+ *          type: integer
+ *          description: The Animal ID
  *      responses:
  *        200:
  *          description: OK

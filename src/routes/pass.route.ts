@@ -40,16 +40,18 @@ const passRouter = express.Router();
  *              type: string
  *           description: The order of the area for the pass
  *       example:
- *         isEscapeGame: 1
+ *         isEscapeGame: false
  *         startDate: 2021-05-14
- *         type: WEEK_END
- *         orderedAreaIds: ["1","2","3"]
+ *         type: DAILY
+ *         orderedAreaIds: [ "1cf385e6-3c6f-4b2d-8aba-d66b264f1c4e","224f0a01-dc36-4ae6-bbdd-3910ea04e47b","99b11bb7-9b95-4e7e-a306-2ad67af93256"]
  */
 
 /**
  * @swagger
  * /pass/:
  *  post:
+ *      security:
+ *          - ApiKeyAuth: []
  *      summary: Create a new Pass
  *      tags: [Pass]
  *      requestBody:
@@ -96,9 +98,9 @@ passRouter.post("/", authMiddleware, async function (req, res) {
  *      tags: [Pass]
  *      responses:
  *        200:
- *          description: The Access Result
+ *          description: OK
  *        404:
- *          description: The Access was not found
+ *          description: A pass with the specified ID was not found.
  */
 passRouter.get("/", authMiddleware, async function (req, res) {
     const passController = await PassController.getInstance();
@@ -116,6 +118,13 @@ passRouter.get("/", authMiddleware, async function (req, res) {
  *  get:
  *      summary: Get a specific Pass by ID
  *      tags: [Pass]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        required: true
+ *        schema :
+ *          type: integer
+ *          description: The Pass Id
  *      responses:
  *        200:
  *          description: OK
