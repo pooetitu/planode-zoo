@@ -101,14 +101,14 @@ authRouter.post("/signup", async function (req, res) {
  *          description: Unexpected error.
  */
 authRouter.post("/login", async function (req, res) {
-    const login = req.body.login;
+    const username = req.body.username;
     const password = req.body.password;
-    if (login === undefined || password === undefined) {
+    if (username === undefined || password === undefined) {
         res.status(400).end();
         return;
     }
     const authController = await AuthController.getInstance();
-    const session = await authController.login(login, password);
+    const session = await authController.login(username, password);
     if (session === null) {
         res.status(404).end();
         return;
