@@ -21,32 +21,41 @@ const accessRouter = express.Router();
  *       type: object
  *       required:
  *         - passId
+ *         - areaId
  *       properties:
  *         passId:
  *           type: number
- *           description: The auto-generated id of the Pass
+ *           description: The ID of the Pass
+ *         areaId:
+ *           type: number
+ *           description: The ID of the Area
  *       example:
- *         id: 1564
+ *         passId: 4
+ *         areaId: 8
  */
 
 /**
  * @swagger
  * /access/zoo/{passId}:
  *  get:
- *      summary: Return access of the pass
+ *      summary: Return if the pass has the permission to be in the Zoo
  *      tags: [Access]
  *      parameters:
  *      - in: path
  *        name: passId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
  *          description: The Pass Id
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), zooAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;
@@ -59,7 +68,7 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), z
     const accessController = await AccessController.getInstance();
     try {
         const passUsage = await accessController.accessZoo(pass);
-        res.status(201).json(passUsage);
+        res.status(200).json(passUsage);
     }catch (err) {
         res.status(409).send(err).end();
     }
@@ -74,15 +83,25 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), z
  *      parameters:
  *      - in: path
  *        name: passId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
  *          description: The Pass Id
+ *      - in: path
+ *        name: areaId
+ *        required: true
+ *        schema :
+ *          type: integer
+ *          description: The Area Id
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, async function (req, res) {
     const passId = req.params.passId;
