@@ -146,7 +146,7 @@ passRouter.get("/:passId", authMiddleware, async function (req, res) {
  * @swagger
  * /pass/{passId}:
  *  put:
- *      summary: TO-DO
+ *      summary: Update a Pass
  *      tags: [Pass]
  *      parameters:
  *      - in: path
@@ -155,6 +155,13 @@ passRouter.get("/:passId", authMiddleware, async function (req, res) {
  *        schema :
  *          type: integer
  *          description: The Pass ID
+ *      requestBody:
+ *        description: Data of the pass
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Pass'
  *      responses:
  *        200:
  *          description: OK
