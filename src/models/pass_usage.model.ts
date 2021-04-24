@@ -10,8 +10,8 @@ export class PassUsage {
     @Column()
     useDate!: Date;
 
-    @Column()
-    leaveDate!: Date;
+    @Column({nullable: true})
+    leaveDate?: Date;
 
     @ManyToOne(() => Pass, pass => pass.passUsages)
     pass!: Pass;

@@ -40,18 +40,6 @@ export class StatsController {
 
     }
 
-    public async leaveZoo(passId: string): Promise<PassUsage> {
-        const currentDate = new Date();
-        const passUsage = await this.passUsageRepository.createQueryBuilder()
-            .where("DATE(NOW()) = DATE(PassUsage.useDate)")
-            .leftJoin("PassUsage.pass", "Pass")
-            .where("Pass.id = passId", {passId})
-            .getOneOrFail();
-        passUsage.leaveDate = currentDate;
-        await this.passUsageRepository.save(passUsage);
-        return passUsage;
-    }
-
     public async getZooAttendance(date: Date, period: "WEEK" | "DATE"): Promise<number> {
         return await this.passUsageRepository.createQueryBuilder()
             .where(":period(:date) = :period(useDate)",{period, date})

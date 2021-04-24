@@ -36,8 +36,9 @@ export class AccessController {
         currentDate.setHours(0,0,0);
         const passUsage = await this.passUsageRepository.createQueryBuilder()
             .where("DATE(NOW()) = DATE(`use_date`) AND id = :passId",{passId})
-            .getOne();
-        if (passUsage !== undefined && passUsage.useDate === currentDate) {
+            .getOneOrFail();
+        passUsage.leaveDate = undefined;
+        if (passUsage.useDate === currentDate) {
             return passUsage;
         } else {
             const passUsage = await this.passUsageRepository.create({useDate: currentDate});
@@ -49,7 +50,7 @@ export class AccessController {
     public async zooCanOpen(date: Date): Promise<Boolean> {
         const presenceDate = date || "NOW()";
         const presentEmployees = await this.employeeRepository.createQueryBuilder()
-                .leftJoin("Employee.presence", "Presence")
+                .leftJoin("Employee.presences", "Presence")
                 .where("WEEK(:presenceDate) = WEEK(Presence.presenceDate)", {presenceDate})
                 .getMany();
         return (this.containsType(presentEmployees, EmployeeType.RECEPTION) !== undefined ||
@@ -124,5 +125,16 @@ export class AccessController {
 
     private containsType(presentEmployees: Employee[], type: EmployeeType): boolean {
         return presentEmployees.some(e => e.type === type);
+    }
+
+    public async leaveZoo(passId: string): Promise<PassUsage> {
+        const passUsage = await this.passUsageRepository.createQueryBuilder()
+            .where("DATE(NOW()) = DATE(PassUsage.useDate)")
+            .leftJoin("PassUsage.pass", "Pass")
+            .where("Pass.id = passId", {passId})
+            .getOneOrFail();
+        passUsage.leaveDate = new Date(Date.now());
+        await this.passUsageRepository.save(passUsage);
+        return passUsage;
     }
 }

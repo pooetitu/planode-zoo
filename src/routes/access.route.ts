@@ -105,6 +105,42 @@ accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, async function (r
     }
 });
 
+/**
+ * @swagger
+ * /access/zoo/{passId}:
+ *  put:
+ *      summary: Update access of the pass
+ *      tags: [Access]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        schema :
+ *          type: integer
+ *          required: true
+ *          description: The Pass Id
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: The Access was not found
+ */
+accessRouter.put("/zoo/:passId", zooOpenCheckMiddleware(new Date()), zooAccessMiddleware, async function (req, res) {
+    const passId = req.params.passId;
+    const passController = await PassController.getInstance();
+    const pass = await passController.getPassById(passId);
+    if (pass === null) {
+        res.status(400).end();
+        return;
+    }
+    const accessController = await AccessController.getInstance();
+    const deleted = await accessController.leaveZoo(pass.id);
+    if (deleted !== null) {
+        res.status(204).end();
+    } else {
+        res.status(409).end();
+    }
+});
+
 export {
     accessRouter
 };
