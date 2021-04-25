@@ -42,7 +42,6 @@ export class AccessController {
             .where("DATE(NOW()) = DATE(createdAt) AND passId = :passId", {passId})
             .withDeleted()
             .getOne();
-        console.log(passUsage)
         if (passUsage === undefined) {
             const passUsage = await this.passUsageRepository.create();
             passUsage.pass = pass;
@@ -184,7 +183,7 @@ export class AccessController {
      * @param passId The pass accessing the area
      * @private
      */
-    private async canAccessEscapeGameArea(passAreas: Area[], areaId: string, passId: string) {
+    private async canAccessEscapeGameArea(passAreas: Area[], areaId: string, passId: string): Promise<boolean> {
         const countAccess = await this.areaAccessRepository.createQueryBuilder()
             .leftJoin("AreaAccess.passUsage", "PassUsage")
             .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
@@ -203,7 +202,7 @@ export class AccessController {
      * @param passId The pass used to access the area
      * @private
      */
-    private async softDeletePreviousAreaAccess(areaId: string, passId: string) {
+    private async softDeletePreviousAreaAccess(areaId: string, passId: string): Promise<void> {
         const areaAccess = await this.areaAccessRepository.createQueryBuilder()
             .leftJoin("AreaAccess.passUsage", "PassUsage")
             .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})

@@ -53,7 +53,6 @@ export class ManagementController {
         for(let i = 0; i < 12 ; i++){
             attendances.push({month :date.getMonth(), count : await statsController.getAreaAttendance(date, "MONTH", areaId)});
             date.setMonth(date.getMonth() - 1);
-            console.log(attendances);
         }
         return attendances.reduce((cur, prev) => cur.count < prev.count ? cur:prev);
     }

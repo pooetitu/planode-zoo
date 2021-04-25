@@ -84,16 +84,12 @@ managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.V
     const animalId = req.params.animalId;
     const animalController = await AnimalController.getInstance();
     const veterinary = (req.user as User).employee;
-    const animal = await animalController.getAnimal(animalId);
-    if (veterinary === null || animal === null) {
-        res.status(400).end();
-        return;
-    }
-    const managementController = await ManagementController.getInstance();
-    const treatment = await managementController.treatAnimal({...req.body}, veterinary, animal);
-    if (treatment !== null) {
+    try{
+        const animal = await animalController.getAnimal(animalId);
+        const managementController = await ManagementController.getInstance();
+        const treatment = await managementController.treatAnimal({...req.body}, veterinary, animal);
         res.status(201).json(treatment);
-    } else {
+    }catch (err) {
         res.status(409).end();
     }
 });
