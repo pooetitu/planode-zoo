@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import {AuthController} from "../controllers/auth.controller";
-import {ensureLoggedIn, ensureLoggedOut} from "connect-ensure-login";
+import {ensureLoggedIn, ensureLoggedOut} from "../middlewares/auth.middleware";
 
 const authRouter = express.Router();
 
@@ -65,7 +65,7 @@ const authRouter = express.Router();
  *        5XX:
  *          description: Unexpected error.
  */
-authRouter.post("/signup", ensureLoggedOut(), async function (req, res) {
+authRouter.post("/signup", ensureLoggedOut, async function (req, res) {
     const authController = await AuthController.getInstance();
     try {
         const user = await authController.subscribe({...req.body});
@@ -101,7 +101,7 @@ authRouter.post("/signup", ensureLoggedOut(), async function (req, res) {
  *        5XX:
  *          description: Unexpected error.
  */
-authRouter.post('/login', ensureLoggedOut(), passport.authenticate('local'), async function (req, res) {
+authRouter.post('/login', ensureLoggedOut, passport.authenticate('local'), async function (req, res) {
     res.json(req.user);
 });
 
@@ -123,7 +123,7 @@ authRouter.post('/login', ensureLoggedOut(), passport.authenticate('local'), asy
  *        5XX:
  *          description: Unexpected error.
  */
-authRouter.delete('/logout', ensureLoggedIn(), async function (req, res) {
+authRouter.delete('/logout', ensureLoggedIn, async function (req, res) {
     req.logout();
     res.status(204).end();
 });
