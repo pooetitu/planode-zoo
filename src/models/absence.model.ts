@@ -1,8 +1,11 @@
 import {Employee} from "./employee.model";
 import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 
+export interface AbsenceProps{
+    absenceDate: Date
+}
 @Entity()
-export class Absence {
+export class Absence implements AbsenceProps{
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 

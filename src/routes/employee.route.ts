@@ -3,6 +3,7 @@ import {AuthController} from "../controllers/auth.controller";
 import {EmployeeController} from "../controllers/employee.controller";
 import express from "express";
 import {managementMiddleware} from "../middlewares/management.middleware";
+import {User} from "../models/user.model";
 
 const employeeRouter = express.Router();
 
@@ -41,7 +42,7 @@ const employeeRouter = express.Router();
 
 /**
  * @swagger
- * /management/employee/{userId}:
+ * /management/employee/hire/{userId}:
  *  post:
  *      security:
  *          - ApiKeyAuth: []
@@ -75,7 +76,7 @@ const employeeRouter = express.Router();
  *        5XX:
  *          description: Unexpected error.
  */
-employeeRouter.post("/:userId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
+employeeRouter.post("/hire/:userId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const userId = req.params.userId;
     try {
         const authController = await AuthController.getInstance();
@@ -231,6 +232,47 @@ employeeRouter.get("/user/:userId", async function (req, res) {
         res.json(employee).end();
     } catch (err) {
         res.status(404).send(err).end();
+    }
+});
+
+/**
+ * @swagger
+ * /management/employee/absence:
+ *  post:
+ *      security:
+ *          - ApiKeyAuth: []
+ *      summary: Create a new Employee
+ *      tags: [Employee]
+ *      requestBody:
+ *        description: The Date of the absence
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  properties:
+ *                      absenceDate:
+ *                          type: date
+ *              example:
+ *                  maintenanceDate: 2021-04-25
+ *      responses:
+ *        200:
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
+ */
+employeeRouter.post("/absence", async function (req,res){
+    const employee = (req.user as User).employee;
+    const employeeController = await EmployeeController.getInstance();
+    try{
+        const absence = await employeeController.addWeekAbsence(employee, {...req.body});
+        res.json(absence).end();
+    }catch (err){
+        res.status(400).send(err).end();
     }
 });
 

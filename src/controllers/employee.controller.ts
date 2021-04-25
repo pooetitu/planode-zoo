@@ -1,14 +1,17 @@
 import {Employee, EmployeeProps} from "../models/employee.model";
 import {getRepository, Repository} from "typeorm";
+import {Absence,AbsenceProps} from "../models/absence.model";
 
 export class EmployeeController {
 
     private static instance: EmployeeController;
 
     private employeeRepository: Repository<Employee>;
+    private absenceRepository: Repository<Absence>;
 
     private constructor() {
         this.employeeRepository = getRepository(Employee);
+        this.absenceRepository = getRepository(Absence);
     }
 
     public static async getInstance(): Promise<EmployeeController> {
@@ -42,5 +45,11 @@ export class EmployeeController {
             .innerJoin("employee.user", "user")
             .where("user.id = :userId", {userId})
             .getOne();
+    }
+
+    async addWeekAbsence(employee: Employee, props: AbsenceProps): Promise<Absence>{
+        const absence = getRepository(Absence).create(props);
+        absence.employee = employee;
+        return await this.absenceRepository.save(absence);
     }
 }
