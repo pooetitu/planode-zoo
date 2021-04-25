@@ -2,7 +2,8 @@ import {User} from "./user.model";
 import {PassUsage} from "./pass_usage.model";
 import {
     Column,
-    CreateDateColumn, DeleteDateColumn,
+    CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     ManyToOne,
     OneToMany,

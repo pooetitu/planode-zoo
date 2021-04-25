@@ -51,13 +51,16 @@ export class ManagementController {
      * @param areaId The area that will be maintained
      */
     public async suggestedMaintenanceDate(areaId: string): Promise<number> {
-        const statsController =  await StatsController.getInstance();
+        const statsController = await StatsController.getInstance();
         const date = new Date();
         let attendances = [];
-        for(let i = 0; i < 12 ; i++){
-            attendances.push({month :date.getMonth(), count : await statsController.getAreaAttendance(date, "MONTH", areaId)});
+        for (let i = 0; i < 12; i++) {
+            attendances.push({
+                month: date.getMonth(),
+                count: await statsController.getAreaAttendance(date, "MONTH", areaId)
+            });
             date.setMonth(date.getMonth() - 1);
         }
-        return attendances.reduce((cur, prev) => cur.count < prev.count ? cur:prev);
+        return attendances.reduce((cur, prev) => cur.count < prev.count ? cur : prev);
     }
 }

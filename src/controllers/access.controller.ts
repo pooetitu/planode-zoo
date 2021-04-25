@@ -103,7 +103,7 @@ export class AccessController {
     public async canAccessArea(pass: Pass, area: Area): Promise<Boolean> {
         const passAreas = await this.getAccessibleAreas(pass.id);
         const statsController = await StatsController.getInstance();
-        if((await statsController.getAreaRealtimeAttendance(area)) >= area.capacity){
+        if ((await statsController.getAreaRealtimeAttendance(area)) >= area.capacity) {
             return false;
         }
         const isOpen = await this.isAreaOpen(area)
@@ -114,24 +114,6 @@ export class AccessController {
             return await this.canAccessEscapeGameArea(passAreas, area.id, pass.id);
         }
         return true;
-    }
-
-    /**
-     * Check if the area is currently opened depending on the area's schedule
-     * @param area The area to be checked
-     * @private
-     */
-    private async isAreaOpen(area: Area): Promise<Boolean>{
-        const currentDate = new Date();
-        currentDate.setFullYear(0,0,0)
-        if(!Array.isArray(area.schedules)) {
-            area.schedules = [area.schedules];
-        }
-        return area.schedules.some(schedule => {
-            schedule.openTime.setFullYear(0,0,0);
-            schedule.closeTime.setFullYear(0,0,0);
-            return schedule.openTime.getTime() <= currentDate.getTime() && schedule.closeTime.getTime() >= currentDate.getTime();
-        });
     }
 
     /**
@@ -173,6 +155,24 @@ export class AccessController {
             .getOneOrFail();
         await this.passUsageRepository.softRemove(passUsage);
         return passUsage;
+    }
+
+    /**
+     * Check if the area is currently opened depending on the area's schedule
+     * @param area The area to be checked
+     * @private
+     */
+    private async isAreaOpen(area: Area): Promise<Boolean> {
+        const currentDate = new Date();
+        currentDate.setFullYear(0, 0, 0)
+        if (!Array.isArray(area.schedules)) {
+            area.schedules = [area.schedules];
+        }
+        return area.schedules.some(schedule => {
+            schedule.openTime.setFullYear(0, 0, 0);
+            schedule.closeTime.setFullYear(0, 0, 0);
+            return schedule.openTime.getTime() <= currentDate.getTime() && schedule.closeTime.getTime() >= currentDate.getTime();
+        });
     }
 
     /**
@@ -225,7 +225,7 @@ export class AccessController {
             .where("MONTH(NOW()) = MONTH(Maintenance.maintenanceDate)");
         return await this.areaRepository.createQueryBuilder()
             .select("Area.id")
-            .leftJoinAndMapOne("Area.schedules", "Area.schedules","Schedule")
+            .leftJoinAndMapOne("Area.schedules", "Area.schedules", "Schedule")
             .leftJoin("Area.passes", "PassAreas")
             .where("PassAreas.pass = :passId", {passId})
             .andWhere("Area.id NOT IN (" + areaInMaintenance.getSql() + ")")
