@@ -24,10 +24,10 @@ const accessRouter = express.Router();
  *         - areaId
  *       properties:
  *         passId:
- *           type: number
+ *           type: string
  *           description: The ID of the Pass
  *         areaId:
- *           type: number
+ *           type: string
  *           description: The ID of the Area
  *       example:
  *         passId: 4
@@ -45,7 +45,7 @@ const accessRouter = express.Router();
  *        name: passId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass Id
  *      responses:
  *        200:
@@ -76,22 +76,22 @@ accessRouter.get("/zoo/:passId", zooOpenCheckMiddleware(new Date(Date.now())), z
 
 /**
  * @swagger
- * /access/zoo/{areaId}/{passId}:
+ * /access/area/{areaId}/{passId}:
  *  get:
- *      summary: Return access of the pass in a area
+ *      summary: Return if the pass can access an Area
  *      tags: [Access]
  *      parameters:
  *      - in: path
  *        name: passId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass Id
  *      - in: path
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Area Id
  *      responses:
  *        200:
@@ -127,14 +127,14 @@ accessRouter.get("/area/:areaId/:passId", zooAccessMiddleware, areaAccessMiddlew
  * @swagger
  * /access/zoo/{passId}:
  *  put:
- *      summary: Update access of the pass
+ *      summary: Leave the Zoo
  *      tags: [Access]
  *      parameters:
  *      - in: path
  *        name: passId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass Id
  *      responses:
  *        200:

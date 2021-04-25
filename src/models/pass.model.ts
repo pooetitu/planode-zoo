@@ -1,6 +1,14 @@
 import {User} from "./user.model";
 import {PassUsage} from "./pass_usage.model";
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn, DeleteDateColumn,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import {PassAreas} from "./pass_areas.model";
 
 export const passMap = {"DAILY": 1, "WEEK_END": 2, "YEARLY": 365, "ONCE_MONTHLY": 365, "NIGHT": 1};
@@ -46,4 +54,13 @@ export class Pass {
 
     @OneToMany(() => PassUsage, passUsage => passUsage.pass)
     passUsages!: PassUsage[];
+
+    @CreateDateColumn()
+    createdAt!: Date;
+
+    @UpdateDateColumn()
+    updatedAt!: Date;
+
+    @DeleteDateColumn()
+    deletedAt!: Date;
 }

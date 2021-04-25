@@ -48,16 +48,14 @@ managementRouter.use("/employee", employeeRouter);
  * @swagger
  * /management/treatment/{animalId}:
  *  post:
- *      security:
- *          - ApiKeyAuth: []
- *      summary: Create a new Pass
+ *      summary: Add treatment to the animals
  *      tags: [Management]
  *      parameters:
  *      - in: path
  *        name: animalId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Animal Id
  *      requestBody:
  *        description: Data of the treatment
@@ -80,20 +78,16 @@ managementRouter.use("/employee", employeeRouter);
  *        5XX:
  *          description: Unexpected error.
  */
-managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
+managementRouter.post("/treatment/:animalId", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const animalId = req.params.animalId;
     const animalController = await AnimalController.getInstance();
     const veterinary = (req.user as User).employee;
-    const animal = await animalController.getAnimal(animalId);
-    if (veterinary === null || animal === null) {
-        res.status(400).end();
-        return;
-    }
-    const managementController = await ManagementController.getInstance();
-    const treatment = await managementController.treatAnimal({...req.body}, veterinary, animal);
-    if (treatment !== null) {
+    try{
+        const animal = await animalController.getAnimal(animalId);
+        const managementController = await ManagementController.getInstance();
+        const treatment = await managementController.treatAnimal({...req.body}, veterinary, animal);
         res.status(201).json(treatment);
-    } else {
+    }catch (err) {
         res.status(409).end();
     }
 });
@@ -102,8 +96,6 @@ managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.V
  * @swagger
  * /management/maintenance/{areaId}:
  *  post:
- *      security:
- *          - ApiKeyAuth: []
  *      summary: Manage maintenance of area
  *      tags: [Management]
  *      parameters:
@@ -111,7 +103,7 @@ managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.V
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Area Id
  *      requestBody:
  *        description: Data of the Maintenance
@@ -177,7 +169,7 @@ managementRouter.post("/maintenance/:areaId", managementMiddleware(EmployeeType.
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Area Id
  *      responses:
  *        200:
@@ -200,7 +192,7 @@ managementRouter.get("/suggest-maintenance-month/:areaId", managementMiddleware(
     const managementController = await ManagementController.getInstance();
     try {
         const date = await managementController.suggestedMaintenanceDate(areaId);
-        res.status(200).json({"month": date}).end();
+        res.status(200).json(date).end();
     } catch (err) {
         res.status(404).send(err).end();
     }

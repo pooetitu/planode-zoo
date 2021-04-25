@@ -94,6 +94,11 @@ authRouter.post("/signup", ensureLoggedOut, async function (req, res) {
  *      responses:
  *        200:
  *          description: OK
+ *          headers:
+ *            Set-Cookie:
+ *              schema:
+ *                type: string
+ *                example: connect.sid=s%3AS-2L6hsPFHHmzquHeaTmfT59nTXVB6zF.WXuWQtiRCxh8p4EUXJP6nWuGYpAth0NmjQF6PHzg4lc
  *        400:
  *          description: Bad request.
  *        401:
@@ -109,8 +114,6 @@ authRouter.post('/login', ensureLoggedOut, passport.authenticate('local'), async
  * @swagger
  * /auth/logout:
  *  delete:
- *      security:
- *          - ApiKeyAuth: []
  *      summary: Request for Logout
  *      tags: [Authentification]
  *      responses:

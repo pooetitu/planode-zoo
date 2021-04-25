@@ -42,8 +42,8 @@ export class EmployeeController {
 
     async getEmployeeByUserId(userId: string) {
         return await this.employeeRepository.createQueryBuilder()
-            .innerJoin("employee.user", "user")
-            .where("user.id = :userId", {userId})
+            .innerJoin("Employee.user", "User")
+            .where("User.id = :userId", {userId})
             .getOne();
     }
 

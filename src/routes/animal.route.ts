@@ -37,7 +37,7 @@ const animalRouter = express.Router();
  *        name: animalId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Animal ID
  *      responses:
  *        200:
@@ -140,7 +140,7 @@ animalRouter.post("/", async function (req, res) {
  *        name: animalId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Animal ID
  *      requestBody:
  *        description: Data of the pass
@@ -188,7 +188,7 @@ animalRouter.put("/:animalId", async function (req, res) {
  *        name: animalId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Animal ID
  *      responses:
  *        200:

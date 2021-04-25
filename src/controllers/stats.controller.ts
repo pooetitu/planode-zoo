@@ -42,18 +42,16 @@ export class StatsController {
         const year = date.getFullYear();
         return await this.passUsageRepository.createQueryBuilder()
             .select("DISTINCT ON (PassUsage.id)")
-            .leftJoin("AreaAccess.passUsage", " PassUsage")
-            .where(":period(:date) = :period(createdAt)", {period, date})
+            .where(period+"(:date) = "+period+"(createdAt)", {period, date})
             .andWhere("YEAR(:year) = YEAR(createdAt)", {year})
             .getCount();
     }
 
     public async getAreaAttendance(date: Date, period: "WEEK" | "DATE" | "MONTH", areaId: string): Promise<number> {
-        const year = date.getFullYear();
         return await this.areaAccessRepository.createQueryBuilder()
-            .where(":period(:date) = :period(createdAt)", {period, date})
-            .andWhere("YEAR(:year) = YEAR(createdAt)", {year})
-            .andWhere("area = :id", {areaId})
+            .where(period+"(:date) = "+period+"(createdAt)", {date})
+            .andWhere("YEAR(:date) = YEAR(createdAt)", {date})
+            .andWhere("areaId = :areaId", {areaId})
             .withDeleted()
             .getCount();
     }

@@ -35,6 +35,9 @@ export class Area implements AreaProps {
     @Column({nullable: false})
     type!: string;
 
+    @Column({nullable: false})
+    capacity!: number;
+
     @Column({default: ""})
     description!: string;
 

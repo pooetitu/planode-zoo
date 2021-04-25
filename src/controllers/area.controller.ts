@@ -47,7 +47,7 @@ export class AreaController {
     }
 
     public async addAnimal(area: Area, animal: Animal) {
-        area.animals.push(animal);
-        await this.areaRepository.save(area);
+        animal.area = area;
+        await getRepository(Animal).save(animal);
     }
 }

@@ -1,7 +1,16 @@
 import {User} from "./user.model";
 import {Maintenance} from "./maintenance.model";
 import {Treatment} from "./treatment.model";
-import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn, DeleteDateColumn,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import {Absence} from "./absence.model";
 
 export enum EmployeeType {
@@ -49,5 +58,14 @@ export class Employee {
 
     @OneToMany(() => Absence, absence => absence.employee)
     absences!: Absence[];
+
+    @CreateDateColumn()
+    createdAt!: Date;
+
+    @UpdateDateColumn()
+    updatedAt!: Date;
+
+    @DeleteDateColumn()
+    deletedAt!: Date;
 
 }
