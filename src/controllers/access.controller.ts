@@ -89,7 +89,7 @@ export class AccessController {
         if (!passAreas.some(passArea => passArea.id === area.id) && passAreas.some(passArea => passArea.schedules.some(schedule => schedule.openTime.getTime() >= currentDate && schedule.openTime.getTime() <= currentDate))) {            return false;
         }
         if (pass.isEscapeGame) {
-            await this.canAccessEscapeGameArea(passAreas, area.id, pass.id);
+            return await this.canAccessEscapeGameArea(passAreas, area.id, pass.id);
         }
         return true;
     }
@@ -98,6 +98,7 @@ export class AccessController {
         const countAccess = await this.areaAccessRepository.createQueryBuilder()
             .leftJoin("AreaAccess.passUsage", "PassUsage")
             .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
+            .withDeleted()
             .getMany();
         if (countAccess.length > 0) {
             await this.softDeletePreviousAreaAccess(passAreas[countAccess.length - 1].id, passId)
