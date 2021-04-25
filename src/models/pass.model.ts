@@ -18,7 +18,6 @@ export enum PassType {
     WEEK_END = "WEEK_END",
     YEARLY = "YEARLY",
     ONCE_MONTHLY = "ONCE_MONTHLY",
-    //TODO gestion du night
     NIGHT = "NIGHT"
 }
 

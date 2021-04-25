@@ -8,7 +8,6 @@ import {PassAreas} from "../models/pass_areas.model";
 import {Schedule} from "../models/schedule.model";
 import {StatsController} from "./stats.controller";
 
-// TODO Verifier la capacité d'une area lors d'un passUsage
 
 export class AccessController {
     private static instance: AccessController;
