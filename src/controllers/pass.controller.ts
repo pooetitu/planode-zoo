@@ -54,6 +54,7 @@ export class PassController {
             endDate,
             startDate
         }));
+        pass.user = user;
         let order = 0;
         const areaController = await AreaController.getInstance();
         for (const areaId of props.areaIds) {
@@ -62,7 +63,6 @@ export class PassController {
             await this.passAreasRepository.save(passArea);
             order++;
         }
-        pass.user = user;
         return pass;
     }
 
