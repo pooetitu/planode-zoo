@@ -5,6 +5,7 @@ import {Animal} from "../models/animal.model";
 import {Treatment, TreatmentProps} from "../models/treatment.model";
 import {getRepository, Repository} from "typeorm";
 import {AreaAccess} from "../models/area_access.model";
+import {StatsController} from "./stats.controller";
 
 export class ManagementController {
 
@@ -47,20 +48,18 @@ export class ManagementController {
 
     /*TODO
     Trouver un moyen d'avoir les mois n'ayant aucun acces a un espace
+    Reste a tester
      */
+
     public async suggestedMaintenanceDate(areaId: string): Promise<number> {
-        const result = await this.areaAccessRepository.createQueryBuilder()
-            .leftJoin("AreaAccess.area", "Area")
-            .where("Area.id = :areaId", {areaId})
-            .andWhere("DATE(NOW())-1 = DATE(AreaAccess.createdAt)")
-            .groupBy("MONTH(AreaAccess.createdAt)")
-            .select("COUNT(*)", "count")
-            .getRawMany();
-        console.log(result);/*
-        let access = areaAccess.reduce((a, b) =>
-            // @ts-ignore
-            b.getDataValue(`totalCount`) < a.getDataValue(`totalCount`) ? b : a
-        );*/
-        return 0;// access.createdAt.getMonth();
+        const statsController =  await StatsController.getInstance();
+        const date = new Date();
+        let attendances = [];
+        for(let i = 0; i < 12 ; i++){
+            attendances.push({month :date.getMonth(), count : await statsController.getAreaAttendance(date, "MONTH", areaId)});
+            date.setDate(date.getMonth() - 1);
+            console.log(date);
+        }
+        return Math.min(...attendances);
     }
 }
