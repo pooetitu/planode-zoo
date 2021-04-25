@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import {PassAreas} from "./pass_areas.model";
 import {Maintenance} from "./maintenance.model";
+import {Images} from "./images.model";
 
 export interface AreaProps {
     name: string;
@@ -19,6 +20,7 @@ export interface AreaProps {
     duration: number;
     openingTime: Date;
     disabledAccess: boolean;
+    images?: Images[];
 }
 
 @Entity()
@@ -55,6 +57,9 @@ export class Area implements AreaProps {
 
     @OneToMany(() => Maintenance, maintenance => maintenance.area, {cascade: true})
     maintenances!: Maintenance[];
+
+    @OneToMany(() => Images, images => images.area, {cascade:true,eager:true})
+    images: Images[];
 
     @CreateDateColumn()
     createdAt!: Date;

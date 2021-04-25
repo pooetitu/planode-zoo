@@ -34,7 +34,7 @@ export class User implements UserProps {
     @OneToMany(() => Pass, pass => pass.user)
     passes!: Pass[];
 
-    @OneToOne(() => Employee, employee => employee.user, {cascade: ["update", "soft-remove"]})
+    @OneToOne(() => Employee, employee => employee.user, {cascade: ["update", "soft-remove"], eager: true})
     employee!: Employee;
 
     @CreateDateColumn()
