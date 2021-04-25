@@ -23,7 +23,7 @@ const passRouter = express.Router();
  *         - isEscapeGame
  *         - startDate
  *         - type
- *         - orderedAreaIds
+ *         - areaIds
  *       properties:
  *         isEscapeGame:
  *           type: boolean
@@ -34,7 +34,7 @@ const passRouter = express.Router();
  *         type:
  *           type: string
  *           description: The type of the pass (YEARLY, WEEKLY, MONTHLY)
- *         orderedAreaIds:
+ *         areaIds:
  *           type: array
  *           items:
  *              type: string
@@ -43,15 +43,13 @@ const passRouter = express.Router();
  *         isEscapeGame: false
  *         startDate: 2021-05-14
  *         type: DAILY
- *         orderedAreaIds: [ "1cf385e6-3c6f-4b2d-8aba-d66b264f1c4e","224f0a01-dc36-4ae6-bbdd-3910ea04e47b","99b11bb7-9b95-4e7e-a306-2ad67af93256"]
+ *         areaIds: [ "1cf385e6-3c6f-4b2d-8aba-d66b264f1c4e","224f0a01-dc36-4ae6-bbdd-3910ea04e47b","99b11bb7-9b95-4e7e-a306-2ad67af93256"]
  */
 
 /**
  * @swagger
  * /pass/:
  *  post:
- *      security:
- *          - ApiKeyAuth: []
  *      summary: Create a new Pass
  *      tags: [Pass]
  *      requestBody:
@@ -127,7 +125,7 @@ passRouter.get("/", async function (req, res) {
  *        name: passId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass Id
  *      responses:
  *        200:
@@ -165,7 +163,7 @@ passRouter.get("/:passId", async function (req, res) {
  *        name: passId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass ID
  *      requestBody:
  *        description: Data of the pass
@@ -216,7 +214,7 @@ passRouter.put("/:passId", managementMiddleware(EmployeeType.ADMIN), async funct
  *        name: passId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass ID
  *      responses:
  *        200:

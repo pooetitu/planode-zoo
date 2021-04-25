@@ -44,8 +44,6 @@ const employeeRouter = express.Router();
  * @swagger
  * /management/employee/hire/{userId}:
  *  post:
- *      security:
- *          - ApiKeyAuth: []
  *      summary: Create a new Employee
  *      tags: [Employee]
  *      parameters:
@@ -53,7 +51,7 @@ const employeeRouter = express.Router();
  *        name: userId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The user Id
  *      requestBody:
  *        description: Data of the employee
@@ -100,7 +98,7 @@ employeeRouter.post("/hire/:userId", managementMiddleware(EmployeeType.ADMIN), a
  *        name: employeeId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Employee ID
  *      responses:
  *        200:
@@ -140,7 +138,7 @@ employeeRouter.delete("/:employeeId", managementMiddleware(EmployeeType.ADMIN), 
  *        name: employeeId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Employee Id
  *      responses:
  *        200:
@@ -204,7 +202,7 @@ employeeRouter.get("/", async function (req, res) {
  *        name: userId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The User Id
  *      responses:
  *        200:
@@ -239,9 +237,7 @@ employeeRouter.get("/user/:userId", async function (req, res) {
  * @swagger
  * /management/employee/absence:
  *  post:
- *      security:
- *          - ApiKeyAuth: []
- *      summary: Create a new Employee
+ *      summary: Set absence of the employee
  *      tags: [Employee]
  *      requestBody:
  *        description: The Date of the absence
@@ -254,7 +250,7 @@ employeeRouter.get("/user/:userId", async function (req, res) {
  *                      absenceDate:
  *                          type: date
  *              example:
- *                  maintenanceDate: 2021-04-25
+ *                  absenceDate: 2021-04-25
  *      responses:
  *        200:
  *          description: OK

@@ -18,6 +18,43 @@ const areaRouter = express.Router();
  * @swagger
  * components:
  *   schemas:
+ *     schedule:
+ *       type: object
+ *       required:
+ *         - openTime
+ *         - closeTime
+ *       properties:
+ *         openTime:
+ *           type: date
+ *           description: Opening time
+ *         closeTime:
+ *           type: date
+ *           description: Closing time
+ *       example:
+ *         openTime: 2000-01-01T08:00:00.000Z
+ *         closeTime: 2000-01-01T08:00:00.000Z
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     image:
+ *       type: object
+ *       required:
+ *         - link
+ *       properties:
+ *         link:
+ *           type: string
+ *           description: link of the picture
+ *       example:
+ *         link: http://link/ppicture.png
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
  *     Area:
  *       type: object
  *       required:
@@ -26,8 +63,8 @@ const areaRouter = express.Router();
  *         - description
  *         - capacity
  *         - duration
- *         - openingTime
  *         - disabledAccess
+ *         - schedules
  *       properties:
  *         name:
  *           type: string
@@ -44,28 +81,34 @@ const areaRouter = express.Router();
  *         duration:
  *           type: number
  *           description: The duration of the Area
- *         openingTime:
- *           type: Date
- *           description: The opening time of the Area
  *         disabledAccess:
  *           type: boolean
  *           description: To know if an area is open or closed
+ *         images:
+ *           type: array
+ *           items:
+ *              $ref: '#/components/schemas/image'
+ *           description: Images of the area
+ *         schedules:
+ *           type: array
+ *           items:
+ *              $ref: '#/components/schemas/schedule'
+ *           description: Opening time of the area
  *       example:
  *         name: aqualand
  *         type: aquatique
  *         description: La place des dauphins
  *         capacity: 1000
  *         duration: 20
- *         openingTime: 13:00:00
  *         disabledAccess: false
+ *         images: [{"link":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Delphinapterus_leucas_2.jpg/1200px-Delphinapterus_leucas_2.jpg"}]
+ *         schedules: [{"openTime":"2000-01-01T14:00:00.000Z","closeTime":"2000-01-01T22:00:00.000Z"}]
  */
 
 /**
  * @swagger
  * /area/:
  *  post:
- *      security:
- *          - ApiKeyAuth: []
  *      summary: Create an area
  *      tags: [Area]
  *      requestBody:
@@ -111,7 +154,7 @@ areaRouter.post("/", ensureLoggedIn, managementMiddleware(EmployeeType.ADMIN), a
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Area Id
  *      responses:
  *        200:
@@ -172,7 +215,7 @@ areaRouter.get("/", async function (req, res) {
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass ID
  *      requestBody:
  *        description: Data of the area
@@ -223,13 +266,13 @@ areaRouter.put("/:areaId", ensureLoggedIn, managementMiddleware(EmployeeType.ADM
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass ID
  *      - in: path
  *        name: animalId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Animal ID
  *      responses:
  *        200:
@@ -273,7 +316,7 @@ areaRouter.put("/:areaId/:animalId", ensureLoggedIn, managementMiddleware(Employ
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Pass Id
  *      responses:
  *        200:
