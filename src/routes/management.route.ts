@@ -80,7 +80,7 @@ managementRouter.use("/employee", employeeRouter);
  *        5XX:
  *          description: Unexpected error.
  */
-managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
+managementRouter.post("/treatment/:animalId", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const animalId = req.params.animalId;
     const animalController = await AnimalController.getInstance();
     const veterinary = (req.user as User).employee;
