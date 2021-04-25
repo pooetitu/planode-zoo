@@ -49,7 +49,7 @@ export class PassController {
         const startDate = new Date(props.startDate);
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + passMap[props.type])
-        const pass = this.passRepository.save(this.passRepository.create({
+        const pass = await this.passRepository.save(this.passRepository.create({
             ...props,
             endDate,
             startDate,
@@ -59,7 +59,7 @@ export class PassController {
         const areaController = await AreaController.getInstance();
         for (const areaId of props.areaIds) {
             const area = await areaController.getAreaById(areaId);
-            const passArea = getRepository(PassAreas).create({pass, area, order});
+            const passArea = this.passAreasRepository.create({pass, area, order});
             await this.passAreasRepository.save(passArea);
             order++;
         }
