@@ -48,16 +48,14 @@ managementRouter.use("/employee", employeeRouter);
  * @swagger
  * /management/treatment/{animalId}:
  *  post:
- *      security:
- *          - ApiKeyAuth: []
- *      summary: Create a new Pass
+ *      summary: Add treatment to the animals
  *      tags: [Management]
  *      parameters:
  *      - in: path
  *        name: animalId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Animal Id
  *      requestBody:
  *        description: Data of the treatment
@@ -98,8 +96,6 @@ managementRouter.post("/treatment/:animalId", managementMiddleware(EmployeeType.
  * @swagger
  * /management/maintenance/{areaId}:
  *  post:
- *      security:
- *          - ApiKeyAuth: []
  *      summary: Manage maintenance of area
  *      tags: [Management]
  *      parameters:
@@ -107,7 +103,7 @@ managementRouter.post("/treatment/:animalId", managementMiddleware(EmployeeType.
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Area Id
  *      requestBody:
  *        description: Data of the Maintenance
@@ -173,7 +169,7 @@ managementRouter.post("/maintenance/:areaId", managementMiddleware(EmployeeType.
  *        name: areaId
  *        required: true
  *        schema :
- *          type: integer
+ *          type: string
  *          description: The Area Id
  *      responses:
  *        200:

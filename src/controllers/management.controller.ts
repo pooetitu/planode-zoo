@@ -46,6 +46,10 @@ export class ManagementController {
 
     }
 
+    /***
+     * Identifies the best month to maintain an area based on area occupancy over the last twelve months.
+     * @param areaId The area that will be maintained
+     */
     public async suggestedMaintenanceDate(areaId: string): Promise<number> {
         const statsController =  await StatsController.getInstance();
         const date = new Date();

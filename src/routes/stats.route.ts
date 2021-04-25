@@ -43,7 +43,7 @@ statsRouter.get("/zoo/realtime", async function (req, res) {
  *        name: date
  *        required: true
  *        schema :
- *          type: date
+ *          type: string
  *          description: The Date
  *      responses:
  *        200:
@@ -76,7 +76,7 @@ statsRouter.get("/zoo/week/:date", async function (req, res) {
  *        name: date
  *        required: true
  *        schema :
- *          type: date
+ *          type: string
  *          description: The Date
  *      responses:
  *        200:
@@ -109,7 +109,7 @@ statsRouter.get("/zoo/day/:date", async function (req, res) {
  *        name: areaId
  *        required: true
  *        schema :
- *          type: number
+ *          type: string
  *          description: The area ID
  *      responses:
  *        200:
@@ -148,13 +148,13 @@ statsRouter.get("/area/realtime/:areaId", async function (req, res) {
  *        name: areaId
  *        required: true
  *        schema :
- *          type: number
+ *          type: string
  *          description: The area ID
  *      - in: path
  *        name: date
  *        required: true
  *        schema :
- *          type: date
+ *          type: string
  *          description: The Date
  *      responses:
  *        200:
@@ -188,13 +188,13 @@ statsRouter.get("/area/day/:areaId/:date", async function (req, res) {
  *        name: areaId
  *        required: true
  *        schema :
- *          type: number
+ *          type: string
  *          description: The area ID
  *      - in: path
  *        name: date
  *        required: true
  *        schema :
- *          type: date
+ *          type: string
  *          description: The Date
  *      responses:
  *        200:
