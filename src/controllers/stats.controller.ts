@@ -38,17 +38,21 @@ export class StatsController {
             .getCount();
     }
 
-    public async getZooAttendance(date: Date, period: "WEEK" | "DATE"): Promise<number> {
+    public async getZooAttendance(date: Date, period: "WEEK" | "DATE" | "MONTH"): Promise<number> {
+        const year = date.getFullYear();
         return await this.passUsageRepository.createQueryBuilder()
             .select("DISTINCT ON (PassUsage.id)")
             .leftJoin("AreaAccess.passUsage", " PassUsage")
             .where(":period(:date) = :period(createdAt)", {period, date})
+            .andWhere("YEAR(:year) = YEAR(createdAt)", {year})
             .getCount();
     }
 
-    public async getAreaAttendance(date: Date, period: "WEEK" | "DATE", areaId: string): Promise<number> {
+    public async getAreaAttendance(date: Date, period: "WEEK" | "DATE" | "MONTH", areaId: string): Promise<number> {
+        const year = date.getFullYear();
         return await this.areaAccessRepository.createQueryBuilder()
             .where(":period(:date) = :period(createdAt)", {period, date})
+            .andWhere("YEAR(:year) = YEAR(createdAt)", {year})
             .andWhere("area = :id", {areaId})
             .withDeleted()
             .getCount();
