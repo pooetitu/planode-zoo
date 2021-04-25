@@ -46,20 +46,15 @@ export class ManagementController {
 
     }
 
-    /*TODO
-    Trouver un moyen d'avoir les mois n'ayant aucun acces a un espace
-    Reste a tester
-     */
-
     public async suggestedMaintenanceDate(areaId: string): Promise<number> {
         const statsController =  await StatsController.getInstance();
         const date = new Date();
         let attendances = [];
         for(let i = 0; i < 12 ; i++){
             attendances.push({month :date.getMonth(), count : await statsController.getAreaAttendance(date, "MONTH", areaId)});
-            date.setDate(date.getMonth() - 1);
-            console.log(date);
+            date.setMonth(date.getMonth() - 1);
+            console.log(attendances);
         }
-        return Math.min(...attendances);
+        return attendances.reduce((cur, prev) => cur.count < prev.count ? cur:prev);
     }
 }

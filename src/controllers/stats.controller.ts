@@ -48,10 +48,9 @@ export class StatsController {
     }
 
     public async getAreaAttendance(date: Date, period: "WEEK" | "DATE" | "MONTH", areaId: string): Promise<number> {
-        const year = date.getFullYear();
         return await this.areaAccessRepository.createQueryBuilder()
             .where(period+"(:date) = "+period+"(createdAt)", {date})
-            .andWhere("YEAR(:year) = YEAR(createdAt)", {year})
+            .andWhere("YEAR(:date) = YEAR(createdAt)", {date})
             .andWhere("areaId = :areaId", {areaId})
             .withDeleted()
             .getCount();

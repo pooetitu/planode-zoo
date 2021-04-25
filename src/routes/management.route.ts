@@ -200,7 +200,7 @@ managementRouter.get("/suggest-maintenance-month/:areaId", managementMiddleware(
     const managementController = await ManagementController.getInstance();
     try {
         const date = await managementController.suggestedMaintenanceDate(areaId);
-        res.status(200).json({"month": date}).end();
+        res.status(200).json(date).end();
     } catch (err) {
         res.status(404).send(err).end();
     }
