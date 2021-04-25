@@ -82,12 +82,12 @@ managementRouter.post("/treatment/:animalId", managementMiddleware(EmployeeType.
     const animalId = req.params.animalId;
     const animalController = await AnimalController.getInstance();
     const veterinary = (req.user as User).employee;
-    try{
+    try {
         const animal = await animalController.getAnimal(animalId);
         const managementController = await ManagementController.getInstance();
         const treatment = await managementController.treatAnimal({...req.body}, veterinary, animal);
         res.status(201).json(treatment);
-    }catch (err) {
+    } catch (err) {
         res.status(409).end();
     }
 });

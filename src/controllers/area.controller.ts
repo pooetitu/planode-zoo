@@ -21,7 +21,7 @@ export class AreaController {
     }
 
     public async createArea(props: AreaProps): Promise<Area | null> {
-        if(props.schedules.length <= 0) {
+        if (props.schedules.length <= 0) {
             throw {message: "You must add at least one schedule to the area"};
         }
         const area = this.areaRepository.create({...props});

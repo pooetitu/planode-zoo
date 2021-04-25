@@ -3,7 +3,8 @@ import {Maintenance} from "./maintenance.model";
 import {Treatment} from "./treatment.model";
 import {
     Column,
-    CreateDateColumn, DeleteDateColumn,
+    CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     JoinColumn,
     OneToMany,

@@ -19,7 +19,7 @@ export function zooOpenCheckMiddleware(accessDate: Date): (req: express.Request,
 export async function zooAccessMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
-    try{
+    try {
         const pass = await passController.getPassById(passId);
         const accessController = await AccessController.getInstance();
         if (await accessController.canAccessZoo(pass)) {

@@ -2,7 +2,8 @@ import {User} from "./user.model";
 import {PassUsage} from "./pass_usage.model";
 import {
     Column,
-    CreateDateColumn, DeleteDateColumn,
+    CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     ManyToOne,
     OneToMany,
@@ -18,7 +19,6 @@ export enum PassType {
     WEEK_END = "WEEK_END",
     YEARLY = "YEARLY",
     ONCE_MONTHLY = "ONCE_MONTHLY",
-    //TODO gestion du night
     NIGHT = "NIGHT"
 }
 
