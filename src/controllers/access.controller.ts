@@ -83,31 +83,36 @@ export class AccessController {
     }
 
     public async canAccessArea(pass: Pass, area: Area): Promise<Boolean> {
-        const passId = pass.id;
         const passAreas = await this.getAccessibleAreas(pass.id);
-        if (!passAreas.some(passArea => passArea.id === area.id)) {
-            return false;
+        const currentDate = new Date().getTime();
+        if (!passAreas.some(passArea => passArea.id === area.id) && passAreas.some(passArea => passArea.schedules.some(schedule => schedule.openTime.getTime() >= currentDate && schedule.openTime.getTime() <= currentDate))) {            return false;
         }
         if (pass.isEscapeGame) {
-            const countAccess = await this.areaAccessRepository.createQueryBuilder()
-                .leftJoin("AreaAccess.passUsage", "PassUsage")
-                .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
-                .getMany();
-            console.log(countAccess)
-            if (countAccess.length > 0) {
-                const areaId = passAreas[countAccess.length - 1].id
-                const areaAccess = await this.areaAccessRepository.createQueryBuilder()
-                    .leftJoin("AreaAccess.passUsage", "PassUsage")
-                    .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
-                    .andWhere("AreaAccess.areaId = :areaId", {areaId})
-                    .getOne();
-                if (areaAccess !== undefined) {
-                    await this.areaAccessRepository.softRemove(areaAccess);
-                }
-            }
-            return passAreas[countAccess.length].id === area.id;
+            await this.canAccessEscapeGameArea(passAreas, area.id, pass.id);
         }
         return true;
+    }
+
+    private async canAccessEscapeGameArea(passAreas: Area[], areaId:string, passId:string){
+        const countAccess = await this.areaAccessRepository.createQueryBuilder()
+            .leftJoin("AreaAccess.passUsage", "PassUsage")
+            .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
+            .getMany();
+        if (countAccess.length > 0) {
+            await this.softDeletePreviousAreaAccess(passAreas[countAccess.length - 1].id, passId)
+        }
+        return passAreas[countAccess.length].id === areaId;
+    }
+
+    private async softDeletePreviousAreaAccess(areaId: string, passId: string){
+        const areaAccess = await this.areaAccessRepository.createQueryBuilder()
+            .leftJoin("AreaAccess.passUsage", "PassUsage")
+            .where("PassUsage.passId = :passId AND DATE(PassUsage.createdAt) = DATE(NOW())", {passId})
+            .andWhere("AreaAccess.areaId = :areaId", {areaId})
+            .getOne();
+        if (areaAccess !== undefined) {
+            await this.areaAccessRepository.softRemove(areaAccess);
+        }
     }
 
     public async accessArea(pass: Pass, area: Area): Promise<AreaAccess> {

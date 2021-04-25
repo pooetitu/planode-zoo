@@ -12,6 +12,7 @@ import {
 import {PassAreas} from "./pass_areas.model";
 import {Maintenance} from "./maintenance.model";
 import {Images} from "./images.model";
+import {Schedule} from "./schedule.model";
 
 export interface AreaProps {
     name: string;
@@ -58,8 +59,11 @@ export class Area implements AreaProps {
     @OneToMany(() => Maintenance, maintenance => maintenance.area, {cascade: true})
     maintenances!: Maintenance[];
 
-    @OneToMany(() => Images, images => images.area, {cascade:true,eager:true})
-    images: Images[];
+    @OneToMany(() => Images, images => images.area, {cascade:true, eager:true})
+    images?: Images[];
+
+    @OneToMany(() => Schedule, schedule => schedule.area, {cascade:true, eager:true})
+    schedules!: Schedule[];
 
     @CreateDateColumn()
     createdAt!: Date;
