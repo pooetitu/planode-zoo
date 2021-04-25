@@ -49,12 +49,12 @@ export class PassController {
         const startDate = new Date(props.startDate);
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + passMap[props.type])
-        const pass = await this.passRepository.save(this.passRepository.create({
+        const pass = this.passRepository.save(this.passRepository.create({
             ...props,
             endDate,
-            startDate
+            startDate,
+            user
         }));
-        pass.user = user;
         let order = 0;
         const areaController = await AreaController.getInstance();
         for (const areaId of props.areaIds) {
