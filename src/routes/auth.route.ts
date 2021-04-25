@@ -109,6 +109,8 @@ authRouter.post('/login', ensureLoggedOut(), passport.authenticate('local'), asy
  * @swagger
  * /auth/logout:
  *  delete:
+ *      security:
+ *          - ApiKeyAuth: []
  *      summary: Request for Logout
  *      tags: [Authentification]
  *      responses:

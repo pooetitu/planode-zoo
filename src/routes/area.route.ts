@@ -21,7 +21,6 @@ const areaRouter = express.Router();
  *     Area:
  *       type: object
  *       required:
- *         - areaId
  *         - name
  *         - type
  *         - description
@@ -30,9 +29,6 @@ const areaRouter = express.Router();
  *         - openingTime
  *         - disabledAccess
  *       properties:
- *         areaId:
- *           type: number
- *           description: The auto-generated id of the Area
  *         name:
  *           type: string
  *           description: The name of the Area
@@ -55,34 +51,43 @@ const areaRouter = express.Router();
  *           type: boolean
  *           description: To know if an area is open or closed
  *       example:
- *         id: 1564
- *         name: Place des lions
- *         type: Area classique
- *         description: La place des lions
- *         capacity: 6
- *         duration: 15
- *         openingTime: 21/04/2021
- *         disabledAccess: 1
+ *         name: aqualand
+ *         type: aquatique
+ *         description: La place des dauphins
+ *         capacity: 1000
+ *         duration: 20
+ *         openingTime: 13:00:00
+ *         disabledAccess: false
  */
 
 /**
  * @swagger
- * /area/{areaId}/{passId}:
+ * /area/:
  *  post:
+ *      security:
+ *          - ApiKeyAuth: []
  *      summary: Create an area
  *      tags: [Area]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
+ *      requestBody:
+ *        description: Data of the area
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Area'
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Area'
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 areaRouter.post("/", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaController = await AreaController.getInstance();
@@ -97,22 +102,30 @@ areaRouter.post("/", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN),
 
 /**
  * @swagger
- * /area/{areaId}/{passId}:
+ * /area/{areaId}:
  *  get:
- *      summary: Create an area
+ *      summary: Get a specific Pass by ID
  *      tags: [Area]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: areaId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          description: The Area Id
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Area'
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 areaRouter.get("/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
@@ -125,6 +138,18 @@ areaRouter.get("/:areaId", async function (req, res) {
     }
 });
 
+/**
+ * @swagger
+ * /area/:
+ *  get:
+ *      summary: Get all Areas
+ *      tags: [Area]
+ *      responses:
+ *        200:
+ *          description: The Access Result
+ *        404:
+ *          description: A area with the specified ID was not found.
+ */
 areaRouter.get("/", async function (req, res) {
     const areaController = await AreaController.getInstance();
     const area = await areaController.getAll();
@@ -138,22 +163,39 @@ areaRouter.get("/", async function (req, res) {
 
 /**
  * @swagger
- * /area/{areaId}/{passId}:
+ * /area/{areaId}:
  *  put:
- *      summary: Create an area
+ *      summary: Update an area
  *      tags: [Area]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: areaId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          description: The Pass ID
+ *      requestBody:
+ *        description: Data of the area
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Area'
  *      responses:
  *        200:
- *          description: The Access Result
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Area'
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
  *        404:
- *          description: The Access was not found
+ *          description: A pass with the specified ID was not found.
+ *        5XX:
+ *          description: Unexpected error.
  */
 areaRouter.put("/:areaId", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.params.areaId;
@@ -170,6 +212,37 @@ areaRouter.put("/:areaId", ensureLoggedIn(), managementMiddleware(EmployeeType.A
     }
 });
 
+/**
+ * @swagger
+ * /area/{areaId}/{animalId}:
+ *  put:
+ *      summary: Add an animal to an area
+ *      tags: [Area]
+ *      parameters:
+ *      - in: path
+ *        name: areaId
+ *        required: true
+ *        schema :
+ *          type: integer
+ *          description: The Pass ID
+ *      - in: path
+ *        name: animalId
+ *        required: true
+ *        schema :
+ *          type: integer
+ *          description: The Animal ID
+ *      responses:
+ *        200:
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        404:
+ *          description: A pass with the specified ID was not found.
+ *        5XX:
+ *          description: Unexpected error.
+ */
 areaRouter.put("/:areaId/:animalId", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.params.areaId;
     const animalId = req.params.animalId;
@@ -191,22 +264,28 @@ areaRouter.put("/:areaId/:animalId", ensureLoggedIn(), managementMiddleware(Empl
 
 /**
  * @swagger
- * /area/zoo/{areaId}/{passId}:
+ * /area/{areaId}:
  *  delete:
- *      summary: Create an area
+ *      summary: Delete an area
  *      tags: [Area]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: areaId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
  *          description: The Pass Id
  *      responses:
  *        200:
- *          description: The Access Result
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
  *        404:
- *          description: The Access was not found
+ *          description: A pass with the specified ID was not found.
+ *        5XX:
+ *          description: Unexpected error.
  */
 areaRouter.delete("/:areaId", ensureLoggedIn(), managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.params.areaId;

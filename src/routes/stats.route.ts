@@ -8,43 +8,24 @@ const statsRouter = express.Router();
  * @swagger
  * tags:
  *   name: Stats
- *   description: Stats actions of the park
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     Stats:
- *       type: object
- *       required:
- *         - passId
- *       properties:
- *         passId:
- *           type: number
- *           description: The auto-generated id of the Pass
- *       example:
- *         id: 1564
+ *   description: Statistics of the park
  */
 
 /**
  * @swagger
  * /stats/zoo/realtime:
  *  get:
- *      summary: Manage Authentification
+ *      summary: Statistic to get the realTime attendance
  *      tags: [Stats]
- *      parameters:
- *      - in: path
- *        name: passId
- *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 statsRouter.get("/zoo/realtime", async function (req, res) {
     const statsController = await StatsController.getInstance();
@@ -55,20 +36,24 @@ statsRouter.get("/zoo/realtime", async function (req, res) {
  * @swagger
  * /stats/zoo/week/{date}:
  *  get:
- *      summary: Manage Authentification
+ *      summary: Statistic to get the week attendance
  *      tags: [Stats]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: date
+ *        required: true
  *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          type: date
+ *          description: The Date
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 statsRouter.get("/zoo/week/:date", async function (req, res) {
     const date = req.params.date;
@@ -84,20 +69,24 @@ statsRouter.get("/zoo/week/:date", async function (req, res) {
  * @swagger
  * /stats/zoo/day/{date}:
  *  get:
- *      summary: Manage Authentification
+ *      summary: Statistic to get the day attendance
  *      tags: [Stats]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: date
+ *        required: true
  *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          type: date
+ *          description: The Date
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 statsRouter.get("/zoo/day/:date", async function (req, res) {
     const date = req.params.date;
@@ -113,20 +102,24 @@ statsRouter.get("/zoo/day/:date", async function (req, res) {
  * @swagger
  * /stats/area/realtime/{areaId}:
  *  get:
- *      summary: Manage Authentification
+ *      summary: Statistic to get the area realtime attendance
  *      tags: [Stats]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: areaId
+ *        required: true
  *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          type: number
+ *          description: The area ID
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 statsRouter.get("/area/realtime/:areaId", async function (req, res) {
     const areaId = req.params.areaId;
@@ -148,20 +141,30 @@ statsRouter.get("/area/realtime/:areaId", async function (req, res) {
  * @swagger
  * /stats/area/day/{areaId}/{date}:
  *  get:
- *      summary: Manage Authentification
+ *      summary: Statistic to get the area day attendance
  *      tags: [Stats]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: areaId
+ *        required: true
  *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          type: number
+ *          description: The area ID
+ *      - in: path
+ *        name: date
+ *        required: true
+ *        schema :
+ *          type: date
+ *          description: The Date
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 statsRouter.get("/area/day/:areaId/:date", async function (req, res) {
     const areaId = req.params.areaId;
@@ -178,20 +181,30 @@ statsRouter.get("/area/day/:areaId/:date", async function (req, res) {
  * @swagger
  * /stats/area/week/{areaId}/{date}:
  *  get:
- *      summary: Manage Authentification
+ *      summary: Statistic to get the area week attendance
  *      tags: [Stats]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: areaId
+ *        required: true
  *        schema :
- *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          type: number
+ *          description: The area ID
+ *      - in: path
+ *        name: date
+ *        required: true
+ *        schema :
+ *          type: date
+ *          description: The Date
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 statsRouter.get("/area/week/:areaId/:date", async function (req, res) {
     const areaId = req.params.areaId;

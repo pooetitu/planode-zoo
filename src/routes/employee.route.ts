@@ -5,24 +5,75 @@ import express from "express";
 import {managementMiddleware} from "../middlewares/management.middleware";
 
 const employeeRouter = express.Router();
+
 /**
  * @swagger
- * /management/employee/hire:
+ * tags:
+ *   name: Employee
+ *   description: Management of the employees
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Employee:
+ *       type: object
+ *       required:
+ *         - firstname
+ *         - lastname
+ *         - type
+ *       properties:
+ *         firstname:
+ *           type: string
+ *           description: The firstname of the employee
+ *         lastname:
+ *           type: string
+ *           description: The lastname of the employee
+ *         type:
+ *           type: string
+ *           description: The type of the employee (ADMIN, USER)
+ *       example:
+ *         firstname: pooo
+ *         lastname: oop
+ *         type: ADMIN
+ */
+
+/**
+ * @swagger
+ * /management/employee/{userId}:
  *  post:
- *      summary: Manage Authentification
- *      tags: [Management]
+ *      security:
+ *          - ApiKeyAuth: []
+ *      summary: Create a new Employee
+ *      tags: [Employee]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: userId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          description: The user Id
+ *      requestBody:
+ *        description: Data of the employee
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Employee'
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Employee'
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 employeeRouter.post("/:userId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const userId = req.params.userId;
@@ -39,22 +90,28 @@ employeeRouter.post("/:userId", managementMiddleware(EmployeeType.ADMIN), async 
 
 /**
  * @swagger
- * /management/employee/fire:
+ * /management/employee/{employeeId}:
  *  delete:
- *      summary: Manage Authentification
- *      tags: [Management]
+ *      summary: Delete a specific Employee
+ *      tags: [Employee]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: employeeId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          description: The Employee ID
  *      responses:
  *        200:
- *          description: The Access Result
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
  *        404:
- *          description: The Access was not found
+ *          description: A employee with the specified ID was not found.
+ *        5XX:
+ *          description: Unexpected error.
  */
 employeeRouter.delete("/:employeeId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const employeeId = req.params.employeeId;
@@ -71,6 +128,33 @@ employeeRouter.delete("/:employeeId", managementMiddleware(EmployeeType.ADMIN), 
     }
 });
 
+/**
+ * @swagger
+ * /management/employee/{employeeId}:
+ *  get:
+ *      summary: Get a specific employee by ID
+ *      tags: [Employee]
+ *      parameters:
+ *      - in: path
+ *        name: employeeId
+ *        required: true
+ *        schema :
+ *          type: integer
+ *          description: The Employee Id
+ *      responses:
+ *        200:
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Employee'
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
+ */
 employeeRouter.get("/:employeeId", async function (req, res) {
     const employeeId = req.params.employeeId;
     if (employeeId === undefined) {
@@ -86,6 +170,18 @@ employeeRouter.get("/:employeeId", async function (req, res) {
     }
 });
 
+/**
+ * @swagger
+ * /management/employee/:
+ *  get:
+ *      summary: Get all Employee
+ *      tags: [Employee]
+ *      responses:
+ *        200:
+ *          description: OK
+ *        404:
+ *          description: A employee with the specified ID was not found.
+ */
 employeeRouter.get("/", async function (req, res) {
     const employeeController = await EmployeeController.getInstance();
     const employees = await employeeController.getAllUser();
@@ -96,6 +192,33 @@ employeeRouter.get("/", async function (req, res) {
     }
 });
 
+/**
+ * @swagger
+ * /management/employee/user/{userId}:
+ *  get:
+ *      summary: Get a specific Employee by User ID
+ *      tags: [Employee]
+ *      parameters:
+ *      - in: path
+ *        name: userId
+ *        required: true
+ *        schema :
+ *          type: integer
+ *          description: The User Id
+ *      responses:
+ *        200:
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Employee'
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
+ */
 employeeRouter.get("/user/:userId", async function (req, res) {
     const userId = req.params.userId;
     if (userId === undefined) {

@@ -40,16 +40,18 @@ const passRouter = express.Router();
  *              type: string
  *           description: The order of the area for the pass
  *       example:
- *         isEscapeGame: 1
+ *         isEscapeGame: false
  *         startDate: 2021-05-14
- *         type: WEEK_END
- *         orderedAreaIds: ["1","2","3"]
+ *         type: DAILY
+ *         orderedAreaIds: [ "1cf385e6-3c6f-4b2d-8aba-d66b264f1c4e","224f0a01-dc36-4ae6-bbdd-3910ea04e47b","99b11bb7-9b95-4e7e-a306-2ad67af93256"]
  */
 
 /**
  * @swagger
  * /pass/:
  *  post:
+ *      security:
+ *          - ApiKeyAuth: []
  *      summary: Create a new Pass
  *      tags: [Pass]
  *      requestBody:
@@ -96,9 +98,13 @@ passRouter.post("/", async function (req, res) {
  *      tags: [Pass]
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 passRouter.get("/", async function (req, res) {
     const passController = await PassController.getInstance();
@@ -116,6 +122,13 @@ passRouter.get("/", async function (req, res) {
  *  get:
  *      summary: Get a specific Pass by ID
  *      tags: [Pass]
+ *      parameters:
+ *      - in: path
+ *        name: passId
+ *        required: true
+ *        schema :
+ *          type: integer
+ *          description: The Pass Id
  *      responses:
  *        200:
  *          description: OK
@@ -145,7 +158,7 @@ passRouter.get("/:passId", async function (req, res) {
  * @swagger
  * /pass/{passId}:
  *  put:
- *      summary: TO-DO
+ *      summary: Update a Pass
  *      tags: [Pass]
  *      parameters:
  *      - in: path
@@ -154,6 +167,13 @@ passRouter.get("/:passId", async function (req, res) {
  *        schema :
  *          type: integer
  *          description: The Pass ID
+ *      requestBody:
+ *        description: Data of the pass
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Pass'
  *      responses:
  *        200:
  *          description: OK
