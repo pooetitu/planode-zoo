@@ -13,6 +13,6 @@ export class Images implements ImagesProps {
     @Column()
     link!: string;
 
-    @ManyToOne(() => Area, area=> area.images)
+    @ManyToOne(() => Area, area => area.images)
     area!: Area;
 }

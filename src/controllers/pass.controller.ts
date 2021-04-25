@@ -6,7 +6,6 @@ import {AreaController} from "./area.controller";
 import {EmployeeType} from "../models/employee.model";
 
 export class PassController {
-
     private static instance: PassController;
 
     private passRepository: Repository<Pass>;
@@ -72,7 +71,7 @@ export class PassController {
         return !(result.affected === undefined || result.affected <= 0);
     }
 
-    async updatePass(id: string, props: PassProps) {
+    public async updatePass(id: string, props: PassProps) {
         const result = await this.passRepository.update(id, props);
         return !(result.affected === undefined || result.affected <= 0);
     }

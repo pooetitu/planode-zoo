@@ -28,16 +28,16 @@ const swaggerOptions = {
                 url: `http://localhost:${port}`
             }
         ],
-        components:{
-            securitySchemes:{
-                ApiKeyAuth:{
+        components: {
+            securitySchemes: {
+                ApiKeyAuth: {
                     type: 'apiKey',
                     in: 'header',
                     name: 'authorization'
                 }
             }
         },
-        security:{
+        security: {
             bearerAuth: []
         },
     },

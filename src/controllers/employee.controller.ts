@@ -1,6 +1,6 @@
 import {Employee, EmployeeProps} from "../models/employee.model";
 import {getRepository, Repository} from "typeorm";
-import {Absence,AbsenceProps} from "../models/absence.model";
+import {Absence, AbsenceProps} from "../models/absence.model";
 
 export class EmployeeController {
 
@@ -47,7 +47,7 @@ export class EmployeeController {
             .getOne();
     }
 
-    async addWeekAbsence(employee: Employee, props: AbsenceProps): Promise<Absence>{
+    async addWeekAbsence(employee: Employee, props: AbsenceProps): Promise<Absence> {
         const absence = getRepository(Absence).create(props);
         absence.employee = employee;
         return await this.absenceRepository.save(absence);

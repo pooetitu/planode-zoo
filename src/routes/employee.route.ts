@@ -265,13 +265,13 @@ employeeRouter.get("/user/:userId", async function (req, res) {
  *        5XX:
  *          description: Unexpected error.
  */
-employeeRouter.post("/absence", async function (req,res){
+employeeRouter.post("/absence", async function (req, res) {
     const employee = (req.user as User).employee;
     const employeeController = await EmployeeController.getInstance();
-    try{
+    try {
         const absence = await employeeController.addWeekAbsence(employee, {...req.body});
         res.json(absence).end();
-    }catch (err){
+    } catch (err) {
         res.status(400).send(err).end();
     }
 });

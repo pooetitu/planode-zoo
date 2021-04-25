@@ -19,8 +19,8 @@ export function zooOpenCheckMiddleware(accessDate: Date): (req: express.Request,
 export async function zooAccessMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
     const passId = req.params.passId;
     const passController = await PassController.getInstance();
-    const pass = await passController.getPassById(passId);
-    if (pass !== null) {
+    try{
+        const pass = await passController.getPassById(passId);
         const accessController = await AccessController.getInstance();
         if (await accessController.canAccessZoo(pass)) {
             next();
@@ -29,8 +29,8 @@ export async function zooAccessMiddleware(req: express.Request, res: express.Res
             res.status(403).send("You are not allowed to enter the zoo today").end();
             return;
         }
-    } else {
-        res.status(401).send("Can't find pass").end();
+    } catch (err) {
+        res.status(401).send(err).end();
         return;
     }
 }

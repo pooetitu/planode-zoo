@@ -11,17 +11,17 @@ import {
 } from "typeorm";
 import {PassAreas} from "./pass_areas.model";
 import {Maintenance} from "./maintenance.model";
-import {Images} from "./images.model";
-import {Schedule} from "./schedule.model";
+import {Images, ImagesProps} from "./images.model";
+import {Schedule, ScheduleProps} from "./schedule.model";
 
 export interface AreaProps {
     name: string;
     type: string;
     description: string;
     duration: number;
-    openingTime: Date;
     disabledAccess: boolean;
-    images?: Images[];
+    images?: ImagesProps[];
+    schedules: ScheduleProps[];
 }
 
 @Entity()
@@ -41,9 +41,6 @@ export class Area implements AreaProps {
     @Column({nullable: false})
     duration!: number;
 
-    @Column({nullable: false, type: "time"})
-    openingTime!: Date;
-
     @Column({default: false, type: "boolean"})
     disabledAccess!: boolean;
 
@@ -59,10 +56,10 @@ export class Area implements AreaProps {
     @OneToMany(() => Maintenance, maintenance => maintenance.area, {cascade: true})
     maintenances!: Maintenance[];
 
-    @OneToMany(() => Images, images => images.area, {cascade:true, eager:true})
+    @OneToMany(() => Images, images => images.area, {cascade: true, eager: true})
     images?: Images[];
 
-    @OneToMany(() => Schedule, schedule => schedule.area, {cascade:true, eager:true})
+    @OneToMany(() => Schedule, schedule => schedule.area, {cascade: true, eager: true})
     schedules!: Schedule[];
 
     @CreateDateColumn()
