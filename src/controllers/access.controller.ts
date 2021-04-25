@@ -32,8 +32,6 @@ export class AccessController {
 
     public async accessZoo(pass: Pass): Promise<PassUsage> {
         const passId = pass.id;
-        const currentDate = new Date(Date.now());
-        currentDate.setHours(0, 0, 0);
         const passUsage = await this.passUsageRepository.createQueryBuilder()
             .where("DATE(NOW()) = DATE(createdAt) AND passId = :passId", {passId})
             .withDeleted()
@@ -65,7 +63,7 @@ export class AccessController {
 
     public async canAccessZoo(pass: Pass): Promise<Boolean> {
         const currentDate = new Date();
-        currentDate.setHours(0, 0, 0)
+        currentDate.setHours(0, 0, 0,0)
         if (pass.endDate === undefined || (currentDate <= pass.startDate && currentDate >= pass.endDate)) {
             return false;
         }
@@ -75,8 +73,11 @@ export class AccessController {
                 .where("MONTH(NOW()) = MONTH(createdAt)")
                 .andWhere("passId = :passId", {passId})
                 .getOne();
-            if (passUsage !== undefined && passUsage.createdAt.getDate() !== currentDate.getDate()) {
-                return false;
+            if(passUsage !== undefined) {
+                passUsage.createdAt.setHours(0, 0, 0,0);
+                if (passUsage.createdAt.getTime() !== currentDate.getTime()) {
+                    return false;
+                }
             }
         }
         return true;
