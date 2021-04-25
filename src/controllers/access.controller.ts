@@ -4,8 +4,6 @@ import {Employee, EmployeeType} from "../models/employee.model";
 import {Pass, PassType} from "../models/pass.model";
 import {Area} from "../models/area.model";
 import {AreaAccess} from "../models/area_access.model";
-import {PassAreas} from "../models/pass_areas.model";
-import {Schedule} from "../models/schedule.model";
 import {StatsController} from "./stats.controller";
 
 
