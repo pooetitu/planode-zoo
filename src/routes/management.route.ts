@@ -22,38 +22,65 @@ managementRouter.use("/employee", employeeRouter);
  * @swagger
  * components:
  *   schemas:
- *     Management:
+ *     Treatment:
  *       type: object
  *       required:
- *         - passId
+ *         - name
+ *         - date
+ *         - description
  *       properties:
- *         passId:
- *           type: number
- *           description: The auto-generated id of the Pass
+ *         name:
+ *           type: string
+ *           description: The name of the animal
+ *         date:
+ *           type: date
+ *           description: The Date of the event
+ *         description:
+ *           type: string
+ *           description: The description of this event
  *       example:
- *         id: 1564
+ *         name: vaccin covid tmtc
+ *         date: 2021-04-01
+ *         description: TMTC le covid c dangereux tout ça faut vacciner meme les chauves souris ces follasses
  */
 
 /**
  * @swagger
- * /management/treatment:
+ * /management/treatment/{animalId}:
  *  post:
- *      summary: Manage Authentification
+ *      security:
+ *          - ApiKeyAuth: []
+ *      summary: Create a new Pass
  *      tags: [Management]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: animalId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          description: The Animal Id
+ *      requestBody:
+ *        description: Data of the treatment
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Treatment'
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/Treatment'
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
-managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
+managementRouter.post("/treatment/:animalId", managementMiddleware(EmployeeType.VETERINARY), async function (req, res) {
     const token = req.headers["authorization"] as string;
     const animalId = req.params.animalId;
     const employeeController = await EmployeeController.getInstance();
@@ -75,22 +102,49 @@ managementRouter.post("/treatment/animalId", managementMiddleware(EmployeeType.V
 
 /**
  * @swagger
- * /management/maintenance:
+ * /management/maintenance/{areaId}:
  *  post:
- *      summary: Manage Authentification
+ *      security:
+ *          - ApiKeyAuth: []
+ *      summary: Manage maintenance of area
  *      tags: [Management]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: areaId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          description: The Area Id
+ *      requestBody:
+ *        description: Data of the Maintenance
+ *        required: true
+ *        content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  properties:
+ *                      maintenanceDate:
+ *                          type: date
+ *              example:
+ *                  maintenanceDate: 2021-04
  *      responses:
  *        200:
- *          description: The Access Result
- *        404:
- *          description: The Access was not found
+ *          description: OK
+ *          content:
+ *           application/json:
+ *              schema:
+ *                  type: object
+ *                  properties:
+ *                      maintenanceDate:
+ *                          type: date
+ *              example:
+ *                  maintenanceDate: 2021-04
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 managementRouter.post("/maintenance/:areaId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const token = req.headers["authorization"] as string;
@@ -118,22 +172,28 @@ managementRouter.post("/maintenance/:areaId", managementMiddleware(EmployeeType.
 
 /**
  * @swagger
- * /management/suggest-maintenance-month:
+ * /management/suggest-maintenance-month/{areaId}:
  *  get:
- *      summary: Manage Authentification
+ *      summary: Know the best month for maintenance
  *      tags: [Management]
  *      parameters:
  *      - in: path
- *        name: passId
+ *        name: areaId
+ *        required: true
  *        schema :
  *          type: integer
- *          required: true
- *          description: The Pass Id
+ *          description: The Area Id
  *      responses:
  *        200:
- *          description: The Access Result
+ *          description: OK
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
  *        404:
- *          description: The Access was not found
+ *          description: A area with the specified ID was not found.
+ *        5XX:
+ *          description: Unexpected error.
  */
 managementRouter.get("/suggest-maintenance-month/:areaId", managementMiddleware(EmployeeType.ADMIN), async function (req, res) {
     const areaId = req.params.areaId;

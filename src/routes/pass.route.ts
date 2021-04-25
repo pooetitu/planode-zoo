@@ -98,8 +98,12 @@ passRouter.post("/", async function (req, res) {
  *      responses:
  *        200:
  *          description: OK
- *        404:
- *          description: A pass with the specified ID was not found.
+ *        400:
+ *          description: Bad request.
+ *        401:
+ *          description: Authorization information is missing or invalid.
+ *        5XX:
+ *          description: Unexpected error.
  */
 passRouter.get("/", async function (req, res) {
     const passController = await PassController.getInstance();
